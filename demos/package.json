@@ -1,0 +1,12 @@
+{
+  "name": "painel-teste-demos",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "dependencies": {
+    "@laihoe/demoparser2": "^0.42.0",
+    "csgo-sharecode": "^7.0.1",
+    "globaloffensive": "^3.3.0",
+    "steam-user": "^5.2.3"
+  }
+}

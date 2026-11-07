@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.steamstatic.com https://*.akamaihd.net; connect-src https://painel-login.juansouzacmc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ranko — CS2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06080c;--side:#080b10;--panel:#0d1118;--panel2:#141a25;--line:#1d2533;
+  --text:#eef2f8;--muted:#8793a8;
+  --t:#ffc20e;      /* lado T: marca e destaque */
+  --ct:#4aa3ff;     /* lado CT: positivo */
+  --red:#ff5a4e;    /* negativo */
+  --gold:#ffc20e;   /* 1º lugar e estrelas */
+  --disp:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Archivo","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:84px;height:100%;scrollbar-gutter:stable}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:400 14px/1.5 var(--body);-webkit-font-smoothing:antialiased;
+  }
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--t);outline-offset:2px}
+@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
+/* ---------- barra lateral ---------- */
+.side{background:var(--side);border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:24px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;align-items:center;gap:11px;font:800 22px/1 var(--disp);letter-spacing:.04em;text-transform:uppercase}
+.logo{width:38px;height:38px;display:grid;place-items:center;background:var(--t);color:var(--on-t);border-radius:6px;transform:skewX(-8deg);}
+.logo svg{transform:skewX(8deg)}
+.brand small{display:block;font:500 10px var(--mono);letter-spacing:.14em;color:var(--muted);margin-top:3px}
+.me{display:flex;align-items:center;gap:10px}
+.me small{display:block;color:var(--muted);font-size:12px}
+.me b{font:700 18px var(--disp);letter-spacing:.03em;text-transform:uppercase}
+nav h4{margin:0 0 8px;color:var(--muted);font:500 10.5px var(--mono);letter-spacing:.16em;text-transform:uppercase}
+nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:6px;color:#aab4c6;font-weight:500;position:relative}
+nav a:hover{background:#ffffff08;color:#fff}
+nav a.on{background:linear-gradient(90deg,rgba(var(--t-rgb),.16),transparent);color:#fff}
+nav a.on::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:2px;background:var(--t)}
+nav a i{font-style:normal;display:grid;place-items:center}
+nav a em{margin-left:auto;font:700 11px var(--mono);font-style:normal;background:#ffffff12;border-radius:4px;padding:1px 7px}
+.promo{margin-top:auto;border:1px solid var(--line);background:linear-gradient(160deg,var(--panel2),var(--panel));border-radius:10px;padding:16px;position:relative;overflow:hidden}
+.promo b{font:700 19px var(--disp);letter-spacing:.03em;text-transform:uppercase;display:block;margin-bottom:5px}
+.promo p{margin:0 0 14px;color:var(--muted);font-size:12.5px}
+.btn{display:inline-block;border:0;border-radius:6px;padding:10px 16px;font:700 13px var(--body);letter-spacing:.02em;text-align:center;transition:transform .15s,background .15s,box-shadow .15s}
+.btn.y{background:var(--t);color:var(--on-t)}
+.btn.y:hover{filter:brightness(1.1)}
+.btn.y:active{transform:translateY(1px)}
+.btn.w{display:block;width:100%}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- topo ---------- */
+main{min-width:0}
+.top{display:flex;align-items:center;gap:16px;padding:13px 32px;border-bottom:1px solid var(--line);background:rgba(6,8,12,.96);position:sticky;top:0;z-index:20}
+.tabs{display:flex;gap:2px}
+.tabs a{padding:8px 15px;border-radius:6px;color:var(--muted);font:600 13px var(--body);white-space:nowrap;transition:background .2s,color .2s}
+.tabs a:hover{color:#fff}
+.tabs a.on{background:#ffffff0f;color:#fff}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:0 12px;width:min(300px,100%)}
+.search input{background:none;border:0;outline:0;color:var(--text);font:inherit;flex:1;min-width:0;padding:9px 0}
+.search:focus-within{border-color:var(--t)}
+.search input::placeholder{color:var(--muted)}
+.wrap{padding:28px 32px 48px;display:grid;gap:56px;grid-template-columns:minmax(0,1fr)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--line);min-height:420px;padding:44px 40px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:30px;align-items:center;
+  background-color:#0b0e14;background-size:cover;background-position:center 35%;
+  background-image:linear-gradient(90deg,rgba(6,8,12,.96) 0%,rgba(6,8,12,.84) 40%,rgba(6,8,12,.3) 64%,rgba(6,8,12,.15) 100%),linear-gradient(0deg,rgba(6,8,12,.7),transparent 50%),url("banner-cs2.jpg")}
+.hero::before{content:"";position:absolute;left:-10%;right:-10%;bottom:34px;height:2px;background:linear-gradient(90deg,transparent,var(--t) 30%,var(--t) 70%,transparent);transform:rotate(-2deg);opacity:.7}
+.hero>*{position:relative;z-index:1;min-width:0}
+.hero h1{margin:0 0 14px;font:800 clamp(48px,6.4vw,96px)/.88 var(--disp);letter-spacing:-.005em;text-transform:uppercase;text-shadow:0 2px 30px #000a}
+.hero h1 em{display:block;font-style:normal;color:transparent;-webkit-text-stroke:2px var(--t)}
+.hero p{margin:0;color:#c3ccdb;max-width:42ch;font-size:15px;text-shadow:0 1px 14px #000}
+
+/* destaques do topo */
+.spot{display:grid;gap:14px}
+.sp{position:relative;overflow:hidden;border-radius:10px;padding:16px 16px 14px;background:rgba(9,12,18,.88);border:1px solid var(--c);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.sp.mv{--c:var(--ct)}.sp.tr{--c:var(--red)}
+.sp-k{display:flex;align-items:center;gap:8px;color:var(--c);font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.sp-k .ic{width:15px;height:15px}
+.sp-b{display:flex;align-items:center;gap:14px;margin-top:12px}
+.sp-b b{display:block;font:800 30px/1 var(--disp);letter-spacing:.01em;text-transform:uppercase}
+.sp-b span{color:var(--muted);font-size:12.5px}
+.sp small{display:block;margin-top:10px;color:var(--muted);font-size:11.5px}
+.sp .num{font-family:var(--mono);font-weight:700;color:var(--text)}
+
+/* avatares */
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--disp);color:#fff;flex:none;overflow:hidden;background:var(--panel2);border:1px solid #2a3446}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.av.l{width:56px;height:56px;font-size:19px}
+.av.xl{width:72px;height:72px;font-size:24px}
+.av.xxl{width:104px;height:104px;font-size:34px}
+
+/* cabeçalhos de seção */
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.sh .no{font:700 11px var(--mono);color:var(--t);letter-spacing:.16em}
+.sh h2{margin:2px 0 0;font:800 clamp(34px,4.4vw,52px)/.95 var(--disp);text-transform:uppercase;letter-spacing:.005em}
+.sh h2 u{text-decoration:none;color:var(--t)}
+.sh p{margin:8px 0 0;color:var(--muted);font-size:13.5px;max-width:62ch}
+.neg-h{margin-top:46px}
+.neg-h .no{color:var(--red)}
+.neg-h h2 u{color:var(--red)}
+
+/* ---------- cards de destaque ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-3px);border-color:var(--c)}
+.card.hl{--c:var(--ct);padding:18px;gap:18px;cursor:pointer}
+.card.hl.neg{--c:var(--red)}
+.hl-k{display:flex;align-items:center;gap:8px;color:var(--c);font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;position:relative}
+.hl-k .ic{width:16px;height:16px}
+.hl-who{display:flex;align-items:center;gap:14px;position:relative}
+.hl-who b{display:block;font:800 28px/1 var(--disp);text-transform:uppercase;letter-spacing:.01em}
+.hl-who span{display:block;color:var(--muted);font-size:12.5px;margin-top:5px;line-height:1.35}
+.tag{display:inline-block;background:var(--c);color:#04141b;font:700 12px var(--mono);padding:4px 10px;transform:skewX(-8deg);border-radius:3px;position:relative;margin-top:auto;align-self:flex-start}
+.card.neg .tag{color:#240509}
+
+/* ---------- pódio ---------- */
+.podio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:end;margin-bottom:14px}
+.pd{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 12px 0;border:1px solid var(--line);border-bottom:0;border-radius:12px 12px 0 0;background:linear-gradient(180deg,var(--panel2),var(--panel));cursor:pointer;overflow:hidden;transition:border-color .2s,transform .2s}
+.pd:hover{transform:translateY(-3px)}
+.pd .av{margin-bottom:12px}
+.pd .nm{font:800 clamp(22px,3vw,34px)/1 var(--disp);text-transform:uppercase;letter-spacing:.01em;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pd .big{font:700 clamp(26px,3.4vw,40px)/1.1 var(--mono);margin:8px 0 2px}
+.pd .sub{color:var(--muted);font-size:12px;margin-bottom:16px}
+.pd .base{width:calc(100% + 24px);margin:0 -12px;display:grid;place-items:center;font:800 80px/1 var(--disp);color:rgba(255,255,255,.07);border-top:1px solid var(--line);overflow:hidden}
+.pd.p1{border-color:rgba(var(--t-rgb),.55);background:linear-gradient(180deg,rgba(var(--t-rgb),.14),var(--panel) 70%);box-shadow:0 -20px 60px -30px var(--gold)}
+.pd.p1 .base{height:150px;font-size:124px;color:rgba(var(--t-rgb),.2)}
+.pd.p2 .base{height:104px;font-size:86px}.pd.p3 .base{height:72px;font-size:60px}
+.pd.p1 .big{color:var(--gold)}
+.pd.p1::before{content:"LÍDER";position:absolute;top:10px;left:0;right:0;font:700 10.5px var(--mono);letter-spacing:.22em;color:var(--gold)}
+.pd.p1{padding-top:34px}
+.lid-k{font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:0 0 10px}
+#hist{margin:0 0 18px;line-height:1.9;color:var(--muted);font-size:12.5px}
+#hist b{color:var(--text);font-weight:600}
+
+/* ---------- tabela ---------- */
+.tbl{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:680px}
+th,td{padding:13px 16px;text-align:left;white-space:nowrap}
+th{color:var(--muted);font:500 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid var(--line)}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr+tr td{border-top:1px solid #151c28}
+tbody tr:hover td{background:#ffffff07}
+td.pos{width:60px}
+.rk{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:6px;background:#ffffff0c;color:var(--muted);font:800 17px var(--disp);transform:skewX(-8deg)}
+tr.top1 .rk{background:var(--gold);color:#241a00}
+tr.top2 .rk{background:#d6dbe6;color:#14171d}
+tr.top3 .rk{background:#d08a4a;color:#241404}
+tr.top1 td{background:linear-gradient(90deg,rgba(var(--t-rgb),.08),transparent 70%)}
+.pl{display:flex;align-items:center;gap:11px;font-weight:600}
+.hv{font:700 17px var(--mono)}
+.up{color:var(--ct)}.dn{color:var(--red)}
+.bar{display:inline-block;width:72px;height:5px;border-radius:9px;background:#ffffff12;vertical-align:middle;margin-right:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--t),#ffc20e);border-radius:9px}
+td .mono{font-family:var(--mono)}
+.note{color:var(--muted);font-size:12.5px;margin:12px 0 0}
+
+/* ---------- zoeira ---------- */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:8px 15px;font:600 13px var(--body);transition:all .15s}
+.chip:hover{color:#fff;border-color:#33405a}
+.chip.on{background:var(--red);border-color:var(--red);color:#240509}
+.zgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+.zlist{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 0}
+.zr{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:14px;padding:12px 18px}
+.zr+.zr{border-top:1px solid #151c28}
+.zn{display:flex;align-items:center;gap:8px;font-weight:600;flex-wrap:wrap}
+.zb{height:6px;border-radius:9px;background:#ffffff10;overflow:hidden;margin-top:8px}
+.zb i{display:block;height:100%;background:linear-gradient(90deg,var(--t),var(--red));border-radius:9px}
+.zv{text-align:right;font:700 18px var(--mono)}
+.pill{background:var(--red);color:#240509;font:700 11px var(--mono);padding:3px 9px;border-radius:3px;transform:skewX(-8deg);display:inline-block}
+.troll{position:relative;overflow:hidden;border-radius:12px;padding:26px;display:grid;gap:10px;justify-items:start;border:1px solid rgba(var(--red-rgb),.5);background:linear-gradient(160deg,rgba(var(--red-rgb),.16),var(--panel) 65%);cursor:pointer}
+.troll .k{font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+.troll b.big{font:800 44px/.95 var(--disp);text-transform:uppercase}
+.troll p{margin:0;color:var(--muted)}
+
+/* ---------- jogadores ---------- */
+.sc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:14px;align-content:start;transition:transform .2s,border-color .2s}
+.sc[data-p]{cursor:pointer}
+.sc[data-p]:hover{transform:translateY(-3px);border-color:var(--t)}
+.sc-h{display:flex;gap:14px;align-items:center}
+.sc-h>div{min-width:0}
+.sc-h b{display:block;font:800 26px/1 var(--disp);text-transform:uppercase}
+.tagx{display:inline-block;margin-top:5px;font:500 10.5px var(--mono);letter-spacing:.08em;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:1px 8px;white-space:nowrap}
+.sc-k{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sc-k b{display:block;font:700 18px var(--mono)}
+.sc-k span{color:var(--muted);font-size:11.5px}
+.sc .note{margin:0}
+#sl .sc-k{display:flex;gap:20px;flex-wrap:wrap}
+.vazio{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:26px;color:var(--muted)}
+#partidas{min-height:55vh}
+.rodape{padding:24px 32px 34px;color:var(--muted);font:500 11.5px var(--mono);letter-spacing:.06em;text-align:center;border-top:1px solid var(--line)}
+
+/* ---------- perfil (painel lateral) ---------- */
+.shade{position:fixed;inset:0;background:rgba(2,4,8,.8);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+.shade.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);background:var(--panel);border-left:1px solid var(--line);z-index:41;overflow-y:auto;transform:translate3d(102%,0,0);transition:transform .3s cubic-bezier(.2,.8,.2,1);padding:0 0 40px;will-change:transform;contain:layout paint;overscroll-behavior:contain}
+.drawer.on{transform:translate3d(0,0,0)}
+.dr-hero{position:relative;padding:28px 26px 22px;background:linear-gradient(180deg,rgba(var(--t-rgb),.16),transparent);border-bottom:1px solid var(--line)}
+.dr-x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);display:grid;place-items:center}
+.dr-x:hover{border-color:var(--t)}
+.dr-id{display:flex;align-items:center;gap:18px;margin-top:6px}
+.dr-id h3{margin:0;font:800 clamp(38px,6vw,54px)/.9 var(--disp);text-transform:uppercase}
+.dr-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.dr-sec{padding:22px 26px 0}
+.dr-sec h4{margin:0 0 12px;font:700 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.radar{display:block;width:100%;max-width:380px;margin:0 auto}
+.leg{display:flex;gap:18px;justify-content:center;color:var(--muted);font-size:12px;margin-top:2px}
+.leg i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px;background:var(--t)}
+.leg i.g{background:none;border-top:2px dashed #6c7a92;height:0}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kp div{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px}
+.kp b{display:block;font:700 22px var(--mono)}
+.kp span{color:var(--muted);font-size:11.5px}
+.zl2{display:grid;gap:10px}
+.zl2 div{display:flex;justify-content:space-between;gap:12px;align-items:baseline;border-bottom:1px solid #151c28;padding-bottom:9px;font-size:13px}
+.zl2 b{font:700 14px var(--mono)}
+.zl2 small{color:var(--muted);font-size:11px;margin-left:6px}
+.ach{display:flex;gap:8px;flex-wrap:wrap}
+.ach span{font:600 12px var(--body);padding:5px 11px;border-radius:5px;border:1px solid var(--ct);color:var(--ct);display:inline-flex;gap:6px;align-items:center}
+.ach span.n{border-color:var(--red);color:var(--red)}
+.ach .ic{width:14px;height:14px}
+body.lock{overflow:hidden}
+
+/* ---------- celular ---------- */
+@media(max-width:1100px){.hero{grid-template-columns:minmax(0,1fr)}.spot{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}.side{display:none}
+  .top{padding:12px 16px;flex-wrap:wrap}.tabs{width:100%;overflow-x:auto}
+  .wrap{padding:18px 16px 40px;gap:44px}
+  .hero{padding:26px 20px;min-height:0;background-image:linear-gradient(rgba(6,8,12,.86),rgba(6,8,12,.8)),url("banner-cs2.jpg");background-position:right center}
+  .spot{grid-template-columns:1fr}
+  .zgrid{grid-template-columns:minmax(0,1fr)}
+  .pd{padding:16px 6px 0}.pd .base{width:calc(100% + 12px);margin:0 -6px}
+  .pd .av.xxl{width:80px;height:80px}
+  .sc-k{grid-template-columns:repeat(2,1fr)}
+  .rodape{padding:20px 16px 30px}
+}
+
+/* login, meu perfil e entrada */
+body:not(.logado) .so-login{display:none!important}
+body.lock-gate{overflow:hidden}
+.gate{position:fixed;inset:0;z-index:60;display:none;place-items:center;padding:24px;overflow:auto;background:linear-gradient(rgba(6,8,12,.84),rgba(6,8,12,.96)),url("banner-cs2.jpg") center/cover}
+.gate.on{display:grid}
+.gate-box{width:min(580px,100%);display:grid;gap:22px;justify-items:start}
+.gate h1{margin:0;font:800 clamp(56px,10vw,104px)/.86 var(--disp);text-transform:uppercase}
+.gate h1 em{display:block;font-style:normal;color:transparent;-webkit-text-stroke:2px var(--t)}
+.gate p{margin:0;color:#c3ccdb;font-size:15px;max-width:46ch}
+.gate small{color:var(--muted);font-size:12px;max-width:54ch;line-height:1.5}
+.gate-btns{display:flex;gap:12px;flex-wrap:wrap}
+.gate .btn{font-size:15px;padding:14px 22px}
+.gate-err{color:var(--red);font-weight:600;min-height:0}
+.btn.g{background:var(--panel2);border:1px solid var(--line);color:var(--text)}
+.btn.g:hover{border-color:#3a475f}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.usr{display:flex;align-items:center;gap:10px;font-weight:600;white-space:nowrap}
+.usr .av{width:30px;height:30px;font-size:12px}
+.usr button{background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;color:var(--muted);font-size:12px}
+.usr button:hover{color:#fff;border-color:var(--t)}
+.me-card{border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+.me-card .dr-hero{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding:26px}
+.me-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px;padding:0 0 28px}
+.priv{border-top:1px solid var(--line);padding:20px 26px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.priv p{margin:0;color:var(--muted);font-size:13px;max-width:62ch}
+.pedido-msg{margin-left:12px;color:var(--muted);font-size:13px}
+.priv-n{margin-top:6px;font-family:var(--body);letter-spacing:0}
+@media(max-width:900px){.me-body{grid-template-columns:minmax(0,1fr)}.usr span{display:none}}
+
+/* pontos fortes e fracos */
+.dr-sec.wide{grid-column:1/-1}
+.pf-r{margin:0 0 14px;color:var(--text);font-size:14px}
+.pf-r b{color:var(--t)}
+.pf{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pf h5{margin:0 0 8px;font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.pf .f h5{color:var(--ct)}.pf .w h5{color:var(--red)}
+.pf ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.pf li{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:11px 13px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);font-size:13px}
+.pf .f li{border-left:3px solid var(--ct)}.pf .w li{border-left:3px solid var(--red)}
+.pf li.vz{color:var(--muted);border-left-color:var(--line)}
+.pf li b{font:700 14px var(--mono)}
+.pf li small{color:var(--muted);font-size:11px;margin-left:6px}
+.pf li>span:last-child{white-space:nowrap;text-align:right}
+.pf li em{display:block;font-style:normal;color:var(--muted);font-size:11px}
+@media(max-width:900px){.pf{grid-template-columns:minmax(0,1fr)}}
+
+body.rota-home .app{display:none}
+.clabar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.clabar .cn{font:800 26px/1 var(--disp);text-transform:uppercase;letter-spacing:.01em}
+.clabar small{display:block;color:var(--muted);font:500 11px var(--mono);letter-spacing:.08em;margin-top:5px}
+.clabar .gr{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+.cla-img{width:56px;height:56px;border-radius:12px;object-fit:cover;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font:800 22px var(--disp);color:var(--t);flex:none;overflow:hidden}
+.cla-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cla-img.sm{width:34px;height:34px;border-radius:8px;font-size:14px}
+.cla-img.lg{width:84px;height:84px;border-radius:16px;font-size:32px}
+.clachip{display:inline-flex;align-items:center;gap:8px;padding:3px 12px 3px 4px;border:1px solid var(--line);border-radius:30px;font:600 12px var(--body);color:var(--text);background:var(--panel2)}
+.clachip:hover{border-color:var(--t)}
+.btn.sm{padding:7px 12px;font-size:12px}
+.btn.red{background:#2a1015;border:1px solid #5a1d28;color:#ff8d9a}
+.btn.red:hover{background:#3a1520}
+.btn.red.armed{background:var(--red);color:#240509;border-color:var(--red)}
+.btn.g.armed{border-color:var(--t);color:var(--t)}
+.btn.nav{display:inline-flex;align-items:center;gap:6px}
+.campo{display:grid;gap:7px;margin:0 0 14px}
+.campo label{font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.campo input[type=text],.campo input:not([type]),.campo input[type=url]{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--text);font:500 15px var(--body);outline:0;width:100%}
+.campo input:focus{border-color:var(--t)}
+.msg{min-height:18px;margin:10px 0 0;font-size:13px;font-weight:600;color:var(--muted)}
+.msg.ok{color:#5be3a1}.msg.err{color:var(--red)}
+.cla-sec{padding:22px 26px 26px;border-top:1px solid var(--line)}
+.cla-sec h4{margin:0 0 14px;font:700 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.cla-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.cla-row .cn{font:800 28px/1 var(--disp);text-transform:uppercase}
+.cla-row small{display:block;color:var(--muted);font:500 11px var(--mono);letter-spacing:.08em;margin-top:6px}
+.cla-row .gr{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
+.cla-vazio{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.cla-vazio>div{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--panel2)}
+.cla-vazio h5{margin:0 0 6px;font:800 20px var(--disp);text-transform:uppercase}
+.cla-vazio p{margin:0 0 14px;color:var(--muted);font-size:13px}
+.cla-vazio .campo{margin:0 0 10px}
+.pagina{max-width:640px;margin:0 auto;width:100%}
+.caixa{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:28px;display:grid;gap:16px;justify-items:start}
+.caixa h2{margin:0;font:800 clamp(34px,6vw,52px)/.95 var(--disp);text-transform:uppercase}
+.caixa h2 u{text-decoration:none;color:var(--t)}
+.caixa p{margin:0;color:#c3ccdb;font-size:14.5px}
+.caixa .campo{width:100%;margin:0}
+.opc{width:min(520px,100vw)}
+.opc-tabs{display:flex;gap:4px;padding:0 26px;margin-top:6px;border-bottom:1px solid var(--line)}
+.opc-tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font:600 13px var(--body);padding:12px 14px;margin-bottom:-1px}
+.opc-tabs button.on{color:#fff;border-bottom-color:var(--t)}
+.opc-body{padding:22px 26px}
+.opc-body h4{margin:22px 0 10px;font:700 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.opc-body h4:first-child{margin-top:0}
+.img-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.link-box{display:flex;gap:8px}
+.link-box input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:11px 12px;color:var(--text);font:500 12.5px var(--mono);outline:0}
+.perigo{margin-top:26px;padding-top:18px;border-top:1px dashed #5a1d28}
+.mrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow .nm{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow .bt{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.skeleton{height:220px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(90deg,var(--panel),var(--panel2),var(--panel));background-size:200% 100%}
+@media(prefers-reduced-motion:no-preference){.skeleton{animation:sk 1.4s linear infinite}@keyframes sk{to{background-position:-200% 0}}}
+.nav-sep{height:1px;background:var(--line);margin:10px 4px}
+body:not(.so-dono) .so-dono{display:none!important}
+.tabs a i{display:none}
+@media(max-width:900px){.cla-vazio{grid-template-columns:minmax(0,1fr)}.clabar .gr,.cla-row .gr{margin-left:0}}
+.msg:empty{display:none}
+.top .search{width:auto;flex:0 1 240px;min-width:130px}
+.top .tabs{min-width:0;flex:0 1 auto}
+.top .usr{flex:none;margin-left:auto}
+.top .search+.btn,.top .search~.usr{margin-left:0}
+.top #entrar{flex:none;margin-left:auto}
+@media(max-width:1180px){.usr span{display:none}}
+.top{gap:12px}
+.top .tabs{overflow-x:auto;scrollbar-width:none}
+.top .tabs::-webkit-scrollbar{display:none}
+.top .tabs a{padding:8px 11px}
+.top .search{flex:0 1 190px;min-width:120px}
+
+/* ===== polimento: contraste e menos cara de template ===== */
+:root{--text:#f5f7fb;--muted:#b3bdce;--dim:#97a3b8;--line:#2b3548;--panel:#0e131b;--panel2:#161d29}
+::selection{background:var(--t);color:var(--on-t)}
+input,textarea{caret-color:var(--t)}
+input::placeholder{color:var(--dim);opacity:1}
+html{scrollbar-color:#3a465c var(--bg)}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#34405a;border-radius:6px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#4a5878}
+.mono,.hv,.zv,.kp b,.sc-k b,.zl2 b,.pf li b,.pd .big,.num,td,th,.cu{font-variant-numeric:tabular-nums}
+a{text-underline-offset:3px}
+
+/* rótulos: de mono minúsculo e espaçado para sans legível */
+nav h4,th,.sp-k,.hl-k,.troll .k,.lid-k,.dr-sec h4,.pf h5,.cla-sec h4,.opc-body h4,.campo label,.tagx,.brand small,.me small,.clabar small,.cla-row small,.sc-h .tagx{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+nav h4,th,.dr-sec h4,.cla-sec h4,.opc-body h4,.campo label{color:var(--muted)}
+.brand small{font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.tagx{color:#d3dae6;border-color:#44516a;padding:2px 9px;font-size:11.5px}
+.rodape{font-family:var(--body);font-size:12.5px;letter-spacing:.02em;color:var(--muted)}
+.note,.sh p{color:var(--muted);font-size:14px}
+.sh p{font-size:14.5px}
+.hl-who span,.me small,.sp small,.pf li small,.pf li em,.leg,.kp span,.sc-k span,.zl2 small,.cla-vazio p,.sp-b span{color:var(--muted)}
+.kp span,.sc-k span{font-size:12.5px}
+.pf li small,.pf li em{font-size:12px}
+.zl2 small{font-size:12px}
+th{padding-top:12px;padding-bottom:12px}
+.tabs a,nav a{color:#c5cede}
+.tabs a:hover,nav a:hover{color:#fff}
+.search input::placeholder{color:var(--dim)}
+.msg{font-size:13.5px}
+
+/* sem eyebrow nem número de seção */
+.sh .no{display:none}
+.kick{display:none}
+.semana{display:inline-block;margin-top:14px;color:#e4e9f2;font:600 13px var(--body);letter-spacing:.02em;text-shadow:0 1px 10px #000}
+.semana::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:9px;vertical-align:1px}
+.gate h1{margin-top:0}
+
+/* sem brilho decorativo: profundidade com sombra de verdade */
+.logo{box-shadow:none}
+.promo::after,.sp::after,.card.hl::before{display:none}
+.btn.y:hover{box-shadow:none;filter:brightness(1.1)}
+.sp:hover{box-shadow:0 10px 24px -12px #000}
+.pd.p1{box-shadow:none}
+.hero h1{text-shadow:0 2px 3px #0008}
+.hero p{text-shadow:0 1px 3px #000a;color:#e0e6f0}
+
+/* sem degradê decorativo: cor chapada */
+nav a.on{background:rgba(var(--t-rgb),.16)}
+.promo{background:var(--panel2)}
+.bar i{background:var(--t)}
+.zb i{background:var(--t)}
+tr.top1 td{background:rgba(var(--t-rgb),.07)}
+.dr-hero{background:var(--panel2)}
+.pd.p1{background:rgba(var(--t-rgb),.10)}
+.pd{background:var(--panel)}
+.troll{background:rgba(var(--red-rgb),.10)}
+
+/* pontos fortes/fracos sem faixa colorida na lateral */
+.pf .f li,.pf .w li{border-left:0;padding-left:12px}
+.pf .f li{background:rgba(var(--ct-rgb),.08)}
+.pf .w li{background:rgba(var(--red-rgb),.09)}
+.pf li.vz{background:none;padding-left:0}
+.pf .f h5{color:var(--ct)}.pf .w h5{color:#ff7a88}
+.sp::before{display:none}
+.sp{border-color:var(--c)}
+.sp small{font-size:12.5px;color:#cdd5e2}
+.hl-who span{font-size:13.5px}
+.radar text{font-size:12.5px}
+.tbl{padding:4px 10px}
+.ring-ct{outline:2px solid var(--ct);outline-offset:2px}
+.ring-red{outline:2px solid var(--red);outline-offset:2px}
+.ring-t{outline:2px solid var(--t);outline-offset:2px}
+.ring-gold{outline:3px solid var(--gold);outline-offset:3px}
+.sp:hover{transform:translateY(-2px);box-shadow:0 10px 24px -12px #000}
+
+/* ===== v3: enxugar a página, celular, navegação única e identidade ===== */
+p,.note,.sh p,.hero p,.caixa p{text-wrap:pretty}
+h1,h2,h3{text-wrap:balance}
+
+/* --- navegação: só o menu lateral; o topo mostra contexto --- */
+.ctx{font:800 24px/1 var(--disp);text-transform:uppercase;letter-spacing:.01em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mlogo,.bnav{display:none}
+nav .nav-sep{height:1px;background:var(--line);margin:14px 4px 12px}
+nav h4+a,nav a+h4{margin-top:0}
+.nav-sep+h4{margin-top:0}
+
+/* --- identidade: laranja só para ação principal e lugar atual --- */
+.sh h2 u,.neg-h h2 u{color:inherit;text-decoration:none}
+.bar i{background:var(--ct)}
+.zb i{background:var(--red)}
+.ring-t{outline:2px solid #6b7a96;outline-offset:2px}
+.cla-img{color:var(--text)}
+.clachip:hover{border-color:#6b7a96}
+
+/* hero: texto em cima, confronto T x CT embaixo */
+.hero{grid-template-columns:minmax(0,1fr);align-content:end;gap:34px;min-height:460px;padding:40px}
+.hero-l{max-width:640px}
+.spot{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;position:relative;align-items:stretch}
+.sp{border:0;border-radius:0;padding:18px 24px 16px;background:#0b1118}
+.sp:hover{transform:none;box-shadow:none;filter:brightness(1.12)}
+.sp.mv{background:#0a1a24;box-shadow:inset 0 3px 0 var(--ct);padding-right:56px;clip-path:polygon(0 0,100% 0,calc(100% - 28px) 100%,0 100%);border-radius:10px 0 0 10px}
+.sp.tr{background:#220d13;box-shadow:inset 0 3px 0 var(--red);padding-left:56px;margin-left:-28px;clip-path:polygon(28px 0,100% 0,100% 100%,0 100%);border-radius:0 10px 10px 0}
+.sp:focus-visible{outline-offset:-5px}
+.spot::after{content:"VS";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) skewX(-8deg);background:var(--bg);border:1px solid var(--line);color:var(--text);font:800 17px/1 var(--disp);letter-spacing:.08em;padding:7px 12px;z-index:2}
+.sp-b b{font-size:32px}
+
+/* destaques: duas listas compactas */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.sub-h{margin:0 0 12px;font:800 24px/1 var(--disp);text-transform:uppercase;letter-spacing:.02em}
+.sub-h.pos{color:var(--ct)}.sub-h.neg{color:var(--red)}
+.hlist{display:grid;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+.hrow{--c:var(--ct);display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:14px;padding:12px 16px;cursor:pointer}
+.hrow.neg{--c:var(--red)}
+.hrow+.hrow{border-top:1px solid var(--line)}
+.hrow:hover{background:#ffffff09}
+.hrow .av{width:44px;height:44px;font-size:15px}
+.hr-w{min-width:0}
+.hr-k{display:flex;align-items:center;gap:7px;color:var(--c);font:600 12.5px var(--body);letter-spacing:.04em;text-transform:uppercase}
+.hr-k .ic{width:15px;height:15px;flex:none}
+.hr-w b{display:block;margin-top:3px;font:800 24px/1 var(--disp);text-transform:uppercase;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-v{font:700 13px var(--mono);color:var(--c);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* seções menores */
+.sh.menor h2{font-size:clamp(26px,3vw,34px)}
+.sh{flex-wrap:wrap}
+
+/* período */
+.per{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel2)}
+.per button{background:none;border:0;padding:9px 16px;font:600 13px var(--body);color:var(--muted)}
+.per button:hover:not([disabled]){color:#fff}
+.per button.on{background:var(--text);color:#0b0e14}
+.per button[disabled]{opacity:.4;cursor:not-allowed}
+.clabar .gr{align-items:center}
+
+/* glossário */
+.gloss{margin-top:16px;border:1px solid var(--line);border-radius:10px;padding:0 16px;background:var(--panel)}
+.gloss summary{cursor:pointer;padding:13px 0;font:600 14px var(--body);color:var(--text)}
+.gloss dl{margin:0 0 16px;display:grid;gap:12px}
+.gloss dt{font-weight:600;font-size:14px}
+.gloss dd{margin:2px 0 0;color:var(--muted);font-size:14px;max-width:70ch}
+.me-card .gloss{border:0;background:none;padding:0;margin:0}
+
+/* sem cartão dentro de cartão no perfil */
+.me-card .kp{gap:0 18px}
+.me-card .kp>div{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:14px 2px}
+.cla-vazio{gap:0}
+.cla-vazio>div{border:0;background:none;padding:0 22px 0 0}
+.cla-vazio>div+div{border-left:1px solid var(--line);padding:0 0 0 22px}
+.pf .f li,.pf .w li{border-radius:6px}
+
+/* pódio */
+.pd .base{color:rgba(255,255,255,.12)}
+.pd.p1 .base{color:rgba(var(--t-rgb),.28)}
+
+/* --- tabela do ranking em lista no celular --- */
+@media(max-width:700px){
+ .tbl{overflow:visible;background:none;border:0;padding:0}
+ table,thead,tbody,tr,td{display:block;min-width:0}
+ thead{display:none}
+ tbody tr{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 8px;padding:14px;margin-bottom:10px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+ tbody tr+tr td,tbody tr td{border:0!important;padding:0;white-space:normal}
+ tbody tr:hover td{background:none}
+ tr.top1 td{background:none}
+ tr.top1{border-color:rgba(var(--t-rgb),.55)}
+ td.pos{width:auto;grid-column:span 1;align-self:center}
+ td:nth-child(2){grid-column:span 3;align-self:center;min-width:0}
+ td:nth-child(3){grid-column:span 2;justify-self:end;align-self:center}
+ td:nth-child(n+4){grid-column:span 2}
+ td:nth-child(n+4)::before{content:attr(data-l);display:block;color:var(--muted);font:600 11.5px var(--body);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+ td .bar{width:38px;margin-right:6px}
+ td[colspan]{grid-column:1/-1}
+ .pd .nm{white-space:normal;overflow-wrap:anywhere;font-size:clamp(17px,5.4vw,24px);line-height:1.05}
+ .pd .big{font-size:clamp(22px,7vw,30px)}
+}
+
+/* --- celular --- */
+@media(max-width:900px){
+ html{scroll-padding-top:72px}
+ body{padding-bottom:68px}
+ .top{flex-wrap:nowrap;padding:8px 12px;gap:10px;min-height:56px}
+ .mlogo{display:grid;place-items:center;width:38px;height:38px;flex:none;background:var(--t);color:var(--on-t);border-radius:6px;transform:skewX(-8deg)}
+ .ctx{display:none}
+ .top .search{flex:1 1 auto;margin-left:0;min-width:0;width:auto}
+ .top .search input{padding:12px 0}
+ .usr span{display:none}
+ .btn,.chip,.usr button,.per button,.mrow .btn{min-height:44px}
+ .btn.sm{min-height:44px;padding:10px 14px}
+ .chip{padding-left:16px;padding-right:16px}
+ .bnav{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--side);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+ .bnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:60px;padding:6px 2px;border-radius:0;color:var(--muted);font:600 11.5px var(--body);text-align:center}
+ .bnav a i{display:grid;place-items:center}
+ .bnav a .ic{width:21px;height:21px}
+ .bnav a.on{color:#fff;background:rgba(var(--t-rgb),.16)}
+ .bnav a.on::before{left:0;right:0;top:0;bottom:auto;width:auto;height:3px;border-radius:0}
+ .hero{min-height:0;padding:26px 18px;gap:24px}
+ .spot{grid-template-columns:minmax(0,1fr);gap:10px}
+ .spot::after{display:none}
+ .sp.mv,.sp.tr{clip-path:none;margin:0;padding:16px 18px;border-radius:10px}
+ .duo{grid-template-columns:minmax(0,1fr);gap:22px}
+ .clabar .gr{margin-left:0;width:100%}
+ .per{display:flex;width:100%}
+ .per button{flex:1}
+ .cla-vazio{grid-template-columns:minmax(0,1fr);gap:18px}
+ .cla-vazio>div,.cla-vazio>div+div{padding:0;border:0}
+ .cla-vazio>div+div{border-top:1px solid var(--line);padding-top:18px}
+}
+@media(max-width:700px){.pd .nm{font-size:clamp(14px,4.4vw,20px);overflow-wrap:normal;word-break:normal;hyphens:none}.pd{min-width:0}}
+.top{background:var(--bg)!important;backdrop-filter:none!important}
+
+/* ===== v4: Letreiro de rodovia — asfalto, amarelo de sinalização, placas numeradas ===== */
+:root{--bg:#0b0d0f;--panel:#14171a;--panel2:#1b1f23;--line:#31363b;--text:#f6f6f1;--muted:#bcc0b8;--dim:#a0a59c;
+ --t:#ffc20e;--t-rgb:255,194,14;--t-hi:#ffd43b;--t-lo:#ffbd00;--t-bd1:#6a5300;--t-bd2:#8a6b00;--t-bg:#221d08;--ct-rgb:74,163,255;--red-rgb:255,90,78;--on-t:#1a1400;--ct:#4aa3ff;--red:#ff5a4e;--gold:#ffc20e;
+ --disp:"Overpass",system-ui,sans-serif;--body:"Overpass",system-ui,sans-serif;--mono:"Overpass Mono",ui-monospace,Menlo,monospace}
+body{font-weight:400;background-color:var(--bg);
+ background-image:radial-gradient(1200px 760px at 8% -12%,rgba(var(--t-rgb),.14),transparent 62%),radial-gradient(1000px 760px at 105% 28%,rgba(var(--ct-rgb),.12),transparent 62%),radial-gradient(1000px 640px at 28% 112%,rgba(var(--red-rgb),.10),transparent 62%)}
+@media(min-width:901px){body{background-attachment:fixed}}
+::selection{background:var(--t);color:var(--on-t)}
+.btn,.chip,.per button,.tabs a{font-family:var(--body)}
+
+/* barra lateral: trilho amarelo de sinalização */
+.side{background:linear-gradient(180deg,var(--t-hi) 0%,var(--t-lo) 100%);border-right:0;color:var(--on-t)}
+.brand{font-weight:900;letter-spacing:.01em;color:var(--on-t)}
+.logo{background:var(--on-t);color:var(--t);transform:none;border-radius:10px}
+.logo svg{transform:none}
+.brand small,.me small,nav h4{color:rgba(26,20,0,.78)}
+.me b{color:var(--on-t);font-weight:900}
+.me .av{border-color:rgba(26,20,0,.5);background:rgba(26,20,0,.1);color:var(--on-t)}
+nav a{color:var(--on-t);font-weight:700;font-size:15px;border-radius:9px}
+nav a:hover{background:rgba(26,20,0,.1);color:var(--on-t)}
+nav a.on{background:var(--on-t);color:var(--t)}
+nav a.on::before{display:none}
+nav a em{background:rgba(26,20,0,.14);color:var(--on-t)}
+nav a.on em{background:rgba(var(--t-rgb),.2);color:var(--t)}
+.promo{background:linear-gradient(160deg,#24282c,#0e1012);border:0;color:var(--text)}
+.promo p{color:#d3d6cd}
+.side .btn.g{border:2px solid rgba(26,20,0,.5);color:var(--on-t);background:none}
+.side .btn.g:hover{background:rgba(26,20,0,.1)}
+
+/* topo e controles */
+.top{background:var(--bg)!important;border-bottom:2px solid var(--line)}
+.ctx{font-weight:900}
+.btn{border-radius:9px;font-weight:800}
+.btn.y{background:var(--t);color:var(--on-t)}
+.btn.g{background:none;border:2px solid var(--line);color:var(--text)}
+.btn.g:hover{border-color:#6b716a}
+.per{border:2px solid var(--line);background:rgba(255,255,255,.03)}
+.per button.on{background:var(--text);color:#0b0d0f}
+.search{border:2px solid var(--line);background:rgba(255,255,255,.03)}
+.chip{border:2px solid var(--line);background:none;border-radius:9px;font-weight:700}
+.chip.on{background:var(--red);border-color:var(--red);color:#1f0503}
+.clabar{background:linear-gradient(135deg,rgba(var(--t-rgb),.10),rgba(255,255,255,.02) 55%,rgba(var(--ct-rgb),.08));border:2px solid var(--line)}
+
+/* placa de linha: a posição vira sinal de estrada */
+.rk,.sp-k::before{--pl:var(--t);display:inline-grid;place-items:center;min-width:42px;height:31px;padding:0 8px;border-radius:7px;background:var(--pl);color:var(--on-t);font:900 18px/1 var(--disp);transform:none;box-shadow:inset 0 0 0 2px var(--pl),inset 0 0 0 4px var(--on-t)}
+tr.top1 .rk{--pl:var(--t);background:var(--pl);color:var(--on-t)}
+tr.top2 .rk{--pl:#dcdcd4;background:var(--pl);color:#1a1a18;box-shadow:inset 0 0 0 2px var(--pl),inset 0 0 0 4px #1a1a18}
+tr.top3 .rk{--pl:#d28b4a;background:var(--pl);color:#1a1005;box-shadow:inset 0 0 0 2px var(--pl),inset 0 0 0 4px #1a1005}
+.tag,.pill{transform:none;border-radius:6px}
+
+/* topo da página: dois quadros de destino */
+.hero{background:linear-gradient(135deg,var(--t-bg) 0%,#101214 46%,#0b1624 100%);border:2px solid var(--line);border-radius:16px;min-height:0;padding:36px;gap:28px;align-content:start}
+.hero::before{display:none}
+.hero h1{font:900 clamp(40px,5.4vw,76px)/.92 var(--disp);letter-spacing:-.01em;text-shadow:none}
+.hero h1 em{color:var(--t);-webkit-text-stroke:0}
+.hero p{text-shadow:none;color:#d9dcd3}
+.spot{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.spot::after{display:none}
+.sp,.sp.mv,.sp.tr{clip-path:none;margin:0;border-radius:12px;padding:20px 22px 18px;border:2px solid var(--line);box-shadow:none;background:#050505}
+.sp.mv{--c:var(--t);background:linear-gradient(135deg,#050505 42%,rgba(var(--t-rgb),.26));border-color:var(--t-bd1)}
+.sp.tr{--c:var(--red);background:linear-gradient(135deg,#050505 42%,rgba(var(--red-rgb),.28));border-color:#722a24}
+.sp:hover{transform:none;filter:brightness(1.12)}
+.sp-k{gap:12px;color:var(--muted);font:700 13px var(--body);letter-spacing:.08em}
+.sp-k .ic{display:none}
+.sp.mv .sp-k::before{content:"1"}
+.sp.tr .sp-k::before{content:"!";--pl:var(--red);color:#1f0503;box-shadow:inset 0 0 0 2px var(--pl),inset 0 0 0 4px #1f0503}
+.sp-b{margin-top:14px}
+.sp-b b{font:900 clamp(34px,4.2vw,58px)/.95 var(--disp);color:var(--c);letter-spacing:0}
+.sp-b span{color:#d3d6cd;font-size:14px}
+.sp.mv .ring-ct{outline-color:var(--t)}
+.sp small{color:var(--muted)}
+
+/* pódio */
+.pd{background:linear-gradient(180deg,#1a1d20,#111315);border:2px solid var(--line);border-bottom:0}
+.pd.p1{background:linear-gradient(180deg,rgba(var(--t-rgb),.24),#121315 78%);border-color:var(--t-bd2)}
+.pd.p1::before{font-family:var(--body);letter-spacing:.16em}
+.pd .base{color:rgba(255,255,255,.1);border-top:2px solid var(--line)}
+.pd.p1 .base{color:rgba(var(--t-rgb),.3)}
+.lid-k{color:var(--t);font-family:var(--body)}
+.ring-gold{outline-color:var(--t)}
+
+/* tabelas, listas e cartões */
+.tbl{background:linear-gradient(180deg,#171a1d,#111315);border:2px solid var(--line)}
+th{font-weight:700;border-bottom:2px solid var(--line)}
+tbody tr+tr td{border-top:1px solid var(--line)}
+tr.top1 td{background:linear-gradient(90deg,rgba(var(--t-rgb),.10),transparent 75%)}
+.bar{background:rgba(255,255,255,.1)}.bar i{background:var(--ct)}
+.zb i{background:var(--red)}
+.zlist,.sc,.hlist,.card,.gloss,.vazio{background:linear-gradient(180deg,#171a1d,#111315);border:2px solid var(--line)}
+.hlist{border-radius:12px}.hrow+.hrow{border-top:1px solid var(--line)}
+.troll{background:linear-gradient(135deg,rgba(var(--red-rgb),.24),#101214 72%);border:2px solid #722a24}
+.sc[data-p]:hover{border-color:var(--t)}
+.tagx{border-width:1px}
+.hr-w b,.sub-h,.troll b.big,.sc-h b,.dr-id h3{font-weight:900}
+.dr-hero{background:linear-gradient(135deg,rgba(var(--t-rgb),.20),rgba(var(--ct-rgb),.08) 60%,transparent)}
+.drawer{background:linear-gradient(180deg,#171a1d,#0f1113);border-left:2px solid var(--line)}
+.kp div{background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.me-card,.opc,.cla-vazio{border-color:var(--line)}
+
+/* entrada */
+.gate{background:radial-gradient(900px 620px at 12% 0%,rgba(var(--t-rgb),.22),transparent 62%),radial-gradient(900px 640px at 100% 100%,rgba(var(--ct-rgb),.2),transparent 62%),#0b0d0f}
+.gate h1{font-weight:900}.gate h1 em{color:var(--t);-webkit-text-stroke:0}
+
+/* celular */
+@media(max-width:900px){
+ .mlogo{background:var(--t);color:var(--on-t);transform:none;border-radius:9px}
+ .bnav{background:var(--t);border-top:0}
+ .bnav a{color:var(--on-t);font-weight:700}
+ .bnav a.on{background:var(--on-t);color:var(--t)}
+ .bnav a.on::before{display:none}
+ .hero{padding:24px 18px}
+ .spot{grid-template-columns:minmax(0,1fr)}
+ .sp,.sp.mv,.sp.tr{padding:16px 18px}
+}
+tr.top1 td{background:rgba(var(--t-rgb),.09)}
+
+/* ===== seletor de cor de destaque ===== */
+.tema{position:relative;flex:none}
+.tema-b{display:flex;align-items:center;gap:9px;min-height:40px;padding:0 14px;border:2px solid var(--line);border-radius:9px;background:rgba(255,255,255,.03);color:var(--text);font:700 14px var(--body)}
+.tema-b:hover{border-color:#6b716a}
+.tema-dot{width:16px;height:16px;border-radius:50%;background:var(--t);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--text);flex:none}
+.tema-p{position:absolute;right:0;top:calc(100% + 8px);z-index:50;min-width:200px;padding:6px;border:2px solid var(--line);border-radius:12px;background:linear-gradient(180deg,#1a1d20,#111315);box-shadow:0 16px 36px -12px #000;display:grid;gap:2px}
+.tema-p[hidden]{display:none}
+.tema-o{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border:0;border-radius:8px;background:none;color:var(--text);font:700 15px var(--body);text-align:left}
+.tema-o:hover{background:rgba(255,255,255,.07)}
+.tema-o i{width:22px;height:22px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
+.tema-o[aria-checked=true]{background:rgba(var(--t-rgb),.16)}
+.tema-o[aria-checked=true]::after{content:"";margin-left:auto;width:16px;height:9px;border-left:3px solid var(--t);border-bottom:3px solid var(--t);transform:rotate(-45deg) translateY(-2px)}
+@media(max-width:900px){.tema-b{min-width:44px;min-height:44px;padding:0 12px;justify-content:center}.tema-b span{display:none}.tema-p{position:fixed;left:12px;right:12px;top:64px;min-width:0}}
+@media(max-width:900px){.top .btn.y{max-width:104px;padding:7px 10px;line-height:1.15;font-size:13px}.top .search{min-width:96px}}
+.tema-livre{cursor:pointer;position:relative}
+.tema-livre input{-webkit-appearance:none;appearance:none;width:22px;height:22px;padding:0;border:0;border-radius:50%;background:none;flex:none;cursor:pointer;box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
+.tema-livre input::-webkit-color-swatch-wrapper{padding:0}
+.tema-livre input::-webkit-color-swatch{border:0;border-radius:50%}
+.tema-livre input::-moz-color-swatch{border:0;border-radius:50%}
+.tema-livre input:focus-visible{outline:2px solid var(--t);outline-offset:3px}
+.tema-livre code{margin-left:auto;font:500 12.5px var(--mono);color:var(--muted)}
+.tema-livre[data-ativo=true]{background:rgba(var(--t-rgb),.16)}
+.tema-p{border-radius:12px}
+.tema-livre{border-top:1px solid var(--line);border-radius:0 0 8px 8px;margin-top:4px}
+
+/* perfil: time no cabeçalho */
+.cla-lado{display:grid;gap:6px;justify-items:end}
+.cla-lado small{font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cla-lado .clachip{min-height:42px;padding:4px 16px 4px 5px;font-size:14px;border:2px solid var(--line)}
+.cla-lado .clachip:hover{border-color:var(--t)}
+@media(max-width:900px){.cla-lado{justify-items:start}}
+
+/* trollagem: cor de destaque */
+#zoeira .chip.on{background:var(--t);border-color:var(--t);color:var(--on-t)}
+#zoeira .chip:hover:not(.on){border-color:var(--t)}
+.zb i{background:var(--t)}
+.pill{background:var(--t);color:var(--on-t)}
+.troll{background:linear-gradient(135deg,rgba(var(--t-rgb),.24),#101214 72%);border:2px solid var(--t-bd1)}
+.troll .k{color:var(--t)}
+.troll .ring-red{outline-color:var(--t)}
+@media(min-width:901px){.ctx{flex:1 1 auto}.top .search{margin-left:0}}
+.fonte-sec{padding-top:6px;padding-bottom:26px}
+.fonte-sec .campo{margin:0 0 12px;max-width:460px}
+.passos{margin:0 0 16px;padding-left:20px;display:grid;gap:6px;color:var(--ink-2,inherit);font-size:14px;line-height:1.5}
+.passos a{color:var(--t);text-decoration:underline;text-underline-offset:3px}
+.fonte-on{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:0 0 10px}
+.fonte-on small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.fonte-sec .note{margin:12px 0 0;max-width:62ch}
+.aviso-ligar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 18px;padding:16px 18px;border:1px solid rgba(var(--t-rgb),.45);border-radius:12px;background:linear-gradient(120deg,rgba(var(--t-rgb),.14),rgba(var(--t-rgb),.04))}
+.aviso-ligar b{display:block;font-size:15px}
+.aviso-ligar p{margin:4px 0 0;color:var(--muted);font-size:14px;max-width:60ch}
+.msg-pronta{width:100%;box-sizing:border-box;resize:vertical;padding:12px 14px;border-radius:10px;border:1px solid var(--line,rgba(255,255,255,.14));background:rgba(255,255,255,.03);color:inherit;font:14px/1.5 var(--body,inherit)}
+.cartao-acoes{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 28px 0}
+.cartao-acoes .msg{margin:0}
+.kpg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 14px}
+.kb{padding:16px 20px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(135deg,rgba(var(--t-rgb),.12),rgba(255,255,255,.02))}
+.kb b{display:block;font:900 clamp(40px,6.5vw,68px)/1 var(--disp,inherit);letter-spacing:-.01em}
+.kb:first-child b{color:var(--t)}
+.kb span{display:block;margin-top:6px;color:var(--muted);font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.hist-sec{padding-bottom:26px}
+.hist-w{overflow-x:auto}
+.hist{width:100%;border-collapse:collapse;font-size:14px;min-width:460px}
+.hist th{text-align:left;font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.14)}
+.hist td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.07);font-variant-numeric:tabular-nums}
+.hist td:first-child{font-weight:700}
+.hist .res{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:1px solid rgba(255,255,255,.2);color:var(--muted)}
+.hist .res.v{color:#8fc7ff;border-color:rgba(var(--ct-rgb),.6);background:rgba(var(--ct-rgb),.14)}
+.hist .res.d{color:#ff8f86;border-color:rgba(var(--red-rgb),.6);background:rgba(var(--red-rgb),.14)}
+.hist{display:table!important}.hist thead{display:table-header-group!important}.hist tbody{display:table-row-group!important}.hist tr{display:table-row!important;border:0!important;background:none!important;padding:0!important;margin:0!important}.hist th,.hist td{display:table-cell!important;width:auto!important;white-space:nowrap}.hist td::before{content:none!important}
+@media(max-width:600px){.hist{font-size:13px}.hist th,.hist td{padding-left:6px!important;padding-right:6px!important}.hist .res{padding:2px 8px;font-size:11px}}
+</style>
+<meta name="theme-color" content="#e6af0c">
+<script>(function(){
+var TEMAS=[
+ {id:'amarelo',nome:'Amarelo',c:'#ffc20e'},
+ {id:'laranja',nome:'Laranja',c:'#ff7a1a'},
+ {id:'vermelho',nome:'Vermelho',c:'#ff4b4b',neg:'#ff9f1a'},
+ {id:'roxo',nome:'Roxo',c:'#a374ff'},
+ {id:'azul',nome:'Azul',c:'#3d8bff',pos:'#2fd9b4'},
+ {id:'verde',nome:'Verde',c:'#2fd16f'}
+];
+function rgb(h){return [1,3,5].map(function(i){return parseInt(h.substr(i,2),16)})}
+function mix(a,b,p){var x=rgb(a),y=rgb(b);return '#'+x.map(function(v,i){var n=Math.round(v*(1-p)+y[i]*p);return (n<16?'0':'')+n.toString(16)}).join('')}
+function aplicar(t){
+ var s=document.documentElement.style,c=t.c,pos=t.pos||'#4aa3ff',neg=t.neg||'#ff5a4e';
+ s.setProperty('--t',c);s.setProperty('--gold',c);s.setProperty('--t-rgb',rgb(c).join(','));
+ s.setProperty('--t-hi',mix(c,'#ffffff',.16));s.setProperty('--t-lo',mix(c,'#000000',.1));
+ s.setProperty('--t-bd1',mix(c,'#000000',.58));s.setProperty('--t-bd2',mix(c,'#000000',.42));s.setProperty('--t-bg',mix(c,'#0c0d0f',.86));
+ s.setProperty('--ct',pos);s.setProperty('--ct-rgb',rgb(pos).join(','));s.setProperty('--red',neg);s.setProperty('--red-rgb',rgb(neg).join(','));
+ var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',mix(c,'#000000',.1));
+}
+function lum(h){var v=rgb(h).map(function(x){x/=255;return x<=.03928?x/12.92:Math.pow((x+.055)/1.055,2.4)});return .2126*v[0]+.7152*v[1]+.0722*v[2]}
+function matiz(h){var v=rgb(h).map(function(x){return x/255}),mx=Math.max(v[0],v[1],v[2]),mn=Math.min(v[0],v[1],v[2]),d=mx-mn;if(!d)return -1;var r=mx===v[0]?((v[1]-v[2])/d)%6:mx===v[1]?(v[2]-v[0])/d+2:(v[0]-v[1])/d+4;return (r*60+360)%360}
+function legivel(h){var n=0;while(lum(h)<.2&&n++<30)h=mix(h,'#ffffff',.08);return h}
+function livre(h){h=legivel(h);var m=matiz(h),t={id:'livre',nome:'Personalizada',c:h};if(m>=185&&m<=255)t.pos='#2fd9b4';if(m>=340||m<=15)t.neg='#ff9f1a';return t}
+function achar(id){if(id&&id.indexOf('livre:')===0&&/^#[0-9a-f]{6}$/i.test(id.slice(6)))return livre(id.slice(6).toLowerCase());for(var i=0;i<TEMAS.length;i++)if(TEMAS[i].id===id)return TEMAS[i];return TEMAS[0]}
+function ler(){try{return localStorage.getItem('painel_tema')}catch(e){return null}}
+function gravar(id){try{localStorage.setItem('painel_tema',id)}catch(e){}}
+window.PAINEL_TEMAS=TEMAS;window.PAINEL_APLICAR=aplicar;
+var bruto=ler(),atual=achar(bruto),livreHex=bruto&&bruto.indexOf('livre:')===0?bruto.slice(6):'#ff4fa3';aplicar(atual);
+function montar(){
+ var host=document.getElementById('tema');if(!host)return;
+ host.innerHTML='<button type="button" class="tema-b" id="tema-b" aria-haspopup="true" aria-expanded="false" aria-controls="tema-p"><i class="tema-dot" aria-hidden="true"></i><span>Cor</span></button>'
+  +'<div class="tema-p" id="tema-p" role="radiogroup" aria-label="Cor de destaque" hidden>'
+  +TEMAS.map(function(t){return '<button type="button" role="radio" class="tema-o" data-tema="'+t.id+'" aria-checked="'+(t.id===atual.id)+'"><i style="background:'+t.c+'"></i>'+t.nome+'</button>'}).join('')
+  +'<label class="tema-o tema-livre" data-ativo="'+(atual.id==='livre')+'"><input type="color" id="tema-c" value="'+livreHex+'" aria-label="Escolher uma cor personalizada"><span>Personalizada</span><code id="tema-hex">'+livreHex.toUpperCase()+'</code></label></div>';
+ var b=document.getElementById('tema-b'),p=document.getElementById('tema-p');
+ function fechar(volta){p.hidden=true;b.setAttribute('aria-expanded','false');if(volta)b.focus()}
+ function abrir(){p.hidden=false;b.setAttribute('aria-expanded','true');var o=p.querySelector('[aria-checked=true]')||p.querySelector('button');if(o)o.focus()}
+ b.addEventListener('click',function(){p.hidden?abrir():fechar(true)});
+ p.addEventListener('click',function(e){var o=e.target.closest('[data-tema]');if(!o)return;atual=achar(o.getAttribute('data-tema'));aplicar(atual);gravar(atual.id);[].forEach.call(p.querySelectorAll('[data-tema]'),function(x){x.setAttribute('aria-checked',String(x===o))});p.querySelector('.tema-livre').setAttribute('data-ativo','false');fechar(true)});
+ var ci=document.getElementById('tema-c'),hx=document.getElementById('tema-hex'),lv=p.querySelector('.tema-livre');
+ function usar(salvar){atual=achar('livre:'+ci.value);aplicar(atual);hx.textContent=ci.value.toUpperCase();lv.setAttribute('data-ativo','true');[].forEach.call(p.querySelectorAll('[data-tema]'),function(x){x.setAttribute('aria-checked','false')});if(salvar)gravar('livre:'+ci.value)}
+ ci.addEventListener('input',function(){usar(false)});ci.addEventListener('change',function(){usar(true)});
+ p.addEventListener('keydown',function(e){var l=[].slice.call(p.querySelectorAll('button,input')),i=l.indexOf(document.activeElement);
+  if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();l[(i+1)%l.length].focus()}
+  else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();l[(i+l.length-1)%l.length].focus()}
+  else if(e.key==='Escape'){e.preventDefault();fechar(true)}});
+ document.addEventListener('click',function(e){if(!p.hidden&&!host.contains(e.target))fechar(false)});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',montar);else montar();
+})();
+</script>
+</head>
+<body class="rota-home">
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/></svg></div><div>Ranko<small>CS2 · GALERA</small></div></div>
+    <div class="me" id="me-w"></div>
+    <nav id="nav"></nav>
+    <div class="promo" id="promo"></div>
+  </aside>
+  <main id="inicio">
+    <header class="top">
+      <a class="mlogo" href="#/" aria-label="Ranko"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/></svg></a>
+      <span class="ctx" id="ctx"></span>
+      <label class="search" id="buscar" style="display:none"><span aria-hidden="true">⌕</span><input id="q" type="search" placeholder="Buscar jogador" aria-label="Buscar jogador"></label>
+      <div class="tema" id="tema"></div>
+      <a class="btn y" id="entrar" href="#" style="display:none">Entrar com a Steam</a>
+      <div class="usr" id="usr"></div>
+    </header>
+    <div class="wrap" id="view"></div>
+    <footer class="rodape"><div id="rodape"></div><div class="priv-n">Os números vêm das partidas de Premier e competitivo lidas pelo Ranko.</div></footer>
+  </main>
+</div>
+<nav class="bnav" id="bnav" aria-label="Navegação"></nav>
+<template id="cla-tpl"><section class="hero" id="painel">
+        <div class="hero-l">
+          
+          <h1>Ranking<em>da semana</em></h1>
+          <p>Quem está carregando o time e quem mais trollou nesta semana.</p><span class="semana" id="kick"></span>
+        </div>
+        <div class="spot" id="spot"></div>
+      </section>
+
+      <section id="conquistas">
+        <div class="sh"><div><h2>Destaques</h2><p id="dest-p">Quem está mandando bem em cada categoria.</p></div></div>
+        <div class="duo">
+          <div><h3 class="sub-h pos">Quem mandou bem</h3><div class="hlist" id="cards"></div></div>
+          <div><h3 class="sub-h neg">Quem atrapalhou</h3><div class="hlist" id="cards2"></div></div>
+        </div>
+      </section>
+
+      <section id="zoeira">
+        <div class="sh"><div><h2>Ranking da trollagem</h2><p id="zo-p">Quem está atrapalhando mais o time. Quanto mais alto na lista, pior.</p></div></div>
+        <div class="chips" id="chips" role="group" aria-label="Categoria da trollagem"></div>
+        <div class="zgrid">
+          <div class="zlist" id="zl"></div>
+          <div class="troll" id="troll"></div>
+        </div>
+        
+      </section>
+
+      <section id="ranking">
+        <div class="sh"><div><h2 id="rk-t">Ranking do mês</h2><p id="rk-p">Ordenado pelo Rating HLTV, calculado com abates, mortes e rodadas com multikills.</p></div></div>
+        <div id="lider"></div>
+        <p id="hist"></p>
+        <div class="tbl"><table>
+          <thead><tr><th>#</th><th>Jogador</th><th title="Nota calculada pelo painel com abates, mortes e multikills. 1,00 é a média.">Rating HLTV</th><th title="Nota de 0 a 100 para pontaria.">Mira</th><th title="Nota de 0 a 100 para uso de granadas e flashes.">Utilidade</th><th title="Nota de 0 a 100 para posição no mapa.">Posicionamento</th><th title="Porcentagem de partidas ganhas.">Vitórias</th><th title="Vezes em que foi o MVP da rodada.">Estrelas</th><th title="Partidas analisadas neste período.">Partidas</th></tr></thead>
+          <tbody id="rows"><tr><td colspan="9" class="note">Carregando dados…</td></tr></tbody>
+        </table></div>
+        <p class="note" id="rk-n">Dados reais (até 100 partidas recentes por jogador). O Rating HLTV é calculado pelo painel. Veja “Como ler os números”. Clique num jogador para abrir o perfil.</p>
+        <p class="note" id="semperfil"></p>
+        <div id="gloss"></div>
+      </section>
+
+      <section id="steam">
+        <div class="sh menor"><div><h2>Faltando dados</h2><p>Amigos que ainda não têm dados de partidas. Quando tiverem, entram no ranking sozinhos. Veja “Como ler os números”.</p></div></div>
+        <div class="cards" id="sl"></div>
+      </section>
+
+      
+
+      <section id="partidas">
+        <div class="sh menor"><div><h2>Partidas</h2><p>As últimas partidas do grupo.</p></div></div>
+        <div class="vazio">Em breve: a lista das partidas recentes, com mapa, placar e quem jogou. O robô ainda não guarda esses dados.</div>
+      </section>
+</template>
+<div class="shade" id="shade"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Perfil do jogador"></aside>
+<aside class="drawer opc" id="opcoes" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Opções do time"></aside>
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-label="Entrar no painel">
+  <div class="gate-box">
+    <h1>Seu CS2<em>em números</em></h1>
+    <p>Entre com a Steam e veja como você joga: abates, mira, uso de granadas e a sua trollagem, calculados a partir das suas próprias partidas. Se quiser, junte a galera num time e compare com os amigos.</p>
+    <div class="gate-err" id="gate-erro"></div>
+    <div class="gate-btns"><a class="btn y" id="gate-go" href="#">Entrar com a Steam</a><button class="btn g" id="gate-skip" type="button">Ver um time de exemplo</button></div>
+    <small>A sua senha nunca passa por aqui: o login acontece no site oficial da Steam e o Ranko recebe só o seu Steam ID, que já é público. Os números vêm das suas partidas de Premier e competitivo, lidas depois que você liga a leitura no seu perfil.</small>
+  </div>
+</div>
+<script>
+function ic(p){return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+p+'</svg>'}
+var FL='<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 1-9z"/>';
+var BO='<path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3.5 3.5M15.5 15.5L19 19M19 5l-3.5 3.5M8.5 15.5L5 19"/>';
+var SH='<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>';
+var IC={
+ "Líder do ranking":'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+ "Mira de ouro":'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>',
+ "Mestre das granadas":'<circle cx="11" cy="14" r="7"/><path d="M16 8l3-3M18 3l3 3"/>',
+ "Posicionamento":SH,
+ "Cegador do time":'<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/>',
+ "Fogo amigo":BO,
+ "Comprou à toa":'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 0 0-4-10z"/>',
+ "Estrelinha":'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+ "Colete do time":SH,
+ "HE no time":'<circle cx="11" cy="14" r="7"/><path d="M16 8l3-3M18 3l3 3"/>',
+ "Não fica vivo":'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>'
+};
+function svg(t){return ic(IC[t]||BO)}
+var NAV=['<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>','<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>','<path d="M8 4h8v5a4 4 0 0 1-8 0zM6 5H3v2a3 3 0 0 0 3 3M18 5h3v2a3 3 0 0 1-3 3M12 13v4M8 20h8"/>',FL,'<path d="M5 20V10M12 20V4M19 20v-7"/>','<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.5 2.5-6 6-6s6 2.5 6 6M16 5a3 3 0 0 1 0 6M18 14c2 .7 3 3 3 6"/>','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'];
+
+
+function f(n,d){return Number(n).toFixed(d).replace('.',',')}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function av(p,x,ring){return '<div class="av '+(x||'')+' '+(ring||'')+'">'+(p.avatar?'<img src="'+esc(p.avatar)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':esc(p.apelido.slice(0,2).toUpperCase()))+'</div>'}
+function el(id){return document.getElementById(id)}
+function z(p,k){var v=p.zoeira&&p.zoeira[k];return v==null?0:v}
+function cu(v,d,pre){return '<span class="cu" data-v="'+v+'" data-d="'+d+'" data-pre="'+(pre||'')+'">'+(pre||'')+f(v,d)+'</span>'}
+
+var P=[],E=[],S=[],B=[],zi=0,modo='geral',DADOS=null;
+var MES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function vis(p,k){var q=p[k];return Object.assign({},p,{hltv:q.hltv,rodadas:q.rodadas,abates:q.abates,mortes:q.mortes,mvps:q.mvps,zoeira:q.zoeira,partidas_analisadas:q.partidas})}
+var CAT=[
+ {t:'Fogo amigo',ti:'Atirador de elite aliado',u:'tiros em amigos por partida',d:2,g:function(p){return z(p,'tiros_em_amigos_por_partida')}},
+ {t:'Cegador do time',ti:'Cegador do time',u:'amigos cegados por partida',d:1,g:function(p){return z(p,'amigos_cegados_por_partida')}},
+ {t:'Comprou à toa',ti:'Morreu sem usar as granadas',u:'utilidade sobrando ao morrer',d:0,g:function(p){return z(p,'utilidade_sobrando_ao_morrer')}},
+ {t:'HE no time',ti:'Granada amiga',u:'dano médio de HE em amigos',d:2,g:function(p){return z(p,'dano_he_em_amigos')}},
+ {t:'Não fica vivo',ti:'O que mais morre do time',u:'mortes por rodada',d:2,g:function(p){return p.rodadas?p.mortes/p.rodadas:0}}
+];
+var APOS=[
+ {t:'Líder do ranking',d:'Maior Rating HLTV do grupo.',k:function(p){return p.hltv},m:function(v){return 'HLTV '+f(v,2)}},
+ {t:'Estrelinha',d:'Mais estrelas de MVP nas partidas.',ok:function(){return P.some(function(p){return p.mvps!=null})},k:function(p){return p.mvps==null?-1:p.mvps},m:function(v){return v+(v===1?' estrela':' estrelas')}},
+ {t:'Mira de ouro',d:'Maior nota de mira do grupo.',k:function(p){return p.mira},m:function(v){return 'Mira '+f(v,0)}},
+ {t:'Mestre das granadas',d:'Melhor nota de utilidade.',k:function(p){return p.utilidade},m:function(v){return 'Util. '+f(v,0)}},
+ {t:'Posicionamento',d:'Melhor nota de posicionamento.',k:function(p){return p.posicionamento},m:function(v){return 'Pos. '+f(v,0)}}
+];
+var ANEG=[
+ {t:'Fogo amigo',d:'Mais tiros acertados em aliados.',k:CAT[0].g,m:function(v){return f(v,2)+' por partida'}},
+ {t:'Cegador do time',d:'Mais amigos cegados com flash.',k:CAT[1].g,m:function(v){return f(v,1)+' por partida'}},
+ {t:'Comprou à toa',d:'Mais utilidade sobrando ao morrer.',k:CAT[2].g,m:function(v){return f(v,0)}},
+ {t:'HE no time',d:'Mais dano de granada HE em aliados.',k:CAT[3].g,m:function(v){return f(v,2)+' por partida'}},
+ {t:'Não fica vivo',d:'Mais mortes por rodada.',k:CAT[4].g,m:function(v){return f(v,2)}}
+];
+function best(a){return P.reduce(function(m,p){return a.k(p)>a.k(m)?p:m},P[0])}
+function cardHl(a,neg){
+ var b=best(a);
+ return '<article class="hrow'+(neg?' neg':'')+'" data-p="'+b.steam64+'" title="'+esc(a.d)+'">'+av(b,'',neg?'ring-red':'ring-ct')
+  +'<div class="hr-w"><span class="hr-k">'+svg(a.t)+a.t+'</span><b>'+esc(b.apelido)+'</b></div><span class="hr-v">'+a.m(a.k(b))+'</span></article>'}
+function order(c,L){return (L||P).slice().sort(function(a,b){return c.g(b)-c.g(a)})}
+
+function drawRows(q){
+ var h=P.filter(function(p){return p.apelido.toLowerCase().indexOf(q)>-1}).map(function(p){
+  var i=P.indexOf(p);
+  function bar(v){return v==null?'–':'<span class="bar"><i style="width:'+Math.max(0,Math.min(100,v))+'%"></i></span><span class="mono">'+f(v,0)+'</span>'}
+  return '<tr data-p="'+p.steam64+'" tabindex="0" class="'+(i<3?'top'+(i+1):'')+'"><td class="pos"><span class="rk">'+(i+1)+'</span></td><td><div class="pl">'+av(p)+esc(p.apelido)+'</div></td>'
+  +'<td><b class="hv '+(p.hltv>=1?'up':'dn')+'">'+f(p.hltv,2)+'</b></td>'
+  +'<td data-l="Mira">'+bar(p.mira)+'</td><td data-l="Utilidade">'+bar(p.utilidade)+'</td><td data-l="Posição">'+bar(p.posicionamento)+'</td>'
+  +'<td class="mono" data-l="Vitórias">'+(p.vitorias_pct==null?'–':f(p.vitorias_pct*100,0)+'%')+'</td><td class="mono" data-l="Estrelas">'+(p.mvps==null?'–':p.mvps)+'</td><td class="mono" data-l="Partidas">'+p.partidas_analisadas+'</td></tr>'}).join('');
+ var vazio='Nenhum jogador encontrado. Tente outro nome.';
+ var e=E.filter(function(p){return p.apelido.toLowerCase().indexOf(q)>-1});
+ var s2=S.filter(function(p){return p.apelido.toLowerCase().indexOf(q)>-1});
+ if(s2.length)vazio=s2.map(function(p){return p.apelido}).join(', ')+': só perfil Steam, sem dados de partidas ainda (veja mais abaixo).';
+ if(e.length)vazio=e.map(function(p){return p.apelido}).join(', ')+': sem dados de partidas ainda.';
+ el('rows').innerHTML=h||'<tr><td colspan="9" class="note">'+esc(vazio)+'</td></tr>';
+}
+function drawZ(){
+ var c=CAT[zi],o=order(c),mx=c.g(o[0])||1;
+ el('chips').innerHTML=CAT.map(function(x,i){return '<button class="chip'+(i===zi?' on':'')+'" aria-pressed="'+(i===zi)+'" data-i="'+i+'">'+x.t+'</button>'}).join('');
+ el('zl').innerHTML=o.map(function(p,pos){
+  return '<div class="zr" data-p="'+p.steam64+'" style="cursor:pointer">'+av(p)+'<div><div class="zn">'+(pos+1)+'º '+esc(p.apelido)+(pos===0?' <span class="pill">'+c.ti+'</span>':'')+'</div><div class="zb"><i style="width:'+Math.round(c.g(p)/mx*100)+'%"></i></div></div><div class="zv">'+f(c.g(p),c.d)+'</div></div>'}).join('')
+  +'<div class="zr note"><span></span>'+c.u+'</div>';
+}
+function spotlight(){
+ var W=B.filter(function(p){return p.semana&&p.semana.partidas>=3&&p.semana.hltv!=null}).map(function(p){return vis(p,'semana')});
+ var sem=W.length>=2;
+ var F=P.filter(function(p){return p.partidas_analisadas>=3});
+ var Q=sem?W:(F.length>=2?F:P);
+ var fb='Poucas partidas nesta semana · mostrando '+(modo==='mes'?'o mês':modo==='semana'?'a semana':'as últimas partidas');
+ var mv=Q.reduce(function(m,p){return p.hltv>m.hltv?p:m},Q[0]);
+ var pts={},lid={};Q.forEach(function(p){pts[p.steam64]=0});
+ CAT.forEach(function(c){var o=order(c,Q);o.forEach(function(p,i){pts[p.steam64]+=Q.length-i});(lid[o[0].steam64]=lid[o[0].steam64]||[]).push(c.t)});
+ var tr=Q.reduce(function(m,p){return pts[p.steam64]>pts[m.steam64]?p:m},Q[0]);
+ var lt=lid[tr.steam64]||[];
+ el('spot').innerHTML=
+  '<div class="sp mv" data-p="'+mv.steam64+'"><div class="sp-k">'+svg('Líder do ranking')+'Carregando o time</div><div class="sp-b">'+av(mv,'xl','ring-ct')+'<div><b>'+esc(mv.apelido)+'</b><span>HLTV <span class="num">'+cu(mv.hltv,2)+'</span> · '+mv.partidas_analisadas+' partidas</span></div></div><small>'+(sem?'Destaque positivo '+(modo==='mes'?'do mês':modo==='semana'?'da semana':'geral')+'':fb)+'</small></div>'
+  +'<div class="sp tr" data-p="'+tr.steam64+'"><div class="sp-k">'+svg('Fogo amigo')+'Maior troll</div><div class="sp-b">'+av(tr,'xl','ring-red')+'<div><b>'+esc(tr.apelido)+'</b><span>'+(lt.length?'Lidera em '+esc(lt.join(', ')):pts[tr.steam64]+' pontos de trollagem')+'</span></div></div><small>'+(sem?'Destaque negativo '+(modo==='mes'?'do mês':modo==='semana'?'da semana':'geral')+'':fb)+'</small></div>';
+}
+function drawL(d){
+ var per=d.periodo||{},h=d.historico||{};
+ var mi=per.mes_id?(+per.mes_id.split('-')[1]-1):new Date(d.atualizado_em).getMonth();
+ var cand=P.filter(function(p){return p.partidas_analisadas>=(modo==='mes'?3:1)}).slice(0,3);
+ var box=el('lider');
+ if(!cand.length){box.innerHTML=''}else{
+  var ord=cand.length>=3?[1,0,2]:cand.length===2?[1,0]:[0];
+  box.innerHTML='<p class="lid-k">'+(modo==='mes'?'Pódio de '+MES[mi]:modo==='semana'?'Pódio da semana':'Pódio')+'</p><div class="podio">'
+   +ord.map(function(i){var p=cand[i],r=i+1;
+    return '<div class="pd p'+r+'" data-p="'+p.steam64+'">'+av(p,'xxl',r===1?'ring-gold':'')+'<div class="nm">'+esc(p.apelido)+'</div><div class="big">'+cu(p.hltv,2)+'</div><div class="sub">'+p.partidas_analisadas+' partidas'+(p.mvps!=null?' · '+p.mvps+(p.mvps===1?' estrela':' estrelas'):'')+'</div><div class="base" aria-hidden="true">'+r+'</div></div>'}).join('')
+   +'</div>';
+ }
+ var ms=Object.keys(h.meses||{}).filter(function(k){return k!==per.mes_id}).sort().reverse().slice(0,3).map(function(k){return MES[+k.split('-')[1]-1]+' · '+esc(h.meses[k].lider.apelido)});
+ var ws=Object.keys(h.semanas||{}).filter(function(k){return k!==per.semana_id}).sort().reverse().slice(0,4).map(function(k){var a=k.split('-');return a[2]+'/'+a[1]+' · '+esc(h.semanas[k].lider.apelido)});
+ var t=[];
+ if(ms.length)t.push('<b>Líderes dos meses anteriores:</b> '+ms.join(' · '));
+ if(ws.length)t.push('<b>Líderes das semanas anteriores:</b> '+ws.join(' · '));
+ el('hist').innerHTML=t.join('<br>');
+}
+function drawS(){
+ var sec=el('steam');
+ if(!S.length){sec.style.display='none';return}
+ sec.style.display='';
+ el('sl').innerHTML=S.map(function(p){
+  var st=p.steam||{},c=st.carreira,k=[];
+  if(st.horas_cs2!=null)k.push('<div><b>'+f(st.horas_cs2,0)+' h</b><span>de CS2</span></div>');
+  if(c&&c.kd!=null)k.push('<div><b>'+f(c.kd,2)+'</b><span>K/D de carreira</span></div>');
+  if(c&&c.headshot_pct!=null)k.push('<div><b>'+f(c.headshot_pct,0)+'%</b><span>headshots</span></div>');
+  var aviso=st.perfil_publico==null?'Os dados da Steam ainda não chegaram.':st.perfil_publico===false?'Perfil privado na Steam: não consigo ver horas nem estatísticas.':(k.length?'Totais de carreira, não das últimas partidas.':'A Steam não devolveu estatísticas deste jogador.');
+  return '<article class="sc"><div class="sc-h">'+av(p,'l')+'<div><b>'+esc(p.apelido)+'</b><span class="tagx">SEM DADOS</span></div></div>'
+   +(k.length?'<div class="sc-k">'+k.join('')+'</div>':'')
+   +'<p class="note">'+aviso+' Ranking, trollagem e conquistas liberam quando houver dados de partidas.</p></article>'}).join('');
+}
+function drawJ(){
+ function n(v,d){return v==null?'–':f(v,d)}
+ el('jl').innerHTML=P.map(function(p,i){
+  return '<article class="sc" data-p="'+p.steam64+'" tabindex="0"><div class="sc-h">'+av(p,'l',i===0?'ring-gold':'')+'<div><b>'+esc(p.apelido)+'</b><span class="tagx">'+(i+1)+'º · '+p.partidas_analisadas+' PARTIDAS</span></div></div>'
+  +'<div class="sc-k"><div><b>'+n(p.hltv,2)+'</b><span>HLTV</span></div><div><b>'+n(p.mira,0)+'</b><span>Mira</span></div><div><b>'+n(p.utilidade,0)+'</b><span>Util.</span></div><div><b>'+n(p.posicionamento,0)+'</b><span>Pos.</span></div></div></article>'}).join('');
+}
+
+/* ---------- radar e perfil ---------- */
+function clamp(v){return Math.max(0,Math.min(100,v))}
+function eixos(p){return [
+ ['Mira',p.mira==null?0:clamp(p.mira)],
+ ['Utilidade',p.utilidade==null?0:clamp(p.utilidade)],
+ ['Posição',p.posicionamento==null?0:clamp(p.posicionamento)],
+ ['Rating',p.hltv==null?0:clamp((p.hltv-0.6)/0.9*100)],
+ ['Vitórias',p.vitorias_pct==null?0:clamp(p.vitorias_pct*100)]]}
+function radar(p){
+ var A=eixos(p),n=A.length,cx=160,cy=150,R=100;
+ var med=A.map(function(_,i){var s=0,c=0;P.forEach(function(q){s+=eixos(q)[i][1];c++});return c?s/c:0});
+ function pt(i,v){var a=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(a)*R*v/100,cy+Math.sin(a)*R*v/100]}
+ function poly(vals){return vals.map(function(v,i){return pt(i,v).join(',')}).join(' ')}
+ var grid=[25,50,75,100].map(function(l){return '<polygon points="'+poly(A.map(function(){return l}))+'" fill="none" stroke="#1d2533" stroke-width="1"/>'}).join('');
+ var rays=A.map(function(_,i){var q=pt(i,100);return '<line x1="'+cx+'" y1="'+cy+'" x2="'+q[0]+'" y2="'+q[1]+'" stroke="#1d2533"/>'}).join('');
+ var lab=A.map(function(a,i){var q=pt(i,128),an=Math.abs(q[0]-cx)<6?'middle':q[0]>cx?'start':'end';return '<text x="'+q[0]+'" y="'+(q[1]+4)+'" text-anchor="'+an+'" fill="#8793a8" font-size="11.5" font-family="Archivo,sans-serif" font-weight="600">'+a[0]+'</text><text x="'+q[0]+'" y="'+(q[1]+18)+'" text-anchor="'+an+'" fill="#eef2f8" font-size="11" font-family="JetBrains Mono,monospace" font-weight="700">'+Math.round(a[1])+'</text>'}).join('');
+ var dots=A.map(function(a,i){var q=pt(i,a[1]);return '<circle cx="'+q[0]+'" cy="'+q[1]+'" r="3.5" style="fill:var(--t)"/>'}).join('');
+ return '<svg class="radar" viewBox="-40 0 400 300" role="img" aria-label="Radar de '+esc(p.apelido)+'">'+grid+rays
+  +(P.length>=3?'<polygon points="'+poly(med)+'" fill="none" stroke="#6c7a92" stroke-width="1.5" stroke-dasharray="4 4"/>':'')
+  +'<polygon points="'+poly(A.map(function(a){return a[1]}))+'" style="fill:rgba(var(--t-rgb),.22);stroke:var(--t)" stroke-width="2.5" stroke-linejoin="round"/>'
+  +dots+lab+'</svg>'}
+function media(fn){var s=0;P.forEach(function(p){s+=fn(p)});return P.length?s/P.length:0}
+var lastFocus=null;
+
+var MET=[
+ {t:'Mira',g:function(p){return p.mira},d:0},
+ {t:'Utilidade',g:function(p){return p.utilidade},d:0},
+ {t:'Posicionamento',g:function(p){return p.posicionamento},d:0},
+ {t:'Rating HLTV',g:function(p){return p.hltv},d:2},
+ {t:'Vitórias',g:function(p){return p.vitorias_pct==null?null:p.vitorias_pct*100},d:0,u:'%'},
+ {t:'K/D',g:function(p){return p.mortes?p.abates/p.mortes:null},d:2},
+ {t:'Clutch',g:function(p){return p.clutch},d:2},
+ {t:'Abertura de rodada',g:function(p){return p.abertura},d:2},
+ {t:'Tiros em amigos',g:function(p){return p.zoeira&&p.zoeira.tiros_em_amigos_por_partida},d:2,low:1},
+ {t:'Amigos cegados',g:function(p){return p.zoeira&&p.zoeira.amigos_cegados_por_partida},d:1,low:1},
+ {t:'Dano de HE em amigos',g:function(p){return p.zoeira&&p.zoeira.dano_he_em_amigos},d:2,low:1},
+ {t:'Mortes por rodada',g:function(p){return p.rodadas?p.mortes/p.rodadas:null},d:2,low:1},
+ {t:'Granadas sobrando ao morrer',g:function(p){return p.zoeira&&p.zoeira.utilidade_sobrando_ao_morrer},d:0,low:1}
+];
+function forcas(p){
+ var out=[];
+ MET.forEach(function(m){
+  var v=m.g(p);if(v==null||isNaN(v))return;
+  var xs=[];P.forEach(function(q){var w=m.g(q);if(w!=null&&!isNaN(w))xs.push(w)});
+  if(xs.length<3)return;
+  var mu=xs.reduce(function(a,b){return a+b},0)/xs.length;
+  var sd=Math.sqrt(xs.reduce(function(a,b){return a+(b-mu)*(b-mu)},0)/xs.length);
+  if(!sd)return;
+  var zz=(v-mu)/sd;if(m.low)zz=-zz;
+  out.push({t:m.t,v:v,mu:mu,d:m.d,u:m.u||'',low:m.low,z:zz});
+ });
+ out.sort(function(a,b){return b.z-a.z});
+ return out;
+}
+function forcasHtml(p){
+ var L=forcas(p);
+ if(L.length<4)return '';
+ var F=L.filter(function(x){return x.z>=0.3}).slice(0,3);
+ var W=L.filter(function(x){return x.z<=-0.3}).slice(-3).reverse();
+ function li(x){return '<li><span>'+x.t+(x.low?'<em>menos é melhor</em>':'')+'</span><span><b>'+f(x.v,x.d)+x.u+'</b><small>média '+f(x.mu,x.d)+x.u+'</small></span></li>'}
+ var r=F.length?'O seu ponto mais forte é <b>'+F[0].t+'</b>':'Você está na média do grupo em quase tudo';
+ r+=W.length?(F.length?', e o que mais pesa contra é <b>':' e o que mais pesa contra é <b>')+W[0].t+'</b>.':'.';
+ return '<div class="dr-sec wide"><h4>Pontos fortes e fracos</h4><p class="pf-r">'+r+'</p><div class="pf">'
+  +'<div class="f"><h5>Pontos fortes</h5><ul>'+(F.length?F.map(li).join(''):'<li class="vz">Nada se destaca ainda.</li>')+'</ul></div>'
+  +'<div class="w"><h5>Pontos fracos</h5><ul>'+(W.length?W.map(li).join(''):'<li class="vz">Nenhum ponto fraco claro.</li>')+'</ul></div></div>'
+  +'<p class="note" style="margin:12px 0 0">Comparado com a média do grupo neste período.</p></div>';
+}
+function perfilCab(p,pos,tags){return '<div class="dr-id">'+av(p,'xxl',pos===1?'ring-gold':'ring-t')+'<div><h3>'+esc(p.apelido)+'</h3><div class="dr-tags">'+tags+'</div></div></div>'}
+function perfilSecoes(p){
+ var kd=p.mortes?p.abates/p.mortes:null;
+ var ach=[];
+ APOS.filter(function(a){return !a.ok||a.ok()}).forEach(function(a){if(best(a)===p)ach.push('<span>'+svg(a.t)+a.t+'</span>')});
+ ANEG.forEach(function(a){if(best(a)===p)ach.push('<span class="n">'+svg(a.t)+a.t+'</span>')});
+ function zrow(l,fn,d){var v=fn(p),m=media(fn);return '<div><span>'+l+'</span><span><b>'+f(v,d)+'</b>'+(P.length>=3?'<small>média '+f(m,d)+'</small>':'')+'</span></div>'}
+ return '<div class="dr-sec"><h4>Perfil de jogo</h4>'+radar(p)+'<div class="leg"><span><i></i>'+esc(p.apelido)+'</span>'+(P.length>=3?'<span><i class="g"></i>Média do grupo</span>':'')+'</div></div>'
+  +'<div class="dr-sec"><h4>Números</h4><div class="kpg"><div class="kb"><b>'+f(p.hltv,2)+'</b><span>Rating HLTV</span></div><div class="kb"><b>'+(kd==null?'–':f(kd,2))+'</b><span>K/D</span></div></div><div class="kp">'
+  +'<div><b>'+(p.vitorias_pct==null?'–':f(p.vitorias_pct*100,0)+'%')+'</b><span>Vitórias</span></div>'
+  +'<div><b>'+(p.hs_pct==null?'–':f(p.hs_pct*100,0)+'%')+'</b><span>Headshots</span></div>'
+  +'<div><b>'+(p.adr==null?'–':f(p.adr,0))+'</b><span>ADR</span></div>'
+  +'<div><b>'+(p.abates==null?'–':p.abates)+'</b><span>Abates</span></div><div><b>'+p.mortes+'</b><span>Mortes</span></div>'+(p.mvps==null?'':'<div><b>'+p.mvps+'</b><span>Estrelas</span></div>')+'</div></div>'
+  +forcasHtml(p)
+  +'<div class="dr-sec"><h4>Trollagem</h4><div class="zl2">'
+  +zrow('Tiros em amigos por partida',function(q){return z(q,'tiros_em_amigos_por_partida')},2)
+  +zrow('Amigos cegados por partida',function(q){return z(q,'amigos_cegados_por_partida')},1)
+  +zrow('Dano de HE em amigos',function(q){return z(q,'dano_he_em_amigos')},2)
+  +zrow('Mortes por rodada',function(q){return q.rodadas?q.mortes/q.rodadas:0},2)
+  +'</div></div>'
+  +(P.length>=3?'<div class="dr-sec"><h4>Conquistas</h4>'+(ach.length?'<div class="ach">'+ach.join('')+'</div>':'<p class="note" style="margin:0">Nenhum título neste período.</p>')+'</div>':'');
+}
+function openProfile(id){
+ var p=P.filter(function(x){return x.steam64===id})[0];if(!p)return;
+ var pos=P.indexOf(p)+1;
+ el('drawer').innerHTML='<div class="dr-hero"><button class="dr-x" aria-label="Fechar">'+ic('<path d="M6 6l12 12M18 6L6 18"/>')+'</button>'
+  +perfilCab(p,pos,'<span class="tagx">'+pos+'º NO RANKING</span><span class="tagx">'+p.partidas_analisadas+' PARTIDAS</span>')+'<a class="btn g sm" style="margin-top:14px" href="#/jogador/'+p.steam64+'">Abrir página do perfil</a></div>'
+  +perfilSecoes(p);
+ lastFocus=document.activeElement;
+ el('drawer').classList.add('on');el('drawer').setAttribute('aria-hidden','false');el('shade').classList.add('on');document.body.classList.add('lock');
+ el('drawer').scrollTop=0;
+ var x=el('drawer').querySelector('.dr-x');if(x)x.focus();
+}
+function closeProfile(){
+ el('drawer').classList.remove('on');el('drawer').setAttribute('aria-hidden','true');el('shade').classList.remove('on');document.body.classList.remove('lock');
+ if(lastFocus&&lastFocus.focus)lastFocus.focus();
+}
+document.addEventListener('click',function(e){
+ if(e.target.closest('.dr-x')||e.target===el('shade')){closeProfile();return}
+ var t=e.target.closest('[data-p]');if(t&&!e.target.closest('a'))openProfile(t.getAttribute('data-p'));
+});
+document.addEventListener('keydown',function(e){
+ if(e.key==='Escape')closeProfile();
+ if(e.key==='Enter'){var t=e.target.closest&&e.target.closest('[data-p][tabindex]');if(t)openProfile(t.getAttribute('data-p'))}
+});
+
+/* números que contam subindo */
+var reduz=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function contar(){
+ var els=document.querySelectorAll('.cu:not([data-ok])');
+ var io='IntersectionObserver' in window&&!reduz?new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){io.unobserve(en.target);anim(en.target)}})},{threshold:.4}):null;
+ els.forEach(function(n){n.setAttribute('data-ok','1');if(io)io.observe(n)});
+}
+function anim(n){
+ var v=+n.getAttribute('data-v'),d=+n.getAttribute('data-d'),t0=null;
+ function step(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/900),e=1-Math.pow(1-k,3);n.textContent=f(v*e,d);if(k<1)requestAnimationFrame(step)}
+ requestAnimationFrame(step);
+}
+
+function init(d){
+ DADOS=d;
+ var all=d.jogadores||[],per=d.periodo||{};
+ if(per.semana_id){var a=per.semana_id.split('-');el('kick').textContent='CS2 · Semana de '+a[2]+'/'+a[1]}
+ el('rodape').textContent=!d.atualizado_em?'Aguardando a primeira atualização.':'Última atualização: '+new Date(d.atualizado_em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'}).replace(', ',' às ');
+ B=all.filter(function(p){return !p.erro&&p.hltv!=null});
+ E=all.filter(function(p){return p.erro||(p.hltv==null&&!p.so_steam)});
+ S=all.filter(function(p){return p.so_steam});
+ var M=B.filter(function(p){return p.mes&&p.mes.partidas>=1&&p.mes.hltv!=null});
+ var Wk=B.filter(function(p){return p.semana&&p.semana.partidas>=1&&p.semana.hltv!=null});
+ DISP={semana:Wk.length>=2,mes:M.length>=2,geral:true};
+ modo=(PER&&DISP[PER])?PER:(DISP.mes?'mes':'geral');
+ P=(modo==='mes'?M.map(function(p){return vis(p,'mes')}):modo==='semana'?Wk.map(function(p){return vis(p,'semana')}):B.slice()).sort(function(a,b){return b.hltv-a.hltv});
+ if(!P.length){NB=0;el('rows').innerHTML='<tr><td colspan="9" class="note">Nenhum jogador com dados ainda. Os números chegam na próxima atualização (a cada hora).</td></tr>';return}
+ var mi=per.mes_id?(+per.mes_id.split('-')[1]-1):new Date(d.atualizado_em).getMonth();
+ var ano=per.mes_id?per.mes_id.split('-')[0]:new Date(d.atualizado_em).getFullYear();
+ var jan=modo==='mes'?'neste mês':modo==='semana'?'nesta semana':'nas últimas partidas';
+ var sd=per.semana_id?per.semana_id.split('-'):null;
+ var PL=modo==='mes'?['do mês','neste mês','mês']:modo==='semana'?['da semana','nesta semana','semana']:['geral','nas últimas partidas','período'];var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=PL[0]==='geral'?'geral':PL[0];h1e.parentNode.nextElementSibling.textContent='Quem está carregando o time e quem mais trollou '+PL[1]+'.'}var kk=el('kick');if(kk)kk.textContent=modo==='mes'?'CS2 · '+MES[mi]+' de '+ano:modo==='semana'&&sd?'CS2 · Semana de '+sd[2]+'/'+sd[1]:'CS2 · últimas 100 partidas';el('rk-t').innerHTML=modo==='mes'?'Ranking do mês':modo==='semana'?'Ranking da semana':'Ranking geral';
+ el('rk-p').textContent=(modo==='mes'?MES[mi].charAt(0).toUpperCase()+MES[mi].slice(1)+' de '+ano:modo==='semana'?'Semana de '+(sd?sd[2]+'/'+sd[1]:''):'Últimas 100 partidas')+' · ordenado pelo Rating HLTV, calculado com abates, mortes e rodadas com multikills.';
+ el('rk-n').textContent=(modo==='mes'?'Dados reais, só partidas do mês.':modo==='semana'?'Dados reais, só partidas da semana.':'Dados reais (até 100 partidas recentes por jogador).')+' O Rating HLTV é calculado pelo painel. Clique num jogador para abrir o perfil.';
+ el('dest-p').textContent='Quem está mandando bem em cada categoria '+jan+'.';
+ el('zo-p').textContent='Quem está atrapalhando mais o time '+jan+'. Quanto mais alto na lista, pior.';
+  NB=P.length;if(el('nb'))el('nb').textContent=NB;
+ var avisos=[];
+ var pend=E.filter(function(p){return p.pendente}),semd=E.filter(function(p){return !p.pendente});
+ if(semd.length)avisos.push('Sem dados: '+semd.map(function(p){return p.apelido}).join(', ')+'. Perfil privado ou sem partidas recentes.');
+ if(pend.length)avisos.push('Aguardando a primeira atualização: '+pend.map(function(p){return p.apelido}).join(', ')+'. Quem acabou de entrar aparece com dados em até 1 hora.');
+ if(modo!=='geral'){var fora=B.filter(function(p){return (modo==='mes'?M:Wk).indexOf(p)<0});if(fora.length)avisos.push('Sem partidas '+(modo==='mes'?'neste mês':'nesta semana')+': '+fora.map(function(p){return p.apelido}).join(', ')+'.')}
+ el('semperfil').textContent=avisos.join(' ');
+ el('cards').innerHTML=APOS.filter(function(a){return !a.ok||a.ok()}).map(function(a){return cardHl(a,false)}).join('');
+ el('cards2').innerHTML=ANEG.map(function(a){return cardHl(a,true)}).join('');
+ var pts={};P.forEach(function(p){pts[p.steam64]=0});
+ CAT.forEach(function(c){order(c).forEach(function(p,pos){pts[p.steam64]+=P.length-pos})});
+ var t=P.reduce(function(m,p){return pts[p.steam64]>pts[m.steam64]?p:m},P[0]);
+ el('troll').setAttribute('data-p',t.steam64);
+ el('troll').innerHTML=av(t,'xl','ring-red')+'<div class="k">'+(modo==='mes'?'Maior troll do mês':modo==='semana'?'Maior troll da semana':'Maior troll nas últimas partidas')+'</div><b class="big">'+esc(t.apelido)+'</b><p>'+pts[t.steam64]+' pontos de trollagem somando as '+CAT.length+' categorias.</p>';
+ if(!el('chips').getAttribute('data-ok')){el('chips').setAttribute('data-ok','1');el('chips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(b){zi=+b.getAttribute('data-i');drawZ();posDraw()}})}
+ spotlight();drawL(d);
+ drawRows('');drawZ();drawS();
+ contar();
+ if(window.spy)spy();
+}
+
+/* =====================================================================
+   APP: rotas, login, times
+   ===================================================================== */
+var WORKER='https://painel-login.juansouzacmc.workers.dev'; /* endereço do Worker (login + times) */
+WORKER=WORKER.replace(/\/+$/,'');
+var SITE=location.origin+location.pathname,SES=null,ME=null,ERRO_LOGIN='',CLA_PADRAO='painel-da-galera';
+var JA=false,ROTA={t:'home',id:''},TOK=0,NB=0,OPC=null,CLA_ATUAL=null,trava=null;
+var SECOES=[['painel','Visão geral',1,'Geral'],['conquistas','Conquistas',2,'Destaques'],['zoeira','Trollagem',3,'Trollagem'],['ranking','Ranking',4,'Ranking'],['partidas','Partidas',6,'Partidas']];
+var PER=null,DISP={semana:false,mes:false,geral:true},LASTD=null,IC0=[NAV[0],NAV[1],NAV[2],FL,NAV[4],NAV[5],NAV[6]];
+
+(function lerSessao(){
+ try{
+  var h=location.hash;
+  if(h.indexOf('#token=')===0){
+   localStorage.setItem('painel_token',h.slice(7));
+   var v=localStorage.getItem('painel_volta');localStorage.removeItem('painel_volta');
+   history.replaceState(null,'',location.pathname+location.search+(v&&v.indexOf('#/')===0?v:''));
+  }else if(h.indexOf('#erro=')===0){ERRO_LOGIN=h.slice(6);history.replaceState(null,'',location.pathname+location.search)}
+  var t=localStorage.getItem('painel_token');
+  if(t){var b=JSON.parse(atob(t.split('.')[0].replace(/-/g,'+').replace(/_/g,'/')));
+   if(b.exp>Date.now()/1000)SES={sid:String(b.sid),token:t};else localStorage.removeItem('painel_token')}
+ }catch(e){}
+})();
+
+function chamar(m,c,corpo,auth){
+ var o={method:m,cache:'no-store',headers:{}};
+ if(auth&&SES)o.headers.authorization='Bearer '+SES.token;
+ if(corpo!==undefined){o.headers['content-type']='application/json';o.body=JSON.stringify(corpo)}
+ return fetch(WORKER+'/api'+c,o).then(function(r){
+  return r.json().catch(function(){return{}}).then(function(j){return{ok:r.ok,status:r.status,j:j}})
+ }).catch(function(){return{ok:false,status:0,j:{erro:'Não consegui falar com o servidor. Tente de novo.'}}});
+}
+function loginHref(){return WORKER+'/login?r='+encodeURIComponent(SITE)}
+function sairConta(){try{localStorage.removeItem('painel_token')}catch(e){}SES=null;ME=null;location.hash='#/';location.reload()}
+function iniciais(n){var w=String(n||'?').trim().split(/\s+/);return (w[0].charAt(0)+(w[1]?w[1].charAt(0):'')).toUpperCase()}
+function claImg(c,t){return '<div class="cla-img '+(t||'')+'">'+(c.imagem?'<img src="'+esc(c.imagem)+'" alt="">':esc(iniciais(c.nome)))+'</div>'}
+function dizer(id,txt,ok){if(id==='msg-opc'&&OPC)OPC.msg=txt?[txt,!!ok]:null;var m=el(id);if(!m)return;m.textContent=txt||'';m.className='msg'+(txt?(ok?' ok':' err'):'')}
+function armar(b,txt){
+ if(b.getAttribute('data-armed'))return true;
+ b.setAttribute('data-armed','1');b.setAttribute('data-txt',b.textContent);b.textContent=txt||'Confirmar?';b.classList.add('armed');
+ setTimeout(function(){if(b.getAttribute('data-armed')){b.removeAttribute('data-armed');b.textContent=b.getAttribute('data-txt');b.classList.remove('armed')}},4000);
+ return false;
+}
+function membroDados(m){
+ var d=m.dados;
+ if(!d||typeof d!=='object')return{steam64:m.steam64,apelido:m.nome||'Jogador',avatar:m.avatar||null,pendente:true};
+ var o=Object.assign({},d);o.steam64=m.steam64;o.apelido=d.apelido||m.nome||'Jogador';o.avatar=m.avatar||d.avatar||null;return o;
+}
+function periodoDe(ms){
+ var t=new Date((ms||Date.now())-3*3600*1000),dow=(t.getUTCDay()+6)%7;
+ var seg=new Date(Date.UTC(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate()-dow));
+ function p2(n){return (n<10?'0':'')+n}
+ return{semana_id:seg.getUTCFullYear()+'-'+p2(seg.getUTCMonth()+1)+'-'+p2(seg.getUTCDate()),mes_id:t.getUTCFullYear()+'-'+p2(t.getUTCMonth()+1)};
+}
+
+/* ---------- menus ---------- */
+function itensMenu(){
+ var voce=[],sec=[];
+ if(ME&&SES)voce.push({t:'Meu perfil',b:'Perfil',n:0,h:'#/jogador/'+SES.sid,on:ROTA.t==='jogador'&&ROTA.id===SES.sid});
+ var naMinha=ROTA.t==='cla'&&ME&&ME.cla&&ME.cla.slug===ROTA.id;
+ if(ME&&ME.cla&&!naMinha)voce.push({t:'Meu time',b:'Time',n:5,h:'#/cla/'+ME.cla.slug,on:false});
+ if(ROTA.t==='cla')SECOES.forEach(function(x){sec.push({t:x[1],b:x[3],n:x[2],s:x[0],em:x[0]==='ranking'})});
+ return{voce:voce,sec:sec};
+}
+function linkMenu(x,curto){
+ return '<a '+(x.s?'href="#/cla/'+esc(ROTA.id)+'" data-sec="'+x.s+'"':'href="'+x.h+'"')+(x.on?' class="on"':'')+'><i>'+ic(IC0[x.n])+'</i>'+(curto?'<span>'+(x.b||x.t)+'</span>':x.t+(x.em?'<em id="nb">'+NB+'</em>':''))+'</a>';
+}
+function desenharPromo(){
+ var p=el('promo'),dono=ME&&ME.cla&&ME.cla.eu_sou_dono;
+ if(dono&&ROTA.t!=='convite'&&ROTA.t!=='criar'){
+  p.style.display='';
+  p.innerHTML='<b>Chame mais amigos</b><p>Copie o link de convite do seu time e mande para a galera.</p><button class="btn y w" type="button" data-acao="abrir-opcoes" data-aba="convite">Link de convite</button>';
+ }else{p.style.display='none';p.innerHTML=''}
+}
+function setCtx(t){var c=el('ctx');if(c)c.textContent=t||''}
+function desenharMenus(){
+ var m=itensMenu(),h='';
+ if(m.voce.length)h+='<h4>Você</h4>'+m.voce.map(function(x){return linkMenu(x)}).join('');
+ if(m.sec.length){var nome=CLA_ATUAL?CLA_ATUAL.cla.nome:'Time';h+=(m.voce.length?'<div class="nav-sep"></div>':'')+'<h4>'+esc(nome)+'</h4>'+m.sec.map(function(x){return linkMenu(x)}).join('')}
+ el('nav').innerHTML=h;
+ var b=m.sec.length?m.voce.slice(0,1).concat(m.sec.filter(function(x){return x.s!=='partidas'})):m.voce;
+ el('bnav').innerHTML=b.map(function(x){return linkMenu(x,true)}).join('');
+ desenharPromo();
+ if(ROTA.t==='cla')spy();
+}
+function desenharChrome(){
+ var nome=ME&&ME.nome?ME.nome:'Conectado';
+ if(SES){
+  el('usr').innerHTML=(ME?av({avatar:ME.avatar,apelido:nome}):'<div class="av">ID</div>')+'<span>'+esc(nome)+'</span><button id="sair" type="button">Sair</button>';
+  el('entrar').style.display='none';
+  el('me-w').innerHTML=(ME?av({avatar:ME.avatar,apelido:nome},'l','ring-t'):'<div class="av l ring-t">VC</div>')+'<div><small>Logado como</small><b>'+esc(nome)+'</b></div>';
+ }else{
+  el('usr').innerHTML='';el('entrar').href=loginHref();el('entrar').style.display='';
+  el('me-w').innerHTML='<div class="av l">?</div><div><small>Você está</small><b>Visitando</b></div>';
+ }
+ desenharMenus();
+}
+function refazerEu(){
+ if(!SES)return Promise.resolve();
+ return chamar('GET','/eu',undefined,true).then(function(r){
+  if(r.status===401){try{localStorage.removeItem('painel_token')}catch(e){}SES=null;ME=null}
+  else if(r.ok)ME=r.j;
+  desenharChrome();
+ });
+}
+
+/* ---------- navegação interna das seções do time ---------- */
+function setActive(id,clicado){
+ ['#nav','#bnav'].forEach(function(sel){
+  var links=[].slice.call(document.querySelectorAll(sel+' a[data-sec]'));
+  var alvo=(clicado&&links.indexOf(clicado)>-1)?clicado:links.filter(function(a){return a.getAttribute('data-sec')===id})[0];
+  links.forEach(function(a){a.classList.toggle('on',a===alvo)})})
+}
+function spy(){
+ if(trava||ROTA.t!=='cla')return;
+ var h=window.innerHeight,cur='painel';
+ SECOES.forEach(function(s){var e=el(s[0]);if(e&&e.offsetParent!==null&&e.getBoundingClientRect().top<=h*0.4)cur=s[0]});
+ if(h+window.scrollY>=document.body.scrollHeight-4){var z=el('partidas');if(z&&z.getBoundingClientRect().top<h*0.85)cur='partidas'}
+ setActive(cur);
+}
+['wheel','touchmove','keydown','mousedown'].forEach(function(ev){window.addEventListener(ev,function(e){if(trava&&!(e.target&&e.target.closest&&e.target.closest('#nav a,#bnav a')))trava=null},{passive:true})});
+window.addEventListener('scroll',spy,{passive:true});window.addEventListener('resize',spy);
+
+/* ---------- telas ---------- */
+function view(h){el('view').innerHTML=h;window.scrollTo(0,0)}
+function pagina(titulo,html){return '<div class="pagina"><div class="caixa">'+titulo+html+'</div></div>'}
+function fecharTudo(){closeProfile()}
+function lerRota(){
+ var p=location.hash.replace(/^#\/?/,'').split('/');
+ var t=p[0]||'home',id='';try{id=p[1]?decodeURIComponent(p[1]):''}catch(e){}
+ if(['jogador','cla','convite','criar'].indexOf(t)<0)t='home';
+ return{t:t,id:id};
+}
+function rotear(manter){
+ var r=lerRota();
+ if(r.t==='home'&&SES){history.replaceState(null,'','#/jogador/'+SES.sid);r=lerRota()}
+ if(r.t==='jogador'&&r.id==='eu'){if(SES){history.replaceState(null,'','#/jogador/'+SES.sid);r=lerRota()}else r={t:'home',id:''}}
+ if(ERRO_LOGIN&&r.t!=='home'){r={t:'home',id:''}}
+ ROTA=r;var meu=++TOK;
+ if(!manter)fecharTudo();
+ document.body.className=document.body.className.replace(/\brota-\S+|\bso-dono\b/g,'').trim();
+ document.body.classList.add('rota-'+r.t);
+ el('buscar').style.display=r.t==='cla'?'':'none';
+ NB=0;CLA_ATUAL=null;setCtx('');
+ desenharMenus();
+ el('rodape').textContent='';
+ function ir(){
+  if(meu!==TOK)return;
+  if(r.t==='home')telaHome();
+  else if(r.t==='jogador')telaJogador(r.id,meu);
+  else if(r.t==='cla')telaCla(r.id,meu);
+  else if(r.t==='convite')telaConvite(r.id,meu);
+  else telaCriar();
+ }
+ /* a cada troca de tela, confere de novo o seu time (alguém pode ter passado a posse ou te expulsado) */
+ if(SES&&!manter&&JA)refazerEu().then(ir);else{JA=true;ir()}
+}
+function loginBtn(rotulo){return '<a class="btn y js-login" href="'+loginHref()+'">'+(rotulo||'Entrar com a Steam')+'</a>'}
+
+function telaHome(){
+ view('');
+ var g=el('gate');
+ el('gate-go').href=loginHref();
+ el('gate-erro').textContent=ERRO_LOGIN?(ERRO_LOGIN==='cancelado'?'Login cancelado. Tente de novo quando quiser.':'Não consegui confirmar o seu login com a Steam. Tente de novo.'):'';
+ ERRO_LOGIN='';
+ g.classList.add('on');document.body.classList.add('lock-gate');
+}
+function fecharGate(){el('gate').classList.remove('on');document.body.classList.remove('lock-gate')}
+
+/* ----- perfil do jogador ----- */
+function telaJogador(id,meu){
+ view('<div class="pagina-perfil"><div class="skeleton"></div></div>');
+ if(!/^\d{17}$/.test(id)){view(pagina('<h2>Jogador <u>não achado</u></h2>','<p>Esse endereço de perfil não existe.</p>'));return}
+ chamar('GET','/jogador/'+id).then(function(r){
+  if(meu!==TOK)return;
+  if(r.status===404){view(pagina('<h2>Perfil <u>indisponível</u></h2>','<p>Esse jogador ainda não entrou no painel. Os perfis só existem para quem fez login com a Steam aqui.</p>'+(SES?'<a class="btn g" href="#/jogador/'+SES.sid+'">Ir para o meu perfil</a>':loginBtn())));return}
+  if(!r.ok){view(pagina('<h2>Algo <u>deu errado</u></h2>','<p>'+esc(r.j.erro||'Não consegui carregar o perfil.')+'</p>'));return}
+  var j=r.j,pr=j.cla?chamar('GET','/cla/'+j.cla.slug):Promise.resolve(null);
+  pr.then(function(rc){
+   if(meu!==TOK)return;
+   var me1=membroDados({steam64:j.steam64,nome:j.nome,avatar:j.avatar,dados:j.dados});
+   var grupo=[];
+   if(rc&&rc.ok)grupo=(rc.j.membros||[]).map(membroDados).filter(function(x){return !x.erro&&x.hltv!=null});
+   if(!grupo.some(function(x){return x.steam64===j.steam64})&&me1.hltv!=null&&!me1.erro)grupo.push(me1);
+   grupo.sort(function(a,b){return b.hltv-a.hltv});
+   P=grupo;
+   var me2=grupo.filter(function(x){return x.steam64===j.steam64})[0]||me1;
+   var propria=!!(SES&&SES.sid===j.steam64);
+   montarPerfil(j,me2,propria,grupo);
+  });
+ });
+}
+function montarPerfil(j,p,propria,grupo){
+ var pos=grupo.indexOf(p)+1,tags='',lado='';
+ if(p.hltv!=null){
+  if(pos&&grupo.length>=2)tags+='<span class="tagx">'+pos+'º NO TIME</span>';
+  tags+='<span class="tagx">'+p.partidas_analisadas+' PARTIDAS</span>';
+ }else if(p.so_steam){tags+='<span class="tagx">SEM DADOS</span>'+((p.steam&&p.steam.horas_cs2!=null)?'<span class="tagx">'+f(p.steam.horas_cs2,0)+' H DE CS2</span>':'')}
+ else tags+='<span class="tagx">AGUARDANDO DADOS</span>';
+ if(j.cla)lado='<div class="cla-lado"><small>'+(propria?'Meu time':'Time')+'</small><a class="clachip" href="#/cla/'+esc(j.cla.slug)+'">'+claImg(j.cla,'sm')+esc(j.cla.nome)+'</a></div>';
+ else tags+='<span class="tagx">SEM TIME</span>';
+ var cab=perfilCab(p,pos,tags);CARTAO_P=p;
+ setCtx(propria?'Meu perfil':p.apelido);
+ var corpo;
+ if(p.hltv!=null&&!p.erro)corpo='<div class="me-body">'+perfilSecoes(p)+'</div>';
+ else if(p.so_steam){
+  var st=p.steam||{},c=st.carreira,k=[];
+  if(st.horas_cs2!=null)k.push('<div><b>'+f(st.horas_cs2,0)+' h</b><span>de CS2</span></div>');
+  if(c&&c.kd!=null)k.push('<div><b>'+f(c.kd,2)+'</b><span>K/D de carreira</span></div>');
+  if(c&&c.headshot_pct!=null)k.push('<div><b>'+f(c.headshot_pct,0)+'%</b><span>headshots</span></div>');
+  corpo='<div class="dr-sec" style="padding-bottom:26px">'+(k.length?'<div class="sc-k" style="margin-bottom:14px">'+k.join('')+'</div>':'')
+   +'<p class="note" style="margin:0 0 14px">'+(propria?'Faltam dados para montar o seu perfil de jogo. Ligue a leitura das suas partidas logo abaixo e, depois de jogar algumas, os seus números aparecem aqui.':'Esse jogador ainda não tem dados de partidas, então só aparecem os totais da Steam.')+'</p>'
+   +'</div>';
+ }else corpo='<div class="dr-sec" style="padding-bottom:6px"><p class="note" style="margin:0">'+(propria?'Ainda não temos partidas suas. Ligue a leitura logo abaixo para começar: leva 2 minutos, uma vez só.':'Esse jogador ainda não ligou a leitura das partidas, então não há números dele por aqui.')+'</p></div>';
+ var claSec=(propria&&!(ME&&ME.cla))?'<div class="cla-sec" id="clasec">'+claCardHtml()+'</div>':'';
+ view('<div class="pagina-perfil"><div class="me-card"><div class="dr-hero">'+cab+lado+'</div>'+(p.hltv!=null&&!p.erro?'<div class="cartao-acoes"><button class="btn g sm" type="button" data-acao="cartao">Baixar cartão para postar</button><span class="msg" id="msg-cartao"></span></div>':'')+corpo+(p.hltv!=null&&!p.erro?'<div class="dr-sec wide hist-sec" id="hist-sec"></div>':'')+(propria?'<div class="dr-sec wide fonte-sec" id="fonte-sec"></div>':'')+claSec+(p.hltv!=null&&!p.erro?'<div class="dr-sec wide" style="padding-bottom:26px">'+glossario()+'</div>':'')+'</div></div>');
+ if(propria)carregarFonte();
+ if(p.hltv!=null&&!p.erro)carregarHist(p.steam64);
+ document.title=p.apelido+' — Ranko';
+}
+function claCardHtml(){
+ var c=ME&&ME.cla;
+ if(c){
+  return '<h4>Meu time</h4><div class="cla-row">'+claImg(c,'lg')+'<div><div class="cn">'+esc(c.nome)+'</div><small>'+c.total+'/'+c.max+' MEMBROS'+(c.eu_sou_dono?' · VOCÊ É O DONO':'')+'</small></div><div class="gr">'
+   +'<a class="btn y sm" href="#/cla/'+esc(c.slug)+'">Abrir painel do time</a>'
+   +(c.eu_sou_dono?'<button class="btn g sm" type="button" data-acao="abrir-opcoes">Opções do time</button>':'<button class="btn red sm" type="button" data-acao="sair-cla">Sair do time</button>')
+   +'</div></div><p class="msg" id="msg-cla"></p>';
+ }
+ return '<h4>Meu time</h4><div class="cla-vazio"><div><h5>Criar um time</h5><p>Junte a galera para comparar os números. Você vira o dono e convida os amigos por link (até 30 membros).</p><a class="btn y sm" href="#/criar">Criar time</a></div>'
+  +'<div><h5>Entrar com convite</h5><p>Cole aqui o link que o dono do time mandou.</p><div class="campo"><input id="cod" type="text" placeholder="Cole o link ou o código" autocomplete="off"></div><button class="btn g sm" type="button" data-acao="entrar-codigo">Continuar</button></div></div><p class="msg" id="msg-cla"></p>';
+}
+
+
+/* ----- leitura das minhas partidas ----- */
+var LINK_CODIGOS='https://help.steampowered.com/pt-br/wizard/HelpWithGameIssue/?appid=730&issueid=128';
+function haQuanto(ms){if(!ms)return 'ainda não checou';var m=Math.round((Date.now()-ms)/60000);if(m<2)return 'agora há pouco';if(m<60)return 'há '+m+' min';var h=Math.round(m/60);if(h<24)return 'há '+h+' h';return 'há '+Math.round(h/24)+' dia(s)'}
+function carregarFonte(){
+ var box=el('fonte-sec');if(!box)return;
+ chamar('GET','/eu/fonte',undefined,true).then(function(r){
+  box=el('fonte-sec');if(!box||!r.ok)return;
+  var j=r.j;
+  if(j.ativa){
+   box.innerHTML='<h4>Minhas partidas</h4><div class="fonte-on"><div><b>Leitura ligada</b><small>'+(j.partidas?j.partidas+' partida(s) lida(s)':'Nenhuma partida lida ainda')+' · última checagem '+haQuanto(j.lido_em)+'</small></div>'
+    +'<button class="btn red sm" type="button" data-acao="fonte-desligar">Desligar e apagar</button></div>'
+    +(j.erro?'<p class="msg err" style="display:block">'+esc(j.erro)+'</p>':'')
+    +'<p class="note">Novas partidas de Premier e competitivo entram sozinhas, em até 2 horas depois de acabarem. Desligar apaga todas as estatísticas guardadas de você.</p><p class="msg" id="msg-fonte"></p>';
+   return;
+  }
+  box.innerHTML='<h4>Ligar minhas partidas</h4><p class="note" style="margin:0 0 12px">O painel lê as suas partidas direto do CS2 e calcula tudo sozinho. Você faz isso uma única vez:</p>'
+   +'<ol class="passos"><li>Abra <a href="'+LINK_CODIGOS+'" target="_blank" rel="noopener">esta página da Steam</a> e entre na sua conta.</li><li>Copie o <b>código de autenticação</b> e o <b>código da sua partida mais recente</b>.</li><li>Cole os dois aqui embaixo.</li></ol>'
+   +'<div class="campo"><label for="f-auth">Código de autenticação</label><input id="f-auth" type="text" placeholder="XXXX-XXXXX-XXXX" autocomplete="off" spellcheck="false"></div>'
+   +'<div class="campo"><label for="f-part">Código da partida mais recente</label><input id="f-part" type="text" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" autocomplete="off" spellcheck="false"></div>'
+   +'<button class="btn y" type="button" data-acao="fonte-ligar">Ligar</button><p class="msg" id="msg-fonte"></p>'
+   +'<p class="note">Só guardamos números (abates, mortes, flashes…), nunca a demo. Vale só para partidas a partir do código que você colar, e a Steam guarda as demos por cerca de 30 dias. Você desliga e apaga tudo quando quiser.</p>';
+ });
+}
+
+/* ----- página do time ----- */
+var CLA_TPL=null;
+function telaCla(slug,meu){
+ view('<div class="skeleton"></div>');
+ chamar('GET','/cla/'+encodeURIComponent(slug)).then(function(r){
+  if(meu!==TOK)return;
+  if(r.status===404){view(pagina('<h2>Time <u>não achado</u></h2>','<p>Esse time não existe ou foi desfeito.</p>'+(SES?'<a class="btn g" href="#/jogador/'+SES.sid+'">Ir para o meu perfil</a>':loginBtn())));return}
+  if(!r.ok){view(pagina('<h2>Algo <u>deu errado</u></h2>','<p>'+esc(r.j.erro||'Não consegui carregar o time.')+'</p>'));return}
+  CLA_ATUAL=r.j;
+  var c=r.j.cla,dono=!!(SES&&c.dono===SES.sid),meuCla=!!(ME&&ME.cla&&ME.cla.slug===c.slug);
+  document.body.classList.toggle('so-dono',dono);
+  var bar='<div class="clabar">'+claImg(c)+'<div><div class="cn">'+esc(c.nome)+'</div><small>'+c.total+'/'+c.max+' MEMBROS</small></div><div class="gr"><div class="per" id="per" role="group" aria-label="Período do ranking"></div>'
+   +(dono?'<button class="btn g sm" type="button" data-acao="abrir-opcoes">Opções do time</button>':'')
+   +(meuCla&&!dono?'<button class="btn red sm" type="button" data-acao="sair-cla">Sair do time</button>':'')
+   +'</div></div><p class="msg" id="msg-cla" style="margin:0"></p>';
+  var eu1=SES&&(r.j.membros||[]).filter(function(m){return m.steam64===SES.sid})[0];
+  var avisoLigar=(eu1&&membroDados(eu1).hltv==null)?'<div class="aviso-ligar"><div><b>Os seus números ainda não aparecem aqui.</b><p>Ligue a leitura das suas partidas: leva 2 minutos, uma vez só. Só contam as partidas jogadas depois de ligar, então quanto antes, melhor.</p></div><a class="btn y sm" href="#/jogador/'+SES.sid+'">Ligar minhas partidas</a></div>':'';
+  view(bar+avisoLigar+CLA_TPL);
+  document.title=c.nome+' — Ranko';
+  setCtx(c.nome);
+  montarCla(r.j);
+ });
+}
+function montarCla(j){
+ var ms=(j.membros||[]).map(membroDados);
+ var mx=0;(j.membros||[]).forEach(function(m){if(m.dados_em&&m.dados_em>mx)mx=m.dados_em});
+ LASTD={jogadores:ms,periodo:periodoDe(mx||Date.now()),historico:{},atualizado_em:mx||0};
+ posInit();
+}
+function posInit(){
+ try{init(LASTD)}catch(e){erro('Erro ao montar a página: '+e.message)}
+ renderPer();
+ var g=el('gloss');if(g)g.innerHTML=glossario();
+ posDraw();
+ desenharMenus();
+}
+function posDraw(){[].forEach.call(document.querySelectorAll('#view [data-p]:not([tabindex])'),function(e){e.tabIndex=0;e.setAttribute('role','button')})}
+function renderPer(){
+ var b=el('per');if(!b)return;
+ b.innerHTML=[['semana','Semana'],['mes','Mês'],['geral','Geral']].map(function(x){
+  var on=modo===x[0],ok=DISP[x[0]];
+  return '<button type="button" class="'+(on?'on':'')+'" data-acao="periodo" data-v="'+x[0]+'" aria-pressed="'+on+'"'+(ok?'':' disabled title="Poucos jogadores com partidas neste período"')+'>'+x[1]+'</button>'}).join('');
+}
+function glossario(){
+ return '<details class="gloss"><summary>Como ler os números</summary><dl>'
+  +'<dt>Rating HLTV (1.0)</dt><dd>Nota na fórmula do HLTV 1.0, calculada pelo painel com abates, mortes e rodadas com multikills. 1,00 é a média; acima disso o jogador rende mais que o normal.</dd>'
+  +'<dt>ADR e Headshots</dt><dd>ADR é o dano médio que você causa nos inimigos por rodada. Headshots é a porcentagem dos seus abates que foram na cabeça.</dd>'
+  +'<dt>Mira, Utilidade e Posicionamento</dt><dd>Notas de 0 a 100 calculadas pelo painel a partir das suas partidas: pontaria (dano por rodada e headshots), uso de flashes e posição (quanto você sobrevive).</dd>'
+  +'<dt>Estrelas (Estrelinha)</dt><dd>Quantas vezes o jogador foi o MVP da rodada.</dd>'
+  +'<dt>Abertura de rodada</dt><dd>Porcentagem dos primeiros duelos da rodada que você ganhou. Clutch ainda não é calculado.</dd>'
+  +'<dt>Pontos de trollagem</dt><dd>Em cada categoria da trollagem, o pior da galera ganha mais pontos. Quem soma mais é o maior troll.</dd><dt>De onde vêm os dados</dt><dd>O painel lê as suas próprias partidas de Premier e competitivo direto do CS2. Para aparecer no ranking, ligue a leitura no seu perfil (“Ligar minhas partidas”). Só contam as partidas jogadas depois de ligar.</dd></dl></details>';
+}
+
+
+function mensagemConvite(c){
+ return 'Entra no painel de CS2 da nossa galera ('+c.nome+')!\n\n1) Abra o link e entre com a Steam:\n'+SITE+'#/convite/'+(c.convite||'')+'\n\n2) No seu perfil, em "Ligar minhas partidas", cole os dois códigos que a Steam mostra (o próprio perfil explica onde pegar). Leva 2 minutos.\n\nSó contam as partidas jogadas depois de ligar, então quanto antes, melhor. A senha da Steam nunca passa pelo painel.';
+}
+
+
+/* ----- cartão do jogador (imagem para postar) ----- */
+var CARTAO_P=null;
+function carregarImg(src){
+ return new Promise(function(res){
+  if(!src)return res(null);
+  var i=new Image();i.crossOrigin='anonymous';
+  var t=setTimeout(function(){res(null)},4000);
+  i.onload=function(){clearTimeout(t);res(i)};i.onerror=function(){clearTimeout(t);res(null)};
+  i.src=src;
+ });
+}
+function gerarCartao(p,b){
+ var CBLUE='74,163,255',CRED='255,90,78',W=1080,H=1350,M=72,cs=getComputedStyle(document.documentElement);
+ var AC=(cs.getPropertyValue('--t')||'').trim()||'#ffc20e',ACR=(cs.getPropertyValue('--t-rgb')||'').trim()||'255,194,14';
+ var c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');
+ var fontes=[document.fonts.load('900 80px Overpass'),document.fonts.load('800 30px Overpass'),document.fonts.load('600 30px Overpass'),document.fonts.load('700 28px "Overpass Mono"')];
+ return Promise.all(fontes.map(function(p){return p.catch(function(){})})).then(function(){return carregarImg(p.avatar)}).then(function(av){
+  var D="Overpass,system-ui,sans-serif",MO="'Overpass Mono',monospace";
+  function rr(px,py,w,h,r){x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath()}
+  function txt(s,px,py,font,col,al){x.font=font;x.fillStyle=col;x.textAlign=al||'left';x.textBaseline='alphabetic';x.fillText(s,px,py)}
+  x.fillStyle='#0b0c0e';x.fillRect(0,0,W,H);
+  var g=x.createRadialGradient(0,0,0,0,0,900);g.addColorStop(0,'rgba('+ACR+',.32)');g.addColorStop(1,'rgba('+ACR+',0)');x.fillStyle=g;x.fillRect(0,0,W,H);
+  g=x.createRadialGradient(W,H,0,W,H,900);g.addColorStop(0,'rgba('+CBLUE+',.26)');g.addColorStop(1,'rgba('+CBLUE+',0)');x.fillStyle=g;x.fillRect(0,0,W,H);
+  // marca
+  rr(M,M,56,56,15);x.fillStyle=AC;x.fill();
+  x.strokeStyle='#141006';x.lineWidth=2.6;x.lineCap='round';x.beginPath();x.arc(M+28,M+28,10,0,6.283);x.stroke();
+  [[28,12,28,19],[28,37,28,44],[12,28,19,28],[37,28,44,28]].forEach(function(l){x.beginPath();x.moveTo(M+l[0],M+l[1]);x.lineTo(M+l[2],M+l[3]);x.stroke()});
+  txt('RANKO',M+74,M+40,'900 38px '+D,'#f4f4ef');
+  txt('CS2',W-M,M+38,'500 26px '+MO,'#9aa0ab','right');
+  // avatar + nome
+  var ay=190,as=190;
+  x.save();x.beginPath();x.arc(M+as/2,ay+as/2,as/2,0,6.283);x.clip();
+  if(av)x.drawImage(av,M,ay,as,as);else{x.fillStyle='#1b1f27';x.fillRect(M,ay,as,as);txt((p.apelido||'?').slice(0,2).toUpperCase(),M+as/2,ay+as/2+26,'900 72px '+D,'#f4f4ef','center')}
+  x.restore();
+  x.beginPath();x.arc(M+as/2,ay+as/2,as/2-2,0,6.283);x.lineWidth=5;x.strokeStyle=AC;x.stroke();
+  var nome=(p.apelido||'Jogador').toUpperCase(),fs=92,nx=M+as+40,maxw=W-M-nx;
+  while(fs>40){x.font='900 '+fs+'px '+D;if(x.measureText(nome).width<=maxw)break;fs-=4}
+  txt(nome,nx,ay+98,'900 '+fs+'px '+D,'#f4f4ef');
+  txt(((p.partidas_analisadas||0)+' PARTIDAS LIDAS'),nx,ay+148,'600 28px '+MO,'#9aa0ab');
+  // rating
+  var ry=470;
+  rr(M,ry,W-2*M,300,28);x.fillStyle='rgba(255,255,255,.05)';x.fill();x.lineWidth=2;x.strokeStyle='rgba(255,255,255,.16)';x.stroke();
+  txt('RATING HLTV',M+40,ry+64,'800 30px '+D,'#aab0bb');
+  txt(f(p.hltv,2),M+36,ry+236,'900 170px '+D,AC);
+  var kd=p.mortes?p.abates/p.mortes:null;
+  var tiles=[['K/D',kd!=null?f(kd,2):'-'],['VITÓRIAS',p.vitorias_pct!=null?Math.round(p.vitorias_pct*100)+'%':'-'],['ABATES',String(p.abates!=null?p.abates:'-')]];
+  tiles.forEach(function(t,i){
+   var yy=ry+112+i*76;
+   txt(t[0],620,yy,'700 24px '+MO,'#9aa0ab');txt(t[1],W-M-40,yy+8,'900 56px '+D,'#f4f4ef','right');
+  });
+  // notas
+  var by=ry+300+60;
+  txt('NOTAS DE 0 A 100',M,by,'800 28px '+D,'#aab0bb');
+  [['MIRA',p.mira],['UTILIDADE',p.utilidade],['POSIÇÃO',p.posicionamento]].forEach(function(b2,i){
+   var yy=by+46+i*64,v=b2[1]==null?null:Math.max(0,Math.min(100,b2[1]));
+   txt(b2[0],M,yy+22,'800 30px '+D,'#f4f4ef');
+   rr(M+250,yy,W-2*M-250-110,26,13);x.fillStyle='rgba(255,255,255,.10)';x.fill();
+   if(v!=null&&v>0){rr(M+250,yy,Math.max(26,(W-2*M-250-110)*v/100),26,13);x.fillStyle=AC;x.fill()}
+   txt(v==null?'-':String(Math.round(v)),W-M,yy+24,'900 38px '+D,'#f4f4ef','right');
+  });
+  // trollagem
+  var ty=by+46+3*64+28,z=p.zoeira||{};
+  rr(M,ty,W-2*M,140,22);x.fillStyle='rgba('+CRED+',.12)';x.fill();x.lineWidth=2;x.strokeStyle='rgba('+CRED+',.5)';x.stroke();
+  txt('RANKING DA TROLLAGEM',M+32,ty+46,'800 26px '+D,'#ff5a4e');
+  txt('Tiros em amigos por partida: '+(z.tiros_em_amigos_por_partida!=null?f(z.tiros_em_amigos_por_partida,1):'-'),M+32,ty+88,'600 28px '+D,'#f4f4ef');
+  txt('Amigos cegados por partida: '+(z.amigos_cegados_por_partida!=null?f(z.amigos_cegados_por_partida,1):'-'),M+32,ty+122,'600 28px '+D,'#f4f4ef');
+  // rodapé
+  txt(SITE.replace(/^https?:\/\//,''),W/2,H-40,'500 24px '+MO,'#7d8493','center');
+  return new Promise(function(res){c.toBlob(function(bl){res(bl)},'image/png')});
+ });
+}
+
+
+/* ----- histórico de partidas ----- */
+function nomeMapa(m){
+ if(!m)return 'Mapa não identificado';
+ var s=String(m).replace(/^(de|cs|ar)_/,'').replace(/_/g,' ');
+ return s.charAt(0).toUpperCase()+s.slice(1);
+}
+function dataBR(t){var d=new Date(t-3*3600*1000);return ('0'+d.getUTCDate()).slice(-2)+'/'+('0'+(d.getUTCMonth()+1)).slice(-2)}
+function carregarHist(id){
+ chamar('GET','/jogador/'+id+'/partidas').then(function(r){
+  var box=el('hist-sec');if(!box||!r.ok)return;
+  var L=(r.j&&r.j.partidas)||[];
+  if(!L.length){box.style.display='none';return}
+  box.innerHTML='<h4>Últimas partidas</h4><div class="hist-w"><table class="hist"><thead><tr><th>Mapa</th><th>Data</th><th>Resultado</th><th>K / D</th><th>ADR</th><th>HS</th></tr></thead><tbody>'
+   +L.map(function(m){
+    var res=m.w===1?'<span class="res v">Vitória</span>':m.w===0?'<span class="res d">Derrota</span>':'<span class="res">–</span>';
+    return '<tr><td>'+esc(nomeMapa(m.mapa))+'</td><td>'+dataBR(m.t)+'</td><td>'+res+'</td><td><b>'+m.k+'</b> / '+m.d+'</td><td>'+(m.adr==null?'–':f(m.adr,0))+'</td><td>'+(m.hs==null?'–':f(m.hs*100,0)+'%')+'</td></tr>';
+   }).join('')+'</tbody></table></div>';
+ });
+}
+
+/* ----- convite ----- */
+function telaConvite(cod,meu){
+ setCtx('Convite');
+ view('<div class="skeleton"></div>');
+ chamar('GET','/convite/'+encodeURIComponent(cod)).then(function(r){
+  if(meu!==TOK)return;
+  if(!r.ok){view(pagina('<h2>Convite <u>inválido</u></h2>','<p>'+esc(r.j.erro||'Esse convite não existe mais.')+' Peça um link novo para o dono do time.</p>'+(SES?'<a class="btn g" href="#/jogador/'+SES.sid+'">Ir para o meu perfil</a>':'')));return}
+  var c=r.j.cla,topo='<div class="cla-row" style="width:100%">'+claImg(c,'lg')+'<div><small style="margin:0 0 6px">VOCÊ FOI CONVIDADO PARA</small><div class="cn">'+esc(c.nome)+'</div><small>'+c.total+'/'+c.max+' MEMBROS</small></div></div>';
+  var corpo;
+  if(!SES)corpo='<p>Entre com a sua conta Steam para aceitar o convite. A senha nunca passa por aqui.</p>'+loginBtn('Entrar com a Steam e aceitar');
+  else if(ME&&ME.cla)corpo='<p>Você já está no time <b>'+esc(ME.cla.nome)+'</b>. Cada jogador fica em um time só: saia dele no seu perfil para aceitar este convite.</p><a class="btn g" href="#/jogador/'+SES.sid+'">Ir para o meu perfil</a>';
+  else if(c.cheio)corpo='<p>Este time já está cheio ('+c.max+' membros).</p>';
+  else corpo='<p>Ao entrar, o seu perfil e os seus números passam a aparecer no painel do time.</p><button class="btn y" type="button" data-acao="aceitar" data-cod="'+esc(cod)+'">Entrar no time</button><p class="msg" id="msg-conv"></p>';
+  view(pagina('<h2>Convite <u>para o time</u></h2>',topo+corpo));
+ });
+}
+
+/* ----- criar time ----- */
+function telaCriar(){
+ setCtx('Criar time');
+ if(!SES){view(pagina('<h2>Criar <u>time</u></h2>','<p>Entre com a Steam para criar o seu time.</p>'+loginBtn()));return}
+ if(ME&&ME.cla){view(pagina('<h2>Você já tem <u>time</u></h2>','<p>Cada jogador fica em um time só. Para criar outro, saia do time <b>'+esc(ME.cla.nome)+'</b> primeiro, no seu perfil.</p><a class="btn g" href="#/jogador/'+SES.sid+'">Ir para o meu perfil</a>'));return}
+ view(pagina('<h2>Criar <u>time</u></h2>','<p>Escolha um nome. Depois você pode trocar o nome, colocar uma imagem e gerar o link de convite (até 30 membros).</p><div class="campo"><label for="novo-nome">Nome do time</label><input id="novo-nome" type="text" maxlength="30" placeholder="Ex.: Galera do CS" autocomplete="off"></div><button class="btn y" type="button" data-acao="criar">Criar time</button><p class="msg" id="msg-criar"></p>'));
+ var i=el('novo-nome');if(i)i.focus();
+}
+
+/* ---------- opções do time (só o dono) ---------- */
+function abrirOpcoes(aba){
+ if(!ME||!ME.cla||!ME.cla.eu_sou_dono)return;
+ OPC={aba:aba||'geral',membros:null};
+ renderOpc();
+ var d=el('opcoes');lastFocus=document.activeElement;
+ d.classList.add('on');d.setAttribute('aria-hidden','false');el('shade').classList.add('on');document.body.classList.add('lock');
+ carregarMembros();
+}
+function carregarMembros(){
+ if(!ME||!ME.cla)return Promise.resolve();
+ return chamar('GET','/cla/'+encodeURIComponent(ME.cla.slug)).then(function(r){if(r.ok&&OPC){OPC.membros=r.j.membros||[];renderOpc()}});
+}
+function renderOpc(){
+ var c=ME&&ME.cla;if(!c||!OPC)return;
+ var a=OPC.aba,corpo='';
+ if(a==='geral'){
+  corpo='<h4>Nome do time</h4><div class="campo"><input id="o-nome" type="text" maxlength="30" value="'+esc(c.nome)+'" aria-label="Nome do time"></div><button class="btn y sm" type="button" data-acao="salvar-nome">Salvar nome</button>'
+   +'<h4>Imagem do time</h4><div class="img-row">'+claImg(c,'lg')+'<div style="display:grid;gap:8px"><label class="btn g sm" for="o-img" style="cursor:pointer">Escolher imagem</label><input id="o-img" type="file" accept="image/*" style="display:none">'+(c.imagem?'<button class="btn g sm" type="button" data-acao="tirar-img">Remover imagem</button>':'')+'</div></div>'
+   +'<p class="note">A imagem é cortada em quadrado e reduzida automaticamente.</p>'
+   +'<div class="perigo"><h4>Zona de perigo</h4>'
+   +(c.total>1?'<p class="note" style="margin:0">Você é o dono, então só pode sair depois de passar a posse para outro membro (aba Membros).</p>':'<p class="note" style="margin:0 0 12px">Você é o único membro. Se sair, o time deixa de existir.</p><button class="btn red sm" type="button" data-acao="sair-cla">Sair e desfazer o time</button>')
+   +'</div>';
+ }else if(a==='convite'){
+  corpo='<h4>Link de convite</h4><div class="link-box"><input id="o-link" type="text" readonly value="'+esc(SITE+'#/convite/'+(c.convite||''))+'" aria-label="Link de convite"><button class="btn y sm" type="button" data-acao="copiar">Copiar</button></div>'
+   +'<h4 style="margin-top:22px">Mensagem pronta para WhatsApp</h4><textarea id="o-msg" class="msg-pronta" readonly rows="10" aria-label="Mensagem pronta para os amigos">'+esc(mensagemConvite(c))+'</textarea><div style="margin-top:8px"><button class="btn y sm" type="button" data-acao="copiar-msg">Copiar mensagem</button></div>'
+   +'<p class="note">Quem abrir o link entra no time depois de fazer login com a Steam. Se o link vazar, gere outro: o antigo para de funcionar.</p>'
+   +'<div style="margin-top:14px"><button class="btn g sm" type="button" data-acao="renovar">Gerar novo link</button></div>';
+ }else{
+  var L=OPC.membros;
+  corpo='<h4>Membros ('+c.total+'/'+c.max+')</h4>'+(!L?'<div class="skeleton" style="height:120px"></div>':L.map(function(m){
+   var p=membroDados(m),eu=SES&&m.steam64===SES.sid;
+   return '<div class="mrow">'+av(p)+'<div class="nm">'+esc(p.apelido)+(eu?' <span class="tagx" style="margin:0 0 0 6px">VOCÊ</span>':'')+'</div>'
+    +(eu?'<span class="tagx" style="margin:0">DONO</span>':'<div class="bt"><button class="btn g sm" type="button" data-acao="posse" data-id="'+m.steam64+'">Passar posse</button><button class="btn red sm" type="button" data-acao="expulsar" data-id="'+m.steam64+'">Expulsar</button></div>')+'</div>'}).join(''));
+ }
+ el('opcoes').innerHTML='<div class="dr-hero"><button class="dr-x" aria-label="Fechar">'+ic('<path d="M6 6l12 12M18 6L6 18"/>')+'</button><div class="dr-id">'+claImg(c,'lg')+'<div><h3>'+esc(c.nome)+'</h3><div class="dr-tags"><span class="tagx">OPÇÕES DO TIME</span><span class="tagx">'+c.total+'/'+c.max+' MEMBROS</span></div></div></div></div>'
+  +'<div class="opc-tabs" role="tablist">'+[['geral','Geral'],['convite','Convite'],['membros','Membros']].map(function(x){return '<button type="button" role="tab" data-acao="aba" data-aba="'+x[0]+'" class="'+(x[0]===a?'on':'')+'" aria-selected="'+(x[0]===a)+'">'+x[1]+'</button>'}).join('')+'</div>'
+  +'<div class="opc-body">'+corpo+'<p class="msg'+(OPC.msg?(OPC.msg[1]?' ok':' err'):'')+'" id="msg-opc">'+(OPC.msg?esc(OPC.msg[0]):'')+'</p></div>';
+}
+function lerImagem(file){
+ return new Promise(function(res,rej){
+  var url=URL.createObjectURL(file),im=new Image();
+  im.onload=function(){
+   URL.revokeObjectURL(url);
+   var tam=[256,192,128],fm=['image/webp','image/jpeg'],qs=[.85,.7,.55,.4];
+   for(var a=0;a<tam.length;a++)for(var b=0;b<fm.length;b++)for(var q=0;q<qs.length;q++){
+    var t=tam[a],c=document.createElement('canvas');c.width=c.height=t;
+    var x=c.getContext('2d'),s=Math.min(im.width,im.height),sx=(im.width-s)/2,sy=(im.height-s)/2;
+    x.fillStyle='#0d1118';x.fillRect(0,0,t,t);x.drawImage(im,sx,sy,s,s,0,0,t,t);
+    var d=c.toDataURL(fm[b],qs[q]);
+    if(d.indexOf('data:'+fm[b])===0&&d.length<=88000){res(d);return}
+   }
+   rej(new Error('Não consegui reduzir essa imagem. Tente outra.'));
+  };
+  im.onerror=function(){rej(new Error('Não consegui ler esse arquivo como imagem.'))};
+  im.src=url;
+ });
+}
+function copiar(txt,inp){
+ function fallback(){inp.select();try{document.execCommand('copy')}catch(e){}}
+ if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(txt).catch(fallback);
+ fallback();return Promise.resolve();
+}
+function depoisDeMudar(){ /* atualiza ME, a lista e a página aberta por baixo */
+ return refazerEu().then(function(){
+  if(!ME||!ME.cla||!ME.cla.eu_sou_dono){fecharTudo();rotear(true);return}
+  renderOpc();
+  if(ROTA.t==='cla'||ROTA.t==='jogador')rotear(true);
+  return carregarMembros();
+ });
+}
+
+/* ---------- ações (um só ouvinte para tudo) ---------- */
+function irParaConvite(txt){
+ txt=String(txt||'').trim();
+ var m=/#\/convite\/([A-Za-z0-9]+)/.exec(txt)||/^([A-Za-z0-9]{8,20})$/.exec(txt);
+ if(!m){dizer('msg-cla','Cole o link de convite inteiro (ou só o código).',false);return}
+ location.hash='#/convite/'+m[1];
+}
+document.addEventListener('click',function(e){
+ if(e.target.id==='sair'){sairConta();return}
+ var lg=e.target.closest('a.js-login,#entrar,#gate-go');
+ if(lg){try{localStorage.setItem('painel_volta',ROTA.t==='home'?'#/':(location.hash||'#/'))}catch(x){}return}
+ var s=e.target.closest('[data-sec]');
+ if(s){
+  var id=s.getAttribute('data-sec');
+  if(ROTA.t==='cla'){e.preventDefault();trava=id;setActive(id,s);var alvo=el(id);if(alvo)alvo.scrollIntoView({behavior:'smooth',block:'start'})}
+  return;
+ }
+ var b=e.target.closest('[data-acao]');if(!b)return;
+ var ac=b.getAttribute('data-acao');
+ if(ac==='periodo'){PER=b.getAttribute('data-v');posInit();return}
+ if(ac==='abrir-opcoes'){abrirOpcoes(b.getAttribute('data-aba')||'geral');return}
+ if(ac==='aba'){OPC.aba=b.getAttribute('data-aba');OPC.msg=null;renderOpc();return}
+ if(ac==='entrar-codigo'){irParaConvite((el('cod')||{}).value);return}
+ if(ac==='copiar-msg'){var m=el('o-msg');copiar(m.value,m).then(function(){dizer('msg-opc','Mensagem copiada. Cole no WhatsApp.',true)});return}
+ if(ac==='copiar'){var i=el('o-link');copiar(i.value,i).then(function(){dizer('msg-opc','Link copiado.',true)});return}
+ if(ac==='criar'){
+  b.disabled=true;dizer('msg-criar','Criando…',true);
+  chamar('POST','/cla',{nome:(el('novo-nome')||{}).value},true).then(function(r){
+   if(!r.ok){b.disabled=false;dizer('msg-criar',r.j.erro||'Não consegui criar o time.',false);return}
+   refazerEu().then(function(){location.hash='#/cla/'+r.j.slug});
+  });return;
+ }
+ if(ac==='aceitar'){
+  b.disabled=true;dizer('msg-conv','Entrando…',true);
+  chamar('POST','/entrar',{codigo:b.getAttribute('data-cod')},true).then(function(r){
+   if(!r.ok){b.disabled=false;dizer('msg-conv',r.j.erro||'Não consegui entrar no time.',false);return}
+   refazerEu().then(function(){location.hash='#/cla/'+r.j.slug});
+  });return;
+ }
+
+ if(ac==='fonte-ligar'){
+  b.disabled=true;dizer('msg-fonte','Ligando…',true);
+  chamar('POST','/eu/fonte',{codigo_auth:(el('f-auth')||{}).value,codigo_partida:(el('f-part')||{}).value},true).then(function(r){
+   if(!r.ok){b.disabled=false;dizer('msg-fonte',r.j.erro||'Não consegui ligar agora.',false);return}
+   carregarFonte();
+  });return;
+ }
+ if(ac==='fonte-desligar'){
+  if(!armar(b,'Apagar tudo e desligar?'))return;
+  b.disabled=true;
+  chamar('POST','/eu/fonte/remover',{},true).then(function(r){b.disabled=false;if(!r.ok){dizer('msg-fonte',r.j.erro||'Não consegui desligar agora.',false);return}location.hash='#/jogador/'+SES.sid;carregarFonte()});return;
+ }
+
+ if(ac==='cartao'){
+  b.disabled=true;dizer('msg-cartao','Gerando…',true);
+  gerarCartao(CARTAO_P,b).then(function(bl){
+   b.disabled=false;
+   if(!bl){dizer('msg-cartao','Não consegui gerar a imagem neste navegador.',false);return}
+   var u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download='ranko-'+String(CARTAO_P.apelido||'jogador').toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);
+   dizer('msg-cartao','Imagem salva.',true);
+  }).catch(function(){b.disabled=false;dizer('msg-cartao','Não consegui gerar a imagem neste navegador.',false)});
+  return;
+ }
+ if(ac==='sair-cla'){
+  var dono=ME&&ME.cla&&ME.cla.eu_sou_dono;
+  if(!armar(b,dono?'Desfazer o time?':'Confirmar saída?'))return;
+  b.disabled=true;
+  chamar('POST','/sair',{},true).then(function(r){
+   if(!r.ok){b.disabled=false;dizer(el('msg-opc')?'msg-opc':'msg-cla',r.j.erro||'Não consegui sair do time.',false);return}
+   fecharTudo();refazerEu().then(function(){var al='#/jogador/'+(SES?SES.sid:'');if(location.hash===al)rotear();else location.hash=al});
+  });return;
+ }
+ if(ac==='salvar-nome'){
+  b.disabled=true;
+  chamar('POST','/cla/opcoes',{nome:el('o-nome').value},true).then(function(r){
+   b.disabled=false;
+   if(!r.ok){dizer('msg-opc',r.j.erro||'Não consegui salvar.',false);return}
+   depoisDeMudar().then(function(){dizer('msg-opc','Nome salvo.',true)});
+  });return;
+ }
+ if(ac==='tirar-img'){
+  chamar('POST','/cla/opcoes',{imagem:null},true).then(function(r){
+   if(!r.ok){dizer('msg-opc',r.j.erro||'Não consegui remover.',false);return}
+   depoisDeMudar().then(function(){dizer('msg-opc','Imagem removida.',true)});
+  });return;
+ }
+ if(ac==='renovar'){
+  if(!armar(b,'Isso invalida o link atual. Confirmar?'))return;
+  chamar('POST','/cla/convite/renovar',{},true).then(function(r){
+   if(!r.ok){dizer('msg-opc',r.j.erro||'Não consegui gerar o link.',false);return}
+   refazerEu().then(function(){renderOpc();dizer('msg-opc','Novo link gerado. O antigo parou de funcionar.',true)});
+  });return;
+ }
+ if(ac==='expulsar'||ac==='posse'){
+  if(!armar(b,ac==='posse'?'Passar a posse?':'Expulsar?'))return;
+  b.disabled=true;
+  chamar('POST',ac==='posse'?'/cla/posse':'/cla/expulsar',{steam64:b.getAttribute('data-id')},true).then(function(r){
+   if(!r.ok){b.disabled=false;dizer('msg-opc',r.j.erro||'Não consegui fazer isso.',false);return}
+   depoisDeMudar().then(function(){if(ME&&ME.cla&&ME.cla.eu_sou_dono)dizer('msg-opc',ac==='posse'?'Posse passada.':'Membro removido.',true)});
+  });return;
+ }
+});
+document.addEventListener('change',function(e){
+ if(e.target.id!=='o-img'||!e.target.files[0])return;
+ var f0=e.target.files[0];dizer('msg-opc','Processando a imagem…',true);
+ lerImagem(f0).then(function(d){
+  return chamar('POST','/cla/opcoes',{imagem:d},true).then(function(r){
+   if(!r.ok)throw new Error(r.j.erro||'Não consegui enviar a imagem.');
+   return depoisDeMudar().then(function(){dizer('msg-opc','Imagem atualizada.',true)});
+  });
+ }).catch(function(err){dizer('msg-opc',err.message,false)});
+});
+document.addEventListener('keydown',function(e){
+ if(e.key==='Enter'){
+  if(e.target.id==='novo-nome'){var b=document.querySelector('[data-acao="criar"]');if(b)b.click()}
+  if(e.target.id==='cod'){irParaConvite(e.target.value)}
+ }
+});
+
+/* ---------- fechar painéis ---------- */
+function closeProfile(){
+ ['drawer','opcoes'].forEach(function(id){var d=el(id);if(d){d.classList.remove('on');d.setAttribute('aria-hidden','true')}});
+ el('shade').classList.remove('on');document.body.classList.remove('lock');
+ if(lastFocus&&lastFocus.focus&&document.contains(lastFocus))lastFocus.focus();
+}
+
+/* busca: filtra o ranking e leva você até ele */
+var qi=el('q');
+qi.addEventListener('input',function(){
+ if(!el('rows'))return;
+ var v=qi.value.trim().toLowerCase();drawRows(v);
+ if(v){var r=el('ranking'),t=r.getBoundingClientRect().top;if(t<0||t>window.innerHeight*0.6)r.scrollIntoView({behavior:'smooth',block:'start'})}
+});
+function erro(m){var r=el('rows');if(r)r.innerHTML='<tr><td colspan="9" class="note">'+esc(m)+'</td></tr>';else view(pagina('<h2>Algo <u>deu errado</u></h2>','<p>'+esc(m)+'</p>'));console.error(m)}
+
+/* ---------- partida ---------- */
+el('gate-skip').addEventListener('click',function(){fecharGate();location.hash='#/cla/'+CLA_PADRAO});
+window.addEventListener('hashchange',function(){fecharGate();rotear()});
+(function boot(){
+ if(!WORKER){view(pagina('<h2>Sem <u>servidor</u></h2>','<p>O endereço do servidor não está configurado no index.html.</p>'));return}
+ CLA_TPL=el('cla-tpl').innerHTML;el('cla-tpl').remove();
+ (SES?chamar('GET','/eu',undefined,true).then(function(r){
+   if(r.status===401){try{localStorage.removeItem('painel_token')}catch(e){}SES=null}
+   else if(r.ok)ME=r.j;
+ }):Promise.resolve()).then(function(){desenharChrome();rotear()});
+})();
+
+document.addEventListener('keydown',function(e){
+ if(e.key!=='Tab')return;
+ var d=el('opcoes').classList.contains('on')?el('opcoes'):(el('drawer').classList.contains('on')?el('drawer'):null);
+ if(!d)return;
+ var f=[].slice.call(d.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),[tabindex="0"]')).filter(function(x){return x.offsetParent!==null});
+ if(!f.length)return;
+ var a=f[0],z=f[f.length-1];
+ if(!d.contains(document.activeElement)){e.preventDefault();a.focus()}
+ else if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}
+ else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}
+});
+
+</script>
+</body>
+</html>
