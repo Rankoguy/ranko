@@ -123,7 +123,7 @@ function estatisticas(arquivo, ids) {
   const fins = parseEvent(arquivo, 'round_end');
   const rounds = fins.length;
   if (!rounds) throw new Error('demo sem rodadas');
-  const S = new Map(ids.map((id) => [id, { r: rounds, k: 0, d: 0, a: 0, hs: 0, dmg: 0, m1: 0, m2: 0, m3: 0, m4: 0, m5: 0, ff: 0, fa: 0, fl: 0, fas: 0, he: 0, ot: 0, og: 0, um: null, w: null, _r: {}, _n: 0, _u: 0 }]));
+  const S = new Map(ids.map((id) => [id, { r: rounds, k: 0, d: 0, a: 0, hs: 0, dmg: 0, m1: 0, m2: 0, m3: 0, m4: 0, m5: 0, ff: 0, fa: 0, fl: 0, fas: 0, he: 0, ot: 0, og: 0, um: null, w: null, awp: 0, sm: 0, eb: 0, tk: 0, ud: 0, v2: 1, _r: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
   for (const e of ordenadas) {
@@ -141,24 +141,45 @@ function estatisticas(arquivo, ids) {
     const a = S.get(String(e.attacker_steamid));
     if (a && e.attacker_steamid !== e.user_steamid && e.attacker_team_num !== e.user_team_num) {
       a.k++; if (e.headshot) a.hs++;
+      if (/awp/i.test(String(e.weapon))) a.awp++; // abates com a AWP (ajuda a sugerir a função)
       const rd = e.total_rounds_played ?? 0; a._r[rd] = (a._r[rd] || 0) + 1;
     }
     const as = S.get(String(e.assister_steamid));
     if (as && e.assister_steamid !== e.user_steamid && e.assister_team_num !== e.user_team_num) { as.a++; if (e.assistedflash) as.fas++; }
   }
+  // troca (trade): matar, em até 5 segundos, quem acabou de matar um colega seu
+  const JANELA = 5 * 64; // 5 s a 64 ticks
+  for (let i = 0; i < ordenadas.length; i++) {
+    const e2 = ordenadas[i];
+    const a = S.get(String(e2.attacker_steamid));
+    if (!a || e2.attacker_steamid === e2.user_steamid || e2.attacker_team_num === e2.user_team_num) continue;
+    for (let j = i - 1; j >= 0 && (e2.tick || 0) - (ordenadas[j].tick || 0) <= JANELA; j--) {
+      const e1 = ordenadas[j];
+      if ((e1.total_rounds_played ?? 0) !== (e2.total_rounds_played ?? 0)) break;
+      if (String(e1.attacker_steamid) === String(e2.user_steamid) && e1.user_team_num === e2.attacker_team_num && e1.user_steamid !== e2.attacker_steamid) { a.tk++; break; }
+    }
+  }
   for (const e of danos) {
     const a = S.get(String(e.attacker_steamid));
     if (!a || e.attacker_steamid === e.user_steamid) continue;
     if (e.attacker_team_num === e.user_team_num) { a.ff++; if (String(e.weapon).includes('hegrenade')) a.he += e.dmg_health || 0; }
-    else a.dmg += e.dmg_health || 0;
+    else {
+      a.dmg += e.dmg_health || 0;
+      if (/hegrenade|inferno|molotov|incgrenade/.test(String(e.weapon))) a.ud += e.dmg_health || 0; // dano de granada nos inimigos
+    }
   }
   for (const e of cegos) {
     const a = S.get(String(e.attacker_steamid));
-    if (a && e.attacker_steamid !== e.user_steamid && e.attacker_team_num === e.user_team_num) a.fa++;
+    if (!a || e.attacker_steamid === e.user_steamid) continue;
+    if (e.attacker_team_num === e.user_team_num) a.fa++;
+    else if ((e.blind_duration || 0) >= 1.5) a.eb++; // inimigo realmente cegado (mais de 1,5 s)
   }
   // flashes lançadas
   try {
     for (const e of parseEvent(arquivo, 'flashbang_detonate')) { const a = S.get(String(e.user_steamid)); if (a) a.fl++; }
+  } catch { /* sem o dado, o item fica de fora */ }
+  try {
+    for (const e of parseEvent(arquivo, 'smokegrenade_detonate')) { const a = S.get(String(e.user_steamid)); if (a) a.sm++; }
   } catch { /* sem o dado, o item fica de fora */ }
   // vitória: time de cada jogador no fim de cada rodada contra o vencedor da rodada
   try {
@@ -183,7 +204,7 @@ function estatisticas(arquivo, ids) {
     if (!s.k && !s.d && !s.dmg) continue; // não estava nessa partida
     for (const k of Object.values(s._r)) { const n = Math.min(k, 5); s['m' + n]++; }
     delete s._r; delete s._n; delete s._u;
-    s.dmg = Math.round(s.dmg); s.he = Math.round(s.he); s.mapa = mapa;
+    s.dmg = Math.round(s.dmg); s.he = Math.round(s.he); s.ud = Math.round(s.ud); s.mapa = mapa;
     saida[id] = s;
   }
   return saida;
