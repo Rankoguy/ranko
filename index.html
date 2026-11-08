@@ -479,7 +479,7 @@ body.lock-gate{overflow:hidden}
   background:radial-gradient(900px 600px at 15% 0%,rgba(var(--t-rgb),.18),transparent 65%),radial-gradient(800px 600px at 100% 100%,rgba(var(--ct-rgb),.12),transparent 65%),var(--bg)}
 .gate.on{display:grid}
 .gate-box{width:min(600px,100%);display:grid;gap:24px;justify-items:start}
-.gate h1{margin:0;font:800 clamp(52px,8vw,96px)/.95 var(--disp);letter-spacing:-.045em}
+.gate h1{margin:0;font:800 clamp(52px,8vw,96px)/1.06 var(--disp);letter-spacing:-.045em}
 .gate h1 em{display:block;font-style:normal;color:var(--t)}
 .gate p{margin:0;max-width:46ch;color:#d3d4d8;font-size:18px;line-height:1.55}
 .gate small{max-width:56ch;color:var(--muted);font-size:14px;line-height:1.55}
@@ -1423,6 +1423,8 @@ function gerarCartao(p,b){
 /* ----- histórico de partidas ----- */
 function nomeMapa(m){
  if(!m)return 'Mapa não identificado';
+ var k=String(m).toLowerCase().replace(/^.*\//,'').replace(/^(de|cs|ar)_/,'').replace(/[^a-z0-9]/g,'');
+ for(var i=0;i<MAPAS.length;i++)if(MAPAS[i][0]===k)return MAPAS[i][1];
  var s=String(m).replace(/^(de|cs|ar)_/,'').replace(/_/g,' ');
  return s.charAt(0).toUpperCase()+s.slice(1);
 }
