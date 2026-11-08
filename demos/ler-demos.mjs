@@ -19,7 +19,7 @@ const STEAM_API_KEY = env('STEAM_API_KEY');
 const REFRESH = env('STEAM_REFRESH_TOKEN');
 const WORKER = env('WORKER_URL').replace(/\/$/, '');
 const ROBO = env('ROBO_SECRET');
-const POR_PESSOA = Number(process.env.MAX_POR_PESSOA || 6);     // partidas novas por pessoa a cada execução
+const POR_PESSOA = Number(process.env.MAX_POR_PESSOA || 10);     // partidas novas por pessoa a cada execução
 const LIMITE_MIN = Number(process.env.LIMITE_MINUTOS || 40);     // para antes de estourar o tempo do GitHub
 const inicio = Date.now();
 const log = (...a) => console.log(...a);
@@ -50,7 +50,8 @@ async function proximoCodigo(f, conhecido) {
 const pessoas = []; // { f, fila:[codigo...], erro }
 for (const f of fontes) {
   const p = { f, fila: [], erro: null };
-  if (process.env.INCLUIR_INICIAL === 'sim') p.fila.push(f.ultimo_codigo); // teste: lê também a partida do código colado
+  // na primeira leitura de cada pessoa, entra também a partida do próprio código colado (é o começo do histórico)
+  if (f.primeira || process.env.INCLUIR_INICIAL === 'sim') p.fila.push(f.ultimo_codigo);
   try {
     let atual = f.ultimo_codigo;
     while (p.fila.length < POR_PESSOA) {
