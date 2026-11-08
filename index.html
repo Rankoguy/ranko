@@ -788,6 +788,12 @@ tr.top1 td{background:rgba(var(--t-rgb),.09)}
 .comp-c.vz b{color:var(--muted);font-weight:500}
 .avisos-c{margin:12px 0 0;padding-left:18px;color:var(--gold);font:500 14px var(--body);display:grid;gap:4px}
 @media(max-width:640px){.func-grid{grid-template-columns:1fr}}
+
+.fonte-sec textarea,.campo textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--text);font:500 14px var(--mono);outline:none;width:100%;resize:vertical}
+.fonte-sec textarea:focus{border-color:var(--t)}
+.mais-f{margin:0 0 14px;border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.mais-f summary{cursor:pointer;font:600 13px var(--body);color:var(--muted)}
+.mais-f[open] summary{margin-bottom:10px}
 </style>
 <meta name="theme-color" content="#e6af0c">
 <script>(function(){
@@ -1451,7 +1457,7 @@ function montarPerfil(j,p,propria,grupo){
   if(c&&c.kd!=null)k.push('<div><b>'+f(c.kd,2)+'</b><span>K/D de carreira</span></div>');
   if(c&&c.headshot_pct!=null)k.push('<div><b>'+f(c.headshot_pct,0)+'%</b><span>headshots</span></div>');
   corpo='<div class="dr-sec" style="padding-bottom:26px">'+(k.length?'<div class="sc-k" style="margin-bottom:14px">'+k.join('')+'</div>':'')
-   +'<p class="note" style="margin:0 0 14px">'+(propria?'Faltam dados para montar o seu perfil de jogo. Ligue a leitura das suas partidas logo abaixo e, depois de jogar algumas, os seus números aparecem aqui.':'Esse jogador ainda não tem dados de partidas, então só aparecem os totais da Steam.')+'</p>'
+   +'<p class="note" style="margin:0 0 14px">'+(propria?'Os seus números aparecem aqui assim que o robô ler as suas partidas (até 2 horas depois de ligar). Ligue logo abaixo e já puxamos as últimas partidas que a Steam ainda guarda.':'Esse jogador ainda não ligou a leitura das partidas, então ainda não há números.')+'</p>'
    +'</div>';
  }else corpo='<div class="dr-sec" style="padding-bottom:6px"><p class="note" style="margin:0">'+(propria?'Ainda não temos partidas suas. Ligue a leitura logo abaixo para começar: leva 2 minutos, uma vez só.':'Esse jogador ainda não ligou a leitura das partidas, então não há números dele por aqui.')+'</p></div>';
  var claSec=(propria&&!(ME&&ME.cla))?'<div class="cla-sec" id="clasec">'+claCardHtml()+'</div>':'';
@@ -1490,11 +1496,15 @@ function carregarFonte(){
    return;
   }
   box.innerHTML='<h4>Ligar minhas partidas</h4><p class="note" style="margin:0 0 12px">O painel lê as suas partidas direto do CS2 e calcula tudo sozinho. Você faz isso uma única vez:</p>'
-   +'<ol class="passos"><li>Abra <a href="'+LINK_CODIGOS+'" target="_blank" rel="noopener">esta página da Steam</a> e entre na sua conta.</li><li>Copie o <b>código de autenticação</b> e o <b>código da sua partida mais recente</b>.</li><li>Cole os dois aqui embaixo.</li></ol>'
+   +'<ol class="passos"><li>Abra <a href="'+LINK_CODIGOS+'" target="_blank" rel="noopener">esta página da Steam</a> e entre na sua conta.</li><li>Na página, aperte <b>Ctrl+A</b> e depois <b>Ctrl+C</b> (no celular, selecione tudo e copie).</li><li>Cole aqui embaixo e clique em <b>Ligar</b>. O painel acha os dois códigos sozinho.</li></ol>'
+   +'<div class="campo"><label for="f-tudo">Cole aqui o que você copiou da página da Steam</label><textarea id="f-tudo" rows="3" placeholder="Cole aqui (Ctrl+V)" autocomplete="off" spellcheck="false"></textarea></div>'
+   +'<details class="mais-f"><summary>Prefiro colar os códigos um por um</summary>'
    +'<div class="campo"><label for="f-auth">Código de autenticação</label><input id="f-auth" type="text" placeholder="XXXX-XXXXX-XXXX" autocomplete="off" spellcheck="false"></div>'
-   +'<div class="campo"><label for="f-part">Código da partida mais recente</label><input id="f-part" type="text" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" autocomplete="off" spellcheck="false"></div>'
+   +'<div class="campo"><label for="f-part">Código da partida mais recente</label><input id="f-part" type="text" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" autocomplete="off" spellcheck="false"></div></details>'
+   +'<details class="mais-f"><summary>Opcional: puxar também as partidas anteriores (até 8)</summary><p class="note" style="margin:10px 0">No CS2, abra <b>Assistir</b>, depois <b>Suas partidas</b>, escolha a partida <b>mais antiga</b> da lista e copie o código de compartilhamento dela. Se preferir, deixe em branco: o painel começa da partida mais recente e segue a partir daí. Você pode voltar aqui e fazer isso depois.</p>'
+   +'<div class="campo"><label for="f-hist">Código da partida mais antiga da lista</label><input id="f-hist" type="text" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" autocomplete="off" spellcheck="false"></div></details>'
    +'<button class="btn y" type="button" data-acao="fonte-ligar">Ligar</button><p class="msg" id="msg-fonte"></p>'
-   +'<p class="note">Só guardamos números (abates, mortes, flashes…), nunca a demo. Vale só para partidas a partir do código que você colar, e a Steam guarda as demos por cerca de 30 dias. Você desliga e apaga tudo quando quiser.</p>';
+   +'<p class="note">Só guardamos números (abates, mortes, flashes…), nunca a demo. A Steam só guarda as últimas 8 partidas, por cerca de 30 dias: é o máximo de histórico que existe para qualquer site. Depois de ligar, o painel lê cada partida nova sozinho. Você desliga e apaga tudo quando quiser.</p>';
  });
 }
 
@@ -1514,7 +1524,7 @@ function telaCla(slug,meu){
    +(meuCla&&!dono?'<button class="btn red sm" type="button" data-acao="sair-cla">Sair do time</button>':'')
    +'</div></div><p class="msg" id="msg-cla" style="margin:0"></p>';
   var eu1=SES&&(r.j.membros||[]).filter(function(m){return m.steam64===SES.sid})[0];
-  var avisoLigar=(eu1&&membroDados(eu1).hltv==null)?'<div class="aviso-ligar"><div><b>Os seus números ainda não aparecem aqui.</b><p>Ligue a leitura das suas partidas: leva 2 minutos, uma vez só. Só contam as partidas jogadas depois de ligar, então quanto antes, melhor.</p></div><a class="btn y sm" href="#/jogador/'+SES.sid+'">Ligar minhas partidas</a></div>':'';
+  var avisoLigar=(eu1&&membroDados(eu1).hltv==null)?'<div class="aviso-ligar"><div><b>Os seus números ainda não aparecem aqui.</b><p>Ligue a leitura das suas partidas: leva 2 minutos, uma vez só, e já puxamos as últimas partidas que a Steam ainda guarda (até 8).</p></div><a class="btn y sm" href="#/jogador/'+SES.sid+'">Ligar minhas partidas</a></div>':'';
   view(bar+avisoLigar+CLA_TPL);
   var psec=el('partidas');if(psec)psec.insertAdjacentHTML('beforebegin','<section id="mapas"></section>');
   document.title=c.nome+' — Ranko';
@@ -1550,12 +1560,12 @@ function glossario(){
   +'<dt>Mira, Utilidade e Posicionamento</dt><dd>Notas de 0 a 100 calculadas pelo painel a partir das suas partidas: pontaria (dano por rodada e headshots), uso de flashes e posição (quanto você sobrevive).</dd>'
   +'<dt>Estrelas (Estrelinha)</dt><dd>Quantas vezes o jogador foi o MVP da rodada.</dd>'
   +'<dt>Abertura de rodada</dt><dd>Porcentagem dos primeiros duelos da rodada que você ganhou. Clutch ainda não é calculado.</dd>'
-  +'<dt>Pontos de trollagem</dt><dd>Em cada categoria da trollagem, o pior da galera ganha mais pontos. Quem soma mais é o maior troll.</dd><dt>De onde vêm os dados</dt><dd>O painel lê as suas próprias partidas de Premier e competitivo direto do CS2. Para aparecer no ranking, ligue a leitura no seu perfil (“Ligar minhas partidas”). Só contam as partidas jogadas depois de ligar.</dd></dl></details>';
+  +'<dt>Pontos de trollagem</dt><dd>Em cada categoria da trollagem, o pior da galera ganha mais pontos. Quem soma mais é o maior troll.</dd><dt>De onde vêm os dados</dt><dd>O painel lê as suas próprias partidas de Premier e competitivo direto do CS2. Para aparecer no ranking, ligue a leitura no seu perfil (“Ligar minhas partidas”). Já puxa as últimas partidas que a Steam ainda guarda (até 8, dos últimos 30 dias) e depois lê cada partida nova sozinho.</dd></dl></details>';
 }
 
 
 function mensagemConvite(c){
- return 'Entra no painel de CS2 da nossa galera ('+c.nome+')!\n\n1) Abra o link e entre com a Steam:\n'+SITE+'#/convite/'+(c.convite||'')+'\n\n2) No seu perfil, em "Ligar minhas partidas", cole os dois códigos que a Steam mostra (o próprio perfil explica onde pegar). Leva 2 minutos.\n\nSó contam as partidas jogadas depois de ligar, então quanto antes, melhor. A senha da Steam nunca passa pelo painel.';
+ return 'Entra no painel de CS2 da nossa galera ('+c.nome+')!\n\n1) Abra o link e entre com a Steam:\n'+SITE+'#/convite/'+(c.convite||'')+'\n\n2) No seu perfil, em "Ligar minhas partidas", cole os dois códigos que a Steam mostra (o próprio perfil explica onde pegar). Leva 2 minutos e já puxa as suas últimas partidas (até 8, dos últimos 30 dias).\n\nA senha da Steam nunca passa pelo painel.';
 }
 
 
@@ -1793,7 +1803,11 @@ document.addEventListener('click',function(e){
  if(ac==='funcao-salvar'){salvarFuncao(b);return}
  if(ac==='fonte-ligar'){
   b.disabled=true;dizer('msg-fonte','Ligando…',true);
-  chamar('POST','/eu/fonte',{codigo_auth:(el('f-auth')||{}).value,codigo_partida:(el('f-part')||{}).value},true).then(function(r){
+  var cd=lerCodigos((el('f-tudo')||{}).value);
+  var auth=cd.auth||String((el('f-auth')||{}).value||'').trim().toUpperCase();
+  var part=extrairCodigo((el('f-hist')||{}).value)||cd.part||extrairCodigo((el('f-part')||{}).value);
+  if(!/^CSGO(-[A-Za-z0-9]{5}){5}$/.test(part)||!/^[A-Z0-9]{4}-[A-Z0-9]{5}-[A-Z0-9]{4}$/.test(auth)){b.disabled=false;dizer('msg-fonte','Não achei os dois códigos no que você colou. Confira se copiou a página inteira (Ctrl+A e Ctrl+C) ou use a opção de colar um por um.',false);return}
+  chamar('POST','/eu/fonte',{codigo_auth:auth,codigo_partida:part},true).then(function(r){
    if(!r.ok){b.disabled=false;dizer('msg-fonte',r.j.erro||'Não consegui ligar agora.',false);return}
    carregarFonte();
   });return;
@@ -1912,6 +1926,13 @@ document.addEventListener('keydown',function(e){
 
 
 /* ----- funções (autodeclaradas) e observação do robô ----- */
+function lerCodigos(t){
+ t=String(t||'');var m=t.match(/CSGO(-[A-Za-z0-9]{5}){5}/),part=m?m[0]:'';
+ var resto=part?t.split(part).join(' '):t;
+ var a=resto.toUpperCase().match(/(^|[^A-Z0-9-])([A-Z0-9]{4}-[A-Z0-9]{5}-[A-Z0-9]{4})(?![A-Z0-9-])/);
+ return {auth:a?a[2]:'',part:part};
+}
+function extrairCodigo(t){var m=String(t||'').match(/CSGO(-[A-Za-z0-9]{5}){5}/);return m?m[0]:String(t||'').trim()}
 function rotuloFuncao(f){
  if(!f||!f.tr||!TR_F[f.tr])return null;
  var t=TR_F[f.tr];return t[0]+(f.sub&&t[1][f.sub]?' · '+t[1][f.sub]:'');
