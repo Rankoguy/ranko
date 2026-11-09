@@ -644,6 +644,33 @@ select::-ms-expand{display:none}
 .pj-n{margin:12px 2px 0;color:var(--muted);font-size:14px}
 @media(max-width:900px){#zoeira{padding:20px}.me-card .dr-sec{padding:24px 20px}.me-card .cartao-acoes{padding:16px 20px}.me-card .me-body>.dr-sec:nth-child(2){border-left:0}.wrap{gap:64px}.func-res .lin>small{min-width:0;width:100%}}
 @media(max-width:600px){.modo-b{width:56px}.modo-b .mt{width:26px;height:26px}.modo-b[aria-checked=true] .mt{transform:translateX(16px)}.modo-b .m-lua{left:9px}.modo-b .m-sol{right:9px}.modo-b svg{width:14px;height:14px;margin-top:-7px}}
+
+/* fotos dos jogadores e modo Pro (v6) */
+.av.m{width:34px;height:34px;font-size:12px}
+.fa{display:inline-flex}
+.fotos{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+.ct-g{display:inline-flex;align-items:center;gap:8px;margin:2px 14px 2px 0}
+.ct-g>b{min-width:30px;color:var(--muted);font:700 13px var(--body)}
+.mapas-t td{vertical-align:middle}
+.fps{display:flex;flex-wrap:wrap;gap:10px 14px}
+.fp{display:inline-flex;align-items:center;gap:8px}
+.fp em{font:500 13px var(--body);font-style:normal;color:var(--muted)}
+.sem-f{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0 0;color:var(--muted);font:500 14px var(--body)}
+.modo-t button{display:inline-flex;align-items:center;gap:6px}
+.modo-t .ic{width:14px;height:14px;fill:currentColor;stroke:none}
+.modo-t button[data-mt=pro].on{background:var(--t);color:var(--on-t)}
+.pro-sec{display:none}
+body.modo-pro .pro-sec{display:block}
+.pro-b{display:inline-block;margin-left:10px;padding:2px 10px;border-radius:999px;background:var(--t);color:var(--on-t);font:800 12px var(--body);letter-spacing:.06em;vertical-align:middle}
+.pro-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.pro-c{position:relative;padding:24px;border:1px solid var(--line);border-radius:var(--r-lg);background:radial-gradient(420px 220px at 0% 0%,rgba(var(--t-rgb),.12),transparent 70%),var(--panel)}
+.pro-c h3{margin:10px 0 6px;font:800 22px/1.15 var(--disp);letter-spacing:-.01em}
+.pro-c p{margin:0 0 14px;color:var(--muted);font-size:15px}
+.pro-c ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.pro-c li{display:flex;align-items:center;gap:10px;font:500 15px var(--body)}
+.pro-c li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--t);flex:none}
+.pro-s{display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);font:600 12.5px var(--body)}
+@media(max-width:900px){.pro-g{grid-template-columns:minmax(0,1fr)}.modo-t{width:100%}}
 </style>
 <meta name="theme-color" content="#e6af0c">
 <script>(function(){
@@ -1129,7 +1156,10 @@ WORKER=WORKER.replace(/\/+$/,'');
 var SITE=location.origin+location.pathname,SES=null,ME=null,ERRO_LOGIN='',CLA_PADRAO='painel-da-galera';
 var JA=false,ROTA={t:'home',id:''},TOK=0,NB=0,OPC=null,CLA_ATUAL=null,trava=null;
 var SECOES=[['painel','Visão geral',1,'Geral'],['conquistas','Conquistas',2,'Destaques'],['zoeira','Trollagem',3,'Trollagem'],['ranking','Ranking',4,'Ranking'],['mapas','Mapas e funções',2,'Mapas'],['partidas','Partidas',6,'Partidas']];
-var PER=null,DISP={semana:false,mes:false,geral:true},LASTD=null,IC0=[NAV[0],NAV[1],NAV[2],FL,NAV[4],NAV[5],NAV[6]];
+var STAR='<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>';
+function proOn(){try{return localStorage.getItem('painel_modo_time')==='pro'}catch(e){return false}}
+function SECS(){return proOn()?[['pro','Time Pro',7,'Pro']].concat(SECOES):SECOES}
+var PER=null,DISP={semana:false,mes:false,geral:true},LASTD=null,IC0=[NAV[0],NAV[1],NAV[2],FL,NAV[4],NAV[5],NAV[6],STAR];
 
 (function lerSessao(){
  try{
@@ -1187,7 +1217,7 @@ function itensMenu(){
  if(ME&&SES)voce.push({t:'Meu perfil',b:'Perfil',n:0,h:'#/jogador/'+SES.sid,on:ROTA.t==='jogador'&&ROTA.id===SES.sid});
  var naMinha=ROTA.t==='cla'&&ME&&ME.cla&&ME.cla.slug===ROTA.id;
  if(ME&&ME.cla&&!naMinha)voce.push({t:'Meu time',b:'Time',n:5,h:'#/cla/'+ME.cla.slug,on:false});
- if(ROTA.t==='cla')SECOES.forEach(function(x){sec.push({t:x[1],b:x[3],n:x[2],s:x[0],em:x[0]==='ranking'})});
+ if(ROTA.t==='cla')SECS().forEach(function(x){sec.push({t:x[1],b:x[3],n:x[2],s:x[0],em:x[0]==='ranking'})});
  return{voce:voce,sec:sec};
 }
 function linkMenu(x,curto){
@@ -1242,7 +1272,7 @@ function setActive(id,clicado){
 function spy(){
  if(trava||ROTA.t!=='cla')return;
  var h=window.innerHeight,cur='painel';
- SECOES.forEach(function(s){var e=el(s[0]);if(e&&e.offsetParent!==null&&e.getBoundingClientRect().top<=h*0.4)cur=s[0]});
+ SECS().forEach(function(s){var e=el(s[0]);if(e&&e.offsetParent!==null&&e.getBoundingClientRect().top<=h*0.4)cur=s[0]});
  if(h+window.scrollY>=document.body.scrollHeight-4){var z=el('partidas');if(z&&z.getBoundingClientRect().top<h*0.85)cur='partidas'}
  setActive(cur);
 }
@@ -1396,7 +1426,7 @@ function telaCla(slug,meu){
   CLA_ATUAL=r.j;
   var c=r.j.cla,dono=!!(SES&&c.dono===SES.sid),meuCla=!!(ME&&ME.cla&&ME.cla.slug===c.slug);
   document.body.classList.toggle('so-dono',dono);
-  var bar='<div class="clabar">'+claImg(c)+'<div><div class="cn">'+esc(c.nome)+'</div><small>'+c.total+'/'+c.max+' membros</small></div><div class="gr"><div class="per" id="per" role="group" aria-label="Período do ranking"></div>'
+  var bar='<div class="clabar">'+claImg(c)+'<div><div class="cn">'+esc(c.nome)+'</div><small>'+c.total+'/'+c.max+' membros</small></div><div class="gr"><div class="per modo-t" id="modo-t" role="group" aria-label="Modo do time"><button type="button" data-mt="simples">Simples</button><button type="button" data-mt="pro"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+STAR+'</svg>Pro</button></div><div class="per" id="per" role="group" aria-label="Período do ranking"></div>'
    +(dono?'<button class="btn g sm" type="button" data-acao="abrir-opcoes">Opções do time</button>':'')
    +(meuCla&&!dono?'<button class="btn red sm" type="button" data-acao="sair-cla">Sair do time</button>':'')
    +'</div></div><p class="msg" id="msg-cla" style="margin:0"></p>';
@@ -1404,11 +1434,22 @@ function telaCla(slug,meu){
   var avisoLigar=(eu1&&membroDados(eu1).hltv==null)?'<div class="aviso-ligar"><div><b>Os seus números ainda não aparecem aqui.</b><p>Ligue a leitura das suas partidas: leva 2 minutos, uma vez só, e já puxamos as últimas partidas que a Steam ainda guarda (até 8).</p></div><button class="btn y sm" type="button" data-acao="abrir-conta">Ligar minhas partidas</button></div>':'';
   view(bar+avisoLigar+CLA_TPL);
   var psec=el('partidas');if(psec)psec.insertAdjacentHTML('beforebegin','<section id="mapas"></section>');
+  var pnl=el('painel');if(pnl)pnl.insertAdjacentHTML('beforebegin',PRO_HTML);
+  aplicarModoTime();
   document.title=c.nome+' — Ranko';
   setCtx(c.nome);
   montarCla(r.j);
   carregarPartidasTime(c.slug);
  });
+}
+var PRO_HTML='<section id="pro" class="pro-sec"><div class="sh menor"><div><h2>Time Pro <span class="pro-b">PRO</span></h2><p>Análise e treino para o time, feitos a partir das partidas que o robô lê. Está em construção: nada aqui é cobrado hoje.</p></div></div>'
+ +'<div class="pro-g"><article class="pro-c"><span class="pro-s">Em breve</span><h3>Ranko Analyst</h3><p>Lê os rounds das partidas do time e mostra o que aconteceu.</p><ul><li>Análise automática dos rounds</li><li>Principais erros coletivos</li><li>Diagnóstico de desempenho individual</li><li>Relatório de vitória ou derrota</li></ul></article>'
+ +'<article class="pro-c"><span class="pro-s">Em breve</span><h3>Ranko Coach</h3><p>Aponta onde o time mais perde e o que treinar.</p><ul><li>Os 3 maiores problemas do time</li><li>Comparação entre partidas</li><li>Erros que se repetem</li><li>Exercícios e mudanças de comportamento</li></ul></article></div>'
+ +'<p class="note">O modo Simples continua igual. O Pro só acrescenta estas análises quando estiverem prontas.</p></section>';
+function aplicarModoTime(){
+ var pro=proOn();
+ document.body.classList.toggle('modo-pro',pro);
+ [].forEach.call(document.querySelectorAll('#modo-t [data-mt]'),function(b){var on=(b.getAttribute('data-mt')==='pro')===pro;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))});
 }
 function carregarPartidasTime(slug){
  var box=el('pt-c');if(!box)return;
@@ -1824,6 +1865,12 @@ window.addEventListener('hashchange',function(){fecharGate();rotear()});
  }):Promise.resolve()).then(function(){desenharChrome();rotear()});
 })();
 
+document.addEventListener('click',function(e){
+ var m=e.target.closest('[data-mt]');if(!m)return;
+ try{localStorage.setItem('painel_modo_time',m.getAttribute('data-mt'))}catch(x){}
+ aplicarModoTime();desenharChrome();
+ if(m.getAttribute('data-mt')==='pro'){var z=el('pro');if(z)z.scrollIntoView({block:'start'})}
+});
 document.addEventListener('keydown',function(e){
  if(e.key!=='Tab')return;
  var d=el('opcoes').classList.contains('on')?el('opcoes'):(el('drawer').classList.contains('on')?el('drawer'):null);
@@ -1935,6 +1982,7 @@ function montarMapas(j){
  var box=el('mapas');if(!box)return;
  var ms=j.membros||[],tot=ms.length;
  var nome=function(m){return esc((m.nome||'Jogador').slice(0,14))};
+ var foto=function(m){var n=(m.nome||'Jogador');return '<span class="fa" role="img" aria-label="'+esc(n)+'" title="'+esc(n)+'">'+av({avatar:m.avatar,apelido:n},'m')+'</span>'};
  var linhas=MAPAS.map(function(mp){
   var k=mp[0],S={n:0,w1:0,wn:0,r:0,k:0,d:0,dmg:0,m1:0,m2:0,m3:0,m4:0,m5:0},jogs=0,conf=0,evit=0,pos={A:[],B:[],meio:[],'rotação':[]};
   ms.forEach(function(m){
@@ -1943,7 +1991,7 @@ function montarMapas(j){
    var fn=m.funcao;if(!fn)return;
    if((fn.conf||[]).indexOf(k)>-1)conf++;
    if((fn.evit||[]).indexOf(k)>-1)evit++;
-   if(fn.ct&&fn.ct[k]&&pos[fn.ct[k]])pos[fn.ct[k]].push(nome(m));
+   if(fn.ct&&fn.ct[k]&&pos[fn.ct[k]])pos[fn.ct[k]].push(foto(m));
   });
   var temDados=jogs>=3,rt=temDados?ratingSomas(S):null,ap=S.wn?S.w1/S.wn:null;
   var decl=tot?(conf-evit)/tot:0;
@@ -1956,7 +2004,7 @@ function montarMapas(j){
  if(ord.length>=4){ord.slice(0,2).forEach(function(x){if(x.score>0)picar[x.k]=1});ord.slice(-2).forEach(function(x){if(x.score<0)risco[x.k]=1})}
  var corpo=linhas.map(function(x){
   var selo=picar[x.k]?'<span class="selo p">Picar</span>':risco[x.k]?'<span class="selo r">Risco</span>':'';
-  var cts=['A','B','meio','rotação'].filter(function(p){return x.pos[p].length}).map(function(p){return '<b>'+p+'</b> '+x.pos[p].join(', ')}).join(' · ');
+  var cts=['A','B','meio','rotação'].filter(function(p){return x.pos[p].length}).map(function(p){return '<span class="ct-g"><b>'+p+'</b><span class="fotos">'+x.pos[p].join('')+'</span></span>'}).join('');
   return '<tr><td data-l="Mapa"><b>'+esc(x.nome)+'</b> '+selo+'</td><td class="mono" data-l="Partidas">'+(x.jogs||'–')+'</td>'
    +'<td class="mono" data-l="Vitórias">'+(x.ap==null?'–':f(x.ap*100,0)+'%')+'</td><td class="mono" data-l="Rating">'+(x.rt==null?'–':f(x.rt,2))+'</td>'
    +'<td class="mono" data-l="Conforto">'+(x.conf||'–')+'</td><td class="mono" data-l="Evitam">'+(x.evit||'–')+'</td><td data-l="CT">'+(cts||'–')+'</td></tr>';
@@ -1964,23 +2012,23 @@ function montarMapas(j){
  /* composição: quem joga o quê no lado TR */
  var porF={},sem=[];
  ms.forEach(function(m){var fn=m.funcao;if(fn&&fn.tr&&TR_F[fn.tr])(porF[fn.tr]=porF[fn.tr]||[]).push(m);else sem.push(m)});
- var av=[];
+ var avs=[];
  if(tot>=2&&sem.length<tot){
-  if(!porF.entry)av.push('Ninguém marcou entry.');else if(porF.entry.length>2)av.push('Tem '+porF.entry.length+' jogadores marcados como entry: dá para dividir melhor.');
-  if(!porF.suporte)av.push('Ninguém marcou suporte.');
-  if(!porF.igl)av.push('Ninguém marcou IGL (quem comanda o time).');
-  if(porF.awp&&porF.awp.length>1)av.push('Mais de uma pessoa marcou AWP.');
+  if(!porF.entry)avs.push('Ninguém marcou entry.');else if(porF.entry.length>2)avs.push('Tem '+porF.entry.length+' jogadores marcados como entry: dá para dividir melhor.');
+  if(!porF.suporte)avs.push('Ninguém marcou suporte.');
+  if(!porF.igl)avs.push('Ninguém marcou IGL (quem comanda o time).');
+  if(porF.awp&&porF.awp.length>1)avs.push('Mais de uma pessoa marcou AWP.');
  }
  var comp=Object.keys(TR_F).map(function(k){
   var l=porF[k]||[];
-  return '<div class="comp-c'+(l.length?'':' vz')+'"><small>'+TR_F[k][0]+'</small><b>'+(l.length?l.map(function(m){return nome(m)+(m.funcao.sub&&TR_F[k][1][m.funcao.sub]?' <em>('+esc(TR_F[k][1][m.funcao.sub])+')</em>':'')}).join(', '):'–')+'</b></div>';
+  return '<div class="comp-c'+(l.length?'':' vz')+'"><small>'+TR_F[k][0]+'</small>'+(l.length?'<div class="fps">'+l.map(function(m){var sb=m.funcao.sub&&TR_F[k][1][m.funcao.sub]?TR_F[k][1][m.funcao.sub]:'';return '<span class="fp">'+foto(m)+(sb?'<em>'+esc(sb)+'</em>':'')+'</span>'}).join('')+'</div>':'<b>–</b>')+'</div>';
  }).join('');
  box.innerHTML='<div class="sh menor"><div><h2>Mapas e funções</h2><p>Quais mapas picar e como o time se organiza.</p></div></div>'
   +'<div class="dr-sec wide" style="padding:0"><div class="hist-w"><table class="hist mapas-t"><thead><tr><th>Mapa</th><th>Partidas</th><th>Vitórias</th><th>Rating</th><th>Conforto</th><th>Evitam</th><th>CT</th></tr></thead><tbody>'+corpo+'</tbody></table></div>'
   +'<p class="note" style="margin:10px 0 0">No Premier cada time pica mapas e o jogo sorteia um dos quatro escolhidos. <b>Picar</b> = mapas em que o time está melhor (números das últimas partidas somados ao que os jogadores marcaram como conforto). <b>Risco</b> = os mais fracos, que podem cair se o adversário picar. Partidas, vitórias e rating consideram só os últimos 90 dias e só mapas com 3 partidas ou mais; o rating é a média de todos os jogadores.'+(ord.length<4?' <b>Ainda faltam dados e marcações para sugerir mapas.</b>':'')+'</p></div>'
   +'<div class="dr-sec wide" style="padding:18px 0 0"><h4>Composição no lado TR</h4><div class="comp">'+comp+'</div>'
-  +(sem.length&&sem.length<tot?'<p class="note" style="margin:8px 0 0">Sem função marcada: '+sem.map(nome).join(', ')+'.</p>':'')
-  +(av.length?'<ul class="avisos-c">'+av.map(function(a){return '<li>'+esc(a)+'</li>'}).join('')+'</ul>':'')
+  +(sem.length&&sem.length<tot?'<div class="sem-f"><span>Sem função marcada:</span><span class="fotos">'+sem.map(foto).join('')+'</span></div>':'')
+  +(avs.length?'<ul class="avisos-c">'+avs.map(function(a){return '<li>'+esc(a)+'</li>'}).join('')+'</ul>':'')
   +(sem.length===tot?'<p class="note" style="margin:8px 0 0">Ninguém marcou função ainda. Cada um escolhe a sua no próprio perfil.</p>':'')
   +'</div>';
 }
