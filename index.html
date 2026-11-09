@@ -1375,11 +1375,9 @@ function carregarFonte(){
    return;
   }
   box.innerHTML='<h4>Ligar minhas partidas</h4><p class="note" style="margin:0 0 12px">O painel lê as suas partidas direto do CS2 e calcula tudo sozinho. Você faz isso uma única vez:</p>'
-   +'<ol class="passos"><li>Abra <a href="'+LINK_CODIGOS+'" target="_blank" rel="noopener">esta página da Steam</a> e entre na sua conta.</li><li>Na página, aperte <b>Ctrl+A</b> e depois <b>Ctrl+C</b> (no celular, selecione tudo e copie).</li><li>Cole aqui embaixo e clique em <b>Ligar</b>. O painel acha os dois códigos sozinho.</li></ol>'
-   +'<div class="campo"><label for="f-tudo">Cole aqui o que você copiou da página da Steam</label><textarea id="f-tudo" rows="3" placeholder="Cole aqui (Ctrl+V)" autocomplete="off" spellcheck="false"></textarea></div>'
-   +'<details class="mais-f"><summary>Prefiro colar os códigos um por um</summary>'
-   +'<div class="campo"><label for="f-auth">Código de autenticação</label><input id="f-auth" type="text" placeholder="XXXX-XXXXX-XXXX" autocomplete="off" spellcheck="false"></div>'
-   +'<div class="campo"><label for="f-part">Código da partida mais recente</label><input id="f-part" type="text" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" autocomplete="off" spellcheck="false"></div></details>'
+   +'<ol class="passos"><li>Abra <a href="'+LINK_CODIGOS+'" target="_blank" rel="noopener">esta página da Steam</a> e entre na sua conta.</li><li>Copie o <b>código de autenticação</b> (ele tem o formato <b>XXXX-XXXXX-XXXX</b>) e cole no primeiro campo.</li><li>Na mesma página, copie o <b>código da partida mais recente</b> (ele começa com <b>CSGO-</b>) e cole no segundo campo.</li><li>Clique em <b>Ligar</b>.</li></ol>'
+   +'<div class="campo"><label for="f-auth">1. Código de autenticação</label><input id="f-auth" type="text" placeholder="XXXX-XXXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>'
+   +'<div class="campo"><label for="f-part">2. Código da partida mais recente</label><input id="f-part" type="text" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" autocomplete="off" spellcheck="false"></div>'
    +'<details class="mais-f"><summary>Opcional: puxar também as partidas anteriores (até 8)</summary><p class="note" style="margin:10px 0">No CS2, abra <b>Assistir</b>, depois <b>Suas partidas</b>, escolha a partida <b>mais antiga</b> da lista e copie o código de compartilhamento dela. Se preferir, deixe em branco: o painel começa da partida mais recente e segue a partir daí. Você pode voltar aqui e fazer isso depois.</p>'
    +'<div class="campo"><label for="f-hist">Código da partida mais antiga da lista</label><input id="f-hist" type="text" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" autocomplete="off" spellcheck="false"></div></details>'
    +'<button class="btn y" type="button" data-acao="fonte-ligar">Ligar</button><p class="msg" id="msg-fonte"></p>'
@@ -1716,10 +1714,11 @@ document.addEventListener('click',function(e){
  if(ac==='abrir-conta'){abrirConta();return}
  if(ac==='fonte-ligar'){
   b.disabled=true;dizer('msg-fonte','Ligando…',true);
-  var cd=lerCodigos((el('f-tudo')||{}).value);
-  var auth=cd.auth||String((el('f-auth')||{}).value||'').trim().toUpperCase();
-  var part=extrairCodigo((el('f-hist')||{}).value)||cd.part||extrairCodigo((el('f-part')||{}).value);
-  if(!/^CSGO(-[A-Za-z0-9]{5}){5}$/.test(part)||!/^[A-Z0-9]{4}-[A-Z0-9]{5}-[A-Z0-9]{4}$/.test(auth)){b.disabled=false;dizer('msg-fonte','Não achei os dois códigos no que você colou. Confira se copiou a página inteira (Ctrl+A e Ctrl+C) ou use a opção de colar um por um.',false);return}
+  var va=String((el('f-auth')||{}).value||''),vp=String((el('f-part')||{}).value||''),vh=String((el('f-hist')||{}).value||'');
+  var cd=lerCodigos(va+' '+vp);
+  var auth=cd.auth||va.trim().toUpperCase();
+  var part=extrairCodigo(vh)||cd.part||extrairCodigo(vp);
+  if(!/^CSGO(-[A-Za-z0-9]{5}){5}$/.test(part)||!/^[A-Z0-9]{4}-[A-Z0-9]{5}-[A-Z0-9]{4}$/.test(auth)){b.disabled=false;dizer('msg-fonte','Confira os dois códigos: o de autenticação tem o formato XXXX-XXXXX-XXXX e o da partida começa com CSGO-. Cole cada um no seu campo.',false);return}
   chamar('POST','/eu/fonte',{codigo_auth:auth,codigo_partida:part},true).then(function(r){
    if(!r.ok){b.disabled=false;dizer('msg-fonte',r.j.erro||'Não consegui ligar agora.',false);return}
    carregarFonte();
