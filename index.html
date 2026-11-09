@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.steamstatic.com https://*.akamaihd.net; connect-src https://painel-login.juansouzacmc.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.steamstatic.com https://*.akamaihd.net; connect-src https://painel-login.rankoguy.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ranko — CS2</title>
@@ -1124,7 +1124,7 @@ function init(d){
 /* =====================================================================
    APP: rotas, login, times
    ===================================================================== */
-var WORKER='https://painel-login.juansouzacmc.workers.dev'; /* endereço do Worker (login + times) */
+var WORKER='https://painel-login.rankoguy.workers.dev'; /* endereço do Worker (login + times) */
 WORKER=WORKER.replace(/\/+$/,'');
 var SITE=location.origin+location.pathname,SES=null,ME=null,ERRO_LOGIN='',CLA_PADRAO='painel-da-galera';
 var JA=false,ROTA={t:'home',id:''},TOK=0,NB=0,OPC=null,CLA_ATUAL=null,trava=null;
