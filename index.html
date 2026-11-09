@@ -25,7 +25,7 @@
   --ease:cubic-bezier(.2,.8,.2,1);
   --side-w:248px;--top-h:64px;
   --w:255,255,255;--bg-rgb:12,13,15;--seta:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23a9abb3' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  --t-text:var(--t);--ct-text:var(--ct);--red-text:var(--red-text);--sb:#2c2e34;
+  --t-text:var(--t);--ct-text:var(--ct);--red-text:var(--red);--sb:#2c2e34;
   color-scheme:dark;
 }
 :root[data-modo="claro"]{
@@ -659,6 +659,85 @@ select::-ms-expand{display:none}
 .modo-t button{display:inline-flex;align-items:center;gap:6px}
 .modo-t .ic{width:14px;height:14px;fill:currentColor;stroke:none}
 .modo-t button[data-mt=pro].on{background:var(--t);color:var(--on-t)}
+
+/* modo Pro: botão brilhante e seções que saem (v7) */
+.modo-t button[data-mt=pro]{position:relative;overflow:hidden;font-weight:800;letter-spacing:.02em;color:var(--on-t);background:linear-gradient(110deg,var(--t-lo),var(--t-hi) 35%,#fff7cf 50%,var(--t-hi) 65%,var(--t-lo));background-size:220% 100%;animation:proBrilho 3.2s linear infinite;box-shadow:0 0 0 1px rgba(var(--t-rgb),.7),0 0 14px rgba(var(--t-rgb),.55),0 0 28px rgba(var(--t-rgb),.28)}
+.modo-t button[data-mt=pro]:hover{filter:brightness(1.08);box-shadow:0 0 0 1px var(--t),0 0 20px rgba(var(--t-rgb),.8),0 0 38px rgba(var(--t-rgb),.4)}
+.modo-t button[data-mt=pro] .ic{animation:proEstrela 2.4s ease-in-out infinite}
+.modo-t button[data-mt=pro].on{box-shadow:0 0 0 2px var(--text),0 0 18px rgba(var(--t-rgb),.9),0 0 40px rgba(var(--t-rgb),.5)}
+.modo-t button[data-mt=simples]{color:var(--muted)}
+.modo-t button[data-mt=simples].on{background:var(--text);color:var(--bg)}
+@keyframes proBrilho{0%{background-position:120% 0}100%{background-position:-120% 0}}
+@keyframes proEstrela{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.25) rotate(18deg)}}
+@media(prefers-reduced-motion:reduce){.modo-t button[data-mt=pro],.modo-t button[data-mt=pro] .ic{animation:none}}
+body.modo-pro #conquistas,body.modo-pro #zoeira,body.modo-pro .spot .sp.tr{display:none}
+body.modo-pro .spot{grid-template-columns:minmax(0,1fr)}
+
+/* Ranko Analyst (v8) */
+.an-box{margin-bottom:16px}
+.an-c{padding:28px}
+.an-c h3{margin:12px 0 8px;font:800 24px/1.15 var(--disp);letter-spacing:-.01em}
+.an-c>p{margin:0 0 14px;color:var(--muted);font-size:15px;max-width:70ch}
+.an-pre{padding:12px 14px;border:1px dashed var(--line2);border-radius:var(--r-btn);color:var(--text)!important}
+.an-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:8px 0 6px}
+.an-t{padding:16px;border:1px solid var(--line);border-radius:var(--r-btn);background:rgba(var(--w),.03);display:grid;gap:4px}
+.an-t span{color:var(--muted);font:500 13px var(--body)}
+.an-t b{font:800 32px/1 var(--disp);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.an-t small{color:var(--muted);font-size:13px}
+.an-h{margin:26px 0 12px;font:700 17px/1.2 var(--body);letter-spacing:-.01em}
+.an-c .an-erros{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:e}
+.an-c .an-erros li{counter-increment:e;padding:16px 16px 16px 56px;position:relative;border:1px solid var(--line);border-radius:var(--r-btn);background:rgba(var(--w),.03);display:grid;gap:8px;font:400 14.5px var(--body)}
+.an-c .an-erros li::before{content:counter(e);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--red-rgb),.16);color:var(--red-text);font:800 14px var(--body)}
+.an-e-t{display:flex;align-items:center;gap:14px}
+.an-e-t b{font:700 16px var(--body);white-space:nowrap}
+.an-e-t i{flex:1;height:6px;border-radius:99px;background:rgba(var(--w),.08);position:relative;overflow:hidden}
+.an-e-t i::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--w);background:var(--red);border-radius:99px}
+.an-erros span{color:var(--muted);font-size:14.5px}
+.an-jg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.an-j{padding:16px;border:1px solid var(--line);border-radius:var(--r-btn);background:rgba(var(--w),.03);display:grid;gap:12px;align-content:start}
+.an-j-h{display:flex;align-items:center;gap:10px}
+.an-j-h small{display:block;color:var(--muted);font-size:13px}
+.an-j-n{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.an-j-n span{display:grid;gap:2px;color:var(--muted);font-size:12.5px}
+.an-j-n b{color:var(--text);font:800 18px var(--disp);font-variant-numeric:tabular-nums}
+.an-c .an-j ul{margin:0;padding:0 0 0 18px;display:grid;gap:6px;font-size:14px;list-style:disc}
+.an-c .an-j li{display:list-item;gap:0;font:400 14px var(--body)}
+.an-c .an-j li::before{content:none}
+.an-c .an-j li::marker{color:var(--t)}
+.an-sd{margin:0;color:var(--muted);font-size:14px}
+.pro-coach{margin-top:16px}
+.an-bt{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid var(--line2);border-radius:var(--r-btn);background:transparent;color:var(--text);font:600 13.5px var(--body)}
+.an-bt:hover{border-color:var(--t);color:var(--t-text,var(--text))}
+.an-bt .ic{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
+.an-bt.trav{color:var(--muted)}
+.an-sem{color:var(--muted);font-size:13.5px}
+.an-aviso{margin:12px 0 0;padding:14px 16px;border:1px solid rgba(var(--t-rgb),.4);border-radius:var(--r-btn);background:rgba(var(--t-rgb),.08);display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;font-size:14.5px}
+.an-aviso[hidden],.an-linha[hidden]{display:none}
+.an-linha>td{white-space:normal!important;padding:0!important;background:rgba(var(--w),.025)}
+.an-det{padding:20px;display:grid;gap:20px}
+.an-col h4{margin:0 0 10px;font:700 15px var(--body)}
+.an-rel{margin:0;padding:0 0 0 18px;display:grid;gap:6px;font-size:14.5px}
+.an-rds{display:flex;flex-wrap:wrap;gap:6px}
+.rd{position:relative;display:inline-grid;place-items:center;width:38px;height:44px;border-radius:8px;border:1px solid var(--line2);font:800 15px/1 var(--disp);font-variant-numeric:tabular-nums;cursor:default}
+.rd small{display:block;margin-top:2px;font:700 10px var(--body)}
+.rd.v{background:rgba(var(--ct-rgb),.11);border-color:rgba(var(--ct-rgb),.5);color:var(--ct-text)}
+.rd.d{background:rgba(var(--red-rgb),.09);border-color:rgba(var(--red-rgb),.5);color:var(--red-text)}
+.rd.abn::after{content:"";position:absolute;top:3px;right:3px;width:7px;height:7px;border-radius:50%;background:var(--red-text)}
+.rd.dpd{outline:2px solid var(--t);outline-offset:1px}
+.rd.clw::before{content:"★";position:absolute;top:-7px;left:-5px;font-size:13px;color:var(--t-text,var(--t))}
+.rd:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.an-leg{margin:12px 0 0;color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px}
+.an-leg .lg{display:inline-flex;align-items:center;gap:8px}
+.an-leg-n{margin:6px 0 0;color:var(--muted);font-size:13px}
+.rd.mini{width:14px;height:14px;border-radius:4px;display:inline-block;margin:0;flex:none}
+.rd.mini.abn::after{width:5px;height:5px;top:1px;right:1px}
+.rd.mini.clw::before{top:-6px;left:-3px;font-size:11px}
+.an-det .an-err{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.an-det .an-err li{display:grid;gap:2px;font-size:14.5px}
+.an-det .an-err span{color:var(--muted)}
+.an-tb td{white-space:nowrap}
+.an-dg td{padding-top:0!important;color:var(--muted);font-size:13.5px;white-space:normal!important}
+@media(max-width:900px){.an-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.an-c{padding:20px}.an-e-t{flex-wrap:wrap}.an-e-t i{flex-basis:100%}}
 .pro-sec{display:none}
 body.modo-pro .pro-sec{display:block}
 .pro-b{display:inline-block;margin-left:10px;padding:2px 10px;border-radius:999px;background:var(--t);color:var(--on-t);font:800 12px var(--body);letter-spacing:.06em;vertical-align:middle}
@@ -1122,7 +1201,7 @@ function init(d){
  var ano=per.mes_id?per.mes_id.split('-')[0]:new Date(d.atualizado_em).getFullYear();
  var jan=modo==='mes'?'neste mês':modo==='semana'?'nesta semana':'nas últimas partidas';
  var sd=per.semana_id?per.semana_id.split('-'):null;
- var PL=modo==='mes'?['do mês','neste mês','mês']:modo==='semana'?['da semana','nesta semana','semana']:['geral','nas últimas partidas','período'];var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=PL[0]==='geral'?'geral':PL[0];h1e.parentNode.nextElementSibling.textContent='Quem está carregando o time e quem mais trollou '+PL[1]+'.'}var kk=el('kick');if(kk)kk.textContent=modo==='mes'?'CS2 · '+MES[mi]+' de '+ano:modo==='semana'&&sd?'CS2 · Semana de '+sd[2]+'/'+sd[1]:'CS2 · últimas 100 partidas';el('rk-t').innerHTML=modo==='mes'?'Ranking do mês':modo==='semana'?'Ranking da semana':'Ranking geral';
+ var PL=modo==='mes'?['do mês','neste mês','mês']:modo==='semana'?['da semana','nesta semana','semana']:['geral','nas últimas partidas','período'];var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=PL[0]==='geral'?'geral':PL[0];h1e.parentNode.nextElementSibling.setAttribute('data-per',PL[1]);h1e.parentNode.nextElementSibling.textContent=proOn()?'Quem está carregando o time '+PL[1]+'.':'Quem está carregando o time e quem mais trollou '+PL[1]+'.'}var kk=el('kick');if(kk)kk.textContent=modo==='mes'?'CS2 · '+MES[mi]+' de '+ano:modo==='semana'&&sd?'CS2 · Semana de '+sd[2]+'/'+sd[1]:'CS2 · últimas 100 partidas';el('rk-t').innerHTML=modo==='mes'?'Ranking do mês':modo==='semana'?'Ranking da semana':'Ranking geral';
  el('rk-p').textContent=(modo==='mes'?MES[mi].charAt(0).toUpperCase()+MES[mi].slice(1)+' de '+ano:modo==='semana'?'Semana de '+(sd?sd[2]+'/'+sd[1]:''):'Últimas 100 partidas')+' · ordenado pelo Rating HLTV, calculado com abates, mortes e rodadas com multikills.';
  el('rk-n').textContent=(modo==='mes'?'Dados reais, só partidas do mês.':modo==='semana'?'Dados reais, só partidas da semana.':'Dados reais (até 100 partidas recentes por jogador).')+' O Rating HLTV é calculado pelo painel. Clique num jogador para abrir o perfil.';
  el('dest-p').textContent='Quem está mandando bem em cada categoria '+jan+'.';
@@ -1158,7 +1237,7 @@ var JA=false,ROTA={t:'home',id:''},TOK=0,NB=0,OPC=null,CLA_ATUAL=null,trava=null
 var SECOES=[['painel','Visão geral',1,'Geral'],['conquistas','Conquistas',2,'Destaques'],['zoeira','Trollagem',3,'Trollagem'],['ranking','Ranking',4,'Ranking'],['mapas','Mapas e funções',2,'Mapas'],['partidas','Partidas',6,'Partidas']];
 var STAR='<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>';
 function proOn(){try{return localStorage.getItem('painel_modo_time')==='pro'}catch(e){return false}}
-function SECS(){return proOn()?[['pro','Time Pro',7,'Pro']].concat(SECOES):SECOES}
+function SECS(){return proOn()?[['pro','Time Pro',7,'Pro']].concat(SECOES.filter(function(x){return x[0]!=='conquistas'&&x[0]!=='zoeira'})):SECOES}
 var PER=null,DISP={semana:false,mes:false,geral:true},LASTD=null,IC0=[NAV[0],NAV[1],NAV[2],FL,NAV[4],NAV[5],NAV[6],STAR];
 
 (function lerSessao(){
@@ -1440,33 +1519,124 @@ function telaCla(slug,meu){
   setCtx(c.nome);
   montarCla(r.j);
   carregarPartidasTime(c.slug);
+  carregarAnalise(c.slug);
  });
 }
-var PRO_HTML='<section id="pro" class="pro-sec"><div class="sh menor"><div><h2>Time Pro <span class="pro-b">PRO</span></h2><p>Análise e treino para o time, feitos a partir das partidas que o robô lê. Está em construção: nada aqui é cobrado hoje.</p></div></div>'
- +'<div class="pro-g"><article class="pro-c"><span class="pro-s">Em breve</span><h3>Ranko Analyst</h3><p>Lê os rounds das partidas do time e mostra o que aconteceu.</p><ul><li>Análise automática dos rounds</li><li>Principais erros coletivos</li><li>Diagnóstico de desempenho individual</li><li>Relatório de vitória ou derrota</li></ul></article>'
- +'<article class="pro-c"><span class="pro-s">Em breve</span><h3>Ranko Coach</h3><p>Aponta onde o time mais perde e o que treinar.</p><ul><li>Os 3 maiores problemas do time</li><li>Comparação entre partidas</li><li>Erros que se repetem</li><li>Exercícios e mudanças de comportamento</li></ul></article></div>'
- +'<p class="note">O modo Simples continua igual. O Pro só acrescenta estas análises quando estiverem prontas.</p></section>';
+var PRO_HTML='<section id="pro" class="pro-sec"><div class="sh menor"><div><h2>Time Pro <span class="pro-b">PRO</span></h2><p>Análise e treino para o time, feitos a partir das partidas que o robô lê.</p></div></div>'
+ +'<div id="an-box" class="an-box"><div class="vazio">Carregando a análise do time…</div></div>'
+ +'<article class="pro-c pro-coach"><span class="pro-s">Em breve</span><h3>Ranko Coach</h3><p>Aponta onde o time mais perde e o que treinar.</p><ul><li>Os 3 maiores problemas do time</li><li>Comparação entre partidas</li><li>Erros que se repetem</li><li>Exercícios e mudanças de comportamento</li></ul></article>'
+ +'<p class="note">O modo Simples continua igual. O Pro só acrescenta estas análises.</p></section>';
 function aplicarModoTime(){
  var pro=proOn();
  document.body.classList.toggle('modo-pro',pro);
+ var hp=document.querySelector('#painel p[data-per]');if(hp){var pp=hp.getAttribute('data-per');hp.textContent=pro?'Quem está carregando o time '+pp+'.':'Quem está carregando o time e quem mais trollou '+pp+'.'}
  [].forEach.call(document.querySelectorAll('#modo-t [data-mt]'),function(b){var on=(b.getAttribute('data-mt')==='pro')===pro;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))});
+}
+var PT=null,ANL=null;
+var pc=function(a,b){return b>0?Math.round(a/b*100)+'%':'–'};
+function analiseDe(t){
+ if(!ANL||!ANL.pro||!ANL.partidas)return null;
+ for(var i=0;i<ANL.partidas.length;i++)if(Math.abs(ANL.partidas[i].t-t)<120000)return {i:i,v:ANL.partidas[i]};
+ return null;
+}
+function carregarAnalise(slug){
+ ANL=null;
+ chamar('GET','/cla/'+encodeURIComponent(slug)+'/analise',undefined,true).then(function(r){
+  ANL=r.ok?r.j:{pro:null};
+  desenharAnalise();desenharPartidasTime();
+ });
 }
 function carregarPartidasTime(slug){
  var box=el('pt-c');if(!box)return;
  chamar('GET','/cla/'+encodeURIComponent(slug)+'/partidas').then(function(r){
   box=el('pt-c');if(!box)return;
   if(!r.ok){box.innerHTML='<div class="vazio">Não consegui carregar as partidas agora.</div>';return}
-  var L=r.j.partidas||[],mn=r.j.minimo||4;
-  var pp=el('pt-p');if(pp)pp.textContent='Partidas em que '+(mn>=4?'4 ou mais':'todos')+' do time jogaram juntos. Partida solo aparece só no perfil de quem jogou.';
-  if(!L.length){box.innerHTML='<div class="vazio">Nenhuma partida do time ainda. Quando '+(mn>=4?'4 ou mais de vocês':'todos de vocês')+' jogarem a mesma partida, ela aparece aqui sozinha.</div>';return}
-  box.innerHTML='<div class="hist-w"><table class="hist"><thead><tr><th>Data</th><th>Mapa</th><th>Resultado</th><th>Quem jogou (abates / mortes)</th></tr></thead><tbody>'
-   +L.map(function(m){var d=new Date(m.t);
-    var dt=('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2);
-    var res=m.w==null?'<span class="res">–</span>':m.w?'<span class="res v">Vitória</span>':'<span class="res d">Derrota</span>';
-    var q=(m.jogadores||[]).slice().sort(function(a,b){return (b.k||0)-(a.k||0)}).map(function(x){var o={steam64:x.steam64,apelido:x.nome||'?',avatar:x.avatar};return '<span class="pj">'+av(o,'sm')+esc(x.nome||'?')+' <b>'+(x.k==null?'–':x.k)+' / '+(x.d==null?'–':x.d)+'</b></span>'}).join('');
-    return '<tr><td>'+dt+'</td><td>'+esc(nomeMapa(m.mapa))+'</td><td>'+res+'</td><td class="qj">'+q+'</td></tr>'}).join('')
-   +'</tbody></table></div><p class="pj-n">'+L.length+(L.length===1?' partida':' partidas')+' do time, as 30 mais recentes. Novas partidas entram até 2 horas depois que o robô lê.</p>';
+  PT={L:r.j.partidas||[],mn:r.j.minimo||4};
+  desenharPartidasTime();
  });
+}
+function desenharPartidasTime(){
+ var box=el('pt-c');if(!box||!PT)return;
+ var L=PT.L,mn=PT.mn;
+ var pp=el('pt-p');if(pp)pp.textContent='Partidas em que '+(mn>=4?'4 ou mais':'todos')+' do time jogaram juntos. Partida solo aparece só no perfil de quem jogou.';
+ if(!L.length){box.innerHTML='<div class="vazio">Nenhuma partida do time ainda. Quando '+(mn>=4?'4 ou mais de vocês':'todos de vocês')+' jogarem a mesma partida, ela aparece aqui sozinha.</div>';return}
+ var temAn=ANL&&ANL.pro!==null&&ANL.pro!==undefined;
+ box.innerHTML='<div class="hist-w"><table class="hist"><thead><tr><th>Data</th><th>Mapa</th><th>Resultado</th><th>Quem jogou (abates / mortes)</th>'+(temAn?'<th>Analyst</th>':'')+'</tr></thead><tbody>'
+  +L.map(function(m){var d=new Date(m.t);
+   var dt=('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2);
+   var res=m.w==null?'<span class="res">–</span>':m.w?'<span class="res v">Vitória</span>':'<span class="res d">Derrota</span>';
+   var q=(m.jogadores||[]).slice().sort(function(a,b){return (b.k||0)-(a.k||0)}).map(function(x){var o={steam64:x.steam64,apelido:x.nome||'?',avatar:x.avatar};return '<span class="pj">'+av(o,'sm')+esc(x.nome||'?')+' <b>'+(x.k==null?'–':x.k)+' / '+(x.d==null?'–':x.d)+'</b></span>'}).join('');
+   var an=analiseDe(m.t),cel='',det='';
+   if(temAn){
+    if(!ANL.pro)cel='<td><button type="button" class="an-bt trav" data-acao="an-travado"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z"/></svg>Pro</button></td>';
+    else if(an)cel='<td><button type="button" class="an-bt" data-acao="an-abrir" data-i="'+an.i+'" aria-expanded="false">Ver análise</button></td>';
+    else cel='<td class="an-sem">sem análise</td>';
+    if(an)det='<tr class="an-linha" id="an-d'+an.i+'" hidden><td colspan="5">'+htmlAnalisePartida(an.v)+'</td></tr>';
+   }
+   return '<tr><td>'+dt+'</td><td>'+esc(nomeMapa(m.mapa))+'</td><td>'+res+'</td><td class="qj">'+q+'</td>'+cel+'</tr>'+det}).join('')
+  +'</tbody></table></div>'
+  +(temAn&&!ANL.pro?'<div class="an-aviso" id="an-aviso" hidden><b>A análise de cada partida faz parte do Time Pro.</b> Ela mostra round a round por que o time ganhou ou perdeu. <button type="button" class="btn g sm" data-mt="pro">Conhecer o Time Pro</button></div>':'')
+  +'<p class="pj-n">'+L.length+(L.length===1?' partida':' partidas')+' do time, as 30 mais recentes. Novas partidas entram até 2 horas depois que o robô lê.'+(temAn&&ANL.pro?' A análise só existe para partidas lidas depois que o Analyst foi ligado.':'')+'</p>';
+}
+function chipRound(r,j){
+ var nm=function(s){var x=null;(j||[]).forEach(function(p){if(p.steam64===s)x=p});return x?x.nome:'?'};
+ var t=['Round '+r.n,r.l.nos==='T'?'de TR':'de CT',r.v==='nos'?'vitória':r.v==='eles'?'derrota':'sem resultado'];
+ if(r.pi)t.push('pistola');else t.push('compra '+r.c.nos+' contra '+r.c.eles);
+ if(r.ab)t.push(r.ab.por==='nos'?'primeiro duelo ganho':'primeiro duelo perdido');
+ if(r.dp==='nos')t.push('vantagem numérica desperdiçada');
+ r.cl.forEach(function(c){t.push('clutch 1x'+c.vs+' de '+nm(c.s)+(c.ganhou?' (venceu)':' (perdeu)'))});
+ if(r.semTrade.length)t.push('sem trade: '+r.semTrade.map(nm).join(', '));
+ var cls='rd '+(r.v==='nos'?'v':r.v==='eles'?'d':'')+(r.ab&&r.ab.por==='eles'?' abn':'')+(r.dp==='nos'?' dpd':'')+(r.cl.some(function(c){return c.ganhou})?' clw':'');
+ return '<span class="'+cls+'" tabindex="0" role="img" title="'+esc(t.join(' · '))+'" aria-label="'+esc(t.join(', '))+'">'+r.n+'<small>'+r.l.nos+'</small></span>';
+}
+function htmlAnalisePartida(v){
+ var rel='<ul class="an-rel">'+v.relatorio.map(function(l){return '<li>'+esc(l)+'</li>'}).join('')+'</ul>';
+ var rd='<div class="an-rds">'+v.rounds.map(function(r){return chipRound(r,v.jogadores)}).join('')+'</div>'
+  +'<p class="an-leg"><span class="lg"><i class="rd v mini"></i>Vitória</span><span class="lg"><i class="rd d mini"></i>Derrota</span><span class="lg"><i class="rd abn mini"></i>Primeiro duelo perdido</span><span class="lg"><i class="rd dpd mini"></i>Vantagem desperdiçada</span><span class="lg"><i class="rd clw mini"></i>Clutch vencido</span></p><p class="an-leg-n">Passe o mouse (ou toque) em um round para ver o que aconteceu.</p>';
+ var er=v.erros.filter(function(e){return e.peso>0.05}).slice(0,3);
+ var ers=er.length?'<ul class="an-err">'+er.map(function(e){return '<li><b>'+esc(e.titulo)+'</b><span>'+esc(e.texto)+'</span></li>'}).join('')+'</ul>':'<p class="note">Nenhum erro coletivo se destacou nesta partida.</p>';
+ var tb='<div class="hist-w"><table class="hist an-tb"><thead><tr><th>Jogador</th><th>Abates / mortes</th><th>1º duelo (ganhou / perdeu)</th><th>Trades feitos</th><th>Mortes sem trade</th><th>Clutches</th></tr></thead><tbody>'
+  +v.jogadores.slice().sort(function(a,b){return b.abates-a.abates}).map(function(p){
+   var o={steam64:p.steam64,apelido:p.nome,avatar:p.avatar};
+   return '<tr><td><span class="pj">'+av(o,'sm')+esc(p.nome)+'</span></td><td>'+p.abates+' / '+p.mortes+'</td><td>'+p.aberturas_ganhas+' / '+p.aberturas_perdidas+'</td><td>'+p.trades_feitos+'</td><td>'+p.mortes_sem_trade+' de '+p.mortes_tradaveis+'</td><td>'+p.clutches_ganhos+' de '+p.clutches+'</td></tr>'
+   +(p.diagnostico&&p.diagnostico.length?'<tr class="an-dg"><td colspan="6">'+p.diagnostico.map(esc).join(' ')+'</td></tr>':'')}).join('')
+  +'</tbody></table></div>';
+ return '<div class="an-det"><div class="an-col"><h4>Por que '+(v.venceu===false?'perdeu':'ganhou')+'</h4>'+rel+'</div>'
+  +'<div class="an-col"><h4>Rounds</h4>'+rd+'</div>'
+  +'<div class="an-col"><h4>Erros coletivos da partida</h4>'+ers+'</div>'
+  +'<div class="an-col"><h4>Cada jogador</h4>'+tb+'</div></div>';
+}
+function desenharAnalise(){
+ var box=el('an-box');if(!box)return;
+ var h='<article class="pro-c an-c"><span class="pro-s">Ranko Analyst</span>';
+ if(!ANL){box.innerHTML='<div class="vazio">Carregando a análise do time…</div>';return}
+ if(ANL.pro===null||ANL.pro===undefined){
+  box.innerHTML=h+'<h3>Análise do time</h3><p>Entre com a sua conta Steam e participe do time para ver a análise.</p></article>';return}
+ if(!ANL.pro){
+  box.innerHTML=h+'<h3>Análise automática das partidas</h3><p>Lê os rounds das partidas do time e mostra o que aconteceu: erros coletivos, diagnóstico de cada jogador e por que o time ganhou ou perdeu.</p>'
+   +'<ul><li>Panorama geral do time</li><li>Análise partida a partida, na aba Partidas</li><li>Erros que mais se repetem</li><li>Diagnóstico individual</li></ul>'
+   +'<p class="an-pre">'+(ANL.disponiveis?'Já há <b>'+ANL.disponiveis+(ANL.disponiveis===1?' partida':' partidas')+' do time analisadas</b>, esperando o plano Pro do time.':'Assim que o time jogar junto, as partidas são analisadas.')+' A assinatura ainda não está aberta: nada é cobrado hoje.</p></article>';return}
+ var P=ANL.panorama;
+ if(!P){box.innerHTML=h+'<h3>Panorama do time</h3><p>Ainda não há partidas analisadas. O robô analisa as próximas partidas em que 4 ou mais do time jogarem juntos.</p></article>';return}
+ var c=P.coletivo,nAb=c.aberturas_positivas+c.aberturas_negativas;
+ var tile=function(k,v,s){return '<div class="an-t"><span>'+k+'</span><b>'+v+'</b><small>'+s+'</small></div>'};
+ var tiles='<div class="an-tiles">'
+  +tile('Partidas analisadas',P.partidas,P.vitorias+' '+(P.vitorias===1?'vitória':'vitórias')+' · '+P.derrotas+' '+(P.derrotas===1?'derrota':'derrotas'))
+  +tile('Primeiro duelo ganho',pc(c.aberturas_positivas,nAb),c.aberturas_positivas+' de '+nAb+' rounds')
+  +tile('Mortes trocadas',pc(c.mortes_trocadas,c.mortes_tradaveis),c.mortes_trocadas+' de '+c.mortes_tradaveis+' mortes')
+  +tile('Vantagem desperdiçada',c.vantagens_desperdicadas,c.vantagens_desperdicadas===1?'round perdido com vantagem':'rounds perdidos com vantagem')+'</div>';
+ var lado='<p class="note">Rounds vencidos: de TR <b>'+P.lados.T.g+' de '+P.lados.T.n+'</b> ('+pc(P.lados.T.g,P.lados.T.n)+') · de CT <b>'+P.lados.CT.g+' de '+P.lados.CT.n+'</b> ('+pc(P.lados.CT.g,P.lados.CT.n)+'). Análise das últimas '+P.partidas+(P.partidas===1?' partida':' partidas')+' do time.</p>';
+ var er=P.erros.filter(function(e){return e.peso>0.05}).slice(0,3);
+ var ers=er.length?'<ol class="an-erros">'+er.map(function(e){return '<li><div class="an-e-t"><b>'+esc(e.titulo)+'</b><i style="--w:'+Math.round(e.peso*100)+'%"></i></div><span>'+esc(e.texto)+'</span></li>'}).join('')+'</ol>':'<p class="note">Nenhum erro coletivo se destacou nas últimas partidas. Bom sinal.</p>';
+ var jg='<div class="an-jg">'+P.jogadores.map(function(p){
+  var o={steam64:p.steam64,apelido:p.nome,avatar:p.avatar};
+  return '<div class="an-j"><div class="an-j-h">'+av(o,'sm')+'<div><b>'+esc(p.nome)+'</b><small>'+p.partidas+(p.partidas===1?' partida':' partidas')+'</small></div></div>'
+   +'<div class="an-j-n"><span><b>'+p.aberturas_ganhas+'/'+p.aberturas_perdidas+'</b>1º duelo</span><span><b>'+p.trades_feitos+'</b>trades feitos</span><span><b>'+pc(p.mortes_sem_trade,p.mortes_tradaveis)+'</b>mortes sem trade</span></div>'
+   +(p.diagnostico.length?'<ul>'+p.diagnostico.map(function(d){return '<li>'+esc(d)+'</li>'}).join('')+'</ul>':'<p class="an-sd">Ainda sem destaque. Precisa de mais partidas.</p>')+'</div>'}).join('')+'</div>';
+ box.innerHTML=h+'<h3>Panorama do time</h3>'+tiles+lado
+  +'<h4 class="an-h">Principais erros coletivos</h4>'+ers
+  +'<h4 class="an-h">Diagnóstico de cada jogador</h4>'+jg
+  +'<p class="note">A análise de cada partida está na seção Partidas, no botão “Ver análise”.</p></article>';
 }
 function montarCla(j){
  var ms=(j.membros||[]).map(membroDados);
@@ -1729,6 +1899,8 @@ document.addEventListener('click',function(e){
  }
  var b=e.target.closest('[data-acao]');if(!b)return;
  var ac=b.getAttribute('data-acao');
+ if(ac==='an-abrir'){var di=el('an-d'+b.getAttribute('data-i'));if(di){var ab=di.hasAttribute('hidden');if(ab)di.removeAttribute('hidden');else di.setAttribute('hidden','');b.setAttribute('aria-expanded',String(ab));b.textContent=ab?'Fechar análise':'Ver análise'}return}
+ if(ac==='an-travado'){var av2=el('an-aviso');if(av2){av2.removeAttribute('hidden');av2.scrollIntoView({block:'nearest',behavior:'smooth'})}return}
  if(ac==='periodo'){PER=b.getAttribute('data-v');posInit();return}
  if(ac==='abrir-opcoes'){abrirOpcoes(b.getAttribute('data-aba')||'geral');return}
  if(ac==='aba'){OPC.aba=b.getAttribute('data-aba');OPC.msg=null;renderOpc();return}
