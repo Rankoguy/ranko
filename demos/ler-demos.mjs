@@ -8,7 +8,9 @@ import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
-const { parseEvent, parseTicks, parseHeader } = require('@laihoe/demoparser2');
+const dpLib = require('@laihoe/demoparser2');
+const { parseEvent, parseTicks, parseHeader } = dpLib;
+import { lerEventos, calcular, compactar } from './analise.mjs';
 
 const env = (k) => {
   const v = (process.env[k] || '').trim();
@@ -213,6 +215,7 @@ function estatisticas(arquivo, ids) {
 
 mkdirSync('saida', { recursive: true });
 const partidas = [];
+const analises = [];
 const ruins = new Map(); // matchId -> 'indisponivel' | 'falha'
 let n = 0;
 for (const pt of porPartida.values()) {
@@ -235,6 +238,11 @@ for (const pt of porPartida.values()) {
     // lê os números de todas as pessoas do painel que jogaram essa partida
     const todos = fontes.map((f) => f.steam64);
     const s = estatisticas(arq, todos);
+    // Ranko Analyst: resumo por round (só eventos; sem posição por tick). Se falhar, a partida segue só com as estatísticas.
+    try {
+      const an = calcular(lerEventos(dpLib, arq));
+      if (an) analises.push({ partida: pt.id, t: pt.horario, a: compactar(an) });
+    } catch (e) { log('  (análise de rounds indisponível nesta partida)'); }
     rmSync(arq, { force: true });
     pt.stats = s;
     for (const [id, st] of Object.entries(s)) partidas.push({ steam64: id, partida: pt.id, t: pt.horario, s: st });
@@ -257,7 +265,7 @@ for (const p of pessoas) {
   }
   const a = avancos.get(p.f.steam64); a.ultimo_codigo = ultimo;
 }
-await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas, avancos: [...avancos.values()] }) });
+await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas, analises, avancos: [...avancos.values()] }) });
 log(`Enviado: ${partidas.length} registros de partida.`);
 steam.logOff();
 await espera(500);
