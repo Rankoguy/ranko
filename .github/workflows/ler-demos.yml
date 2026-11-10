@@ -7,6 +7,9 @@ on:
       incluir_inicial:
         description: 'Teste: ler também a partida do código colado (digite sim)'
         default: 'nao'
+      depurar_rating:
+        description: 'Teste do rating: mostra no log os nomes dos campos do perfil, sem valores (digite sim)'
+        default: 'nao'
 permissions:
   contents: read   # o robô só precisa LER o código; não pode escrever no repositório
 concurrency:
@@ -31,4 +34,5 @@ jobs:
           WORKER_URL: ${{ secrets.WORKER_URL }}
           ROBO_SECRET: ${{ secrets.ROBO_SECRET }}
           INCLUIR_INICIAL: ${{ inputs.incluir_inicial }}
+          DEPURAR_RATING: ${{ inputs.depurar_rating }}
         run: node ler-demos.mjs
