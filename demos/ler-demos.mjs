@@ -117,18 +117,20 @@ function premierDe(perfil) {
 }
 const DEP = process.env.DEPURAR_RATING === 'sim';
 async function perfilDe(f) {
-  // tenta o pedido de dois jeitos; no modo depuração diz por que cada um falhou (nunca imprime valores)
-  const tentativas = [['id de conta (número)', Number(BigInt(f.steam64) & 0xFFFFFFFFn)], ['steam64 (texto)', f.steam64]];
-  for (const [nome, arg] of tentativas) {
-    try {
-      const perfil = await comTempo(new Promise((res) => { csgo.requestPlayersProfile(arg, res); }), 20000, 'sem resposta do perfil');
-      if (DEP) log(`  (rating: a Valve respondeu à tentativa "${nome}")`);
-      return perfil || {};
-    } catch (e) {
-      if (DEP) log(`  (rating: tentativa "${nome}" falhou: ${String((e && e.message) || e).slice(0, 120)})`);
-    }
+  // o pedido da Valve só responde para amigo da conta-robô que esteja com o CS aberto.
+  // No modo depuração diz se a amizade existe e por que falhou (nunca imprime valores).
+  if (DEP) {
+    const rel = steam.myFriends && steam.myFriends[f.steam64];
+    log(`  (rating: amizade com a conta-robô: ${rel === SteamUser.EFriendRelationship.Friend ? 'SIM' : 'NÃO (relação ' + (rel === undefined ? 'nenhuma' : rel) + ')'})`);
   }
-  return null;
+  try {
+    const perfil = await comTempo(new Promise((res) => { csgo.requestPlayersProfile(f.steam64, res); }), 30000, 'sem resposta da Valve em 30 s');
+    if (DEP) log('  (rating: a Valve respondeu ao pedido)');
+    return perfil || {};
+  } catch (e) {
+    if (DEP) log(`  (rating: o pedido falhou: ${String((e && e.message) || e).slice(0, 120)})`);
+    return null;
+  }
 }
 for (const f of querRating) {
   const perfil = await perfilDe(f);
