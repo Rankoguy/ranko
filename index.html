@@ -750,6 +750,19 @@ body.modo-pro .pro-sec{display:block}
 .pro-c li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--t);flex:none}
 .pro-s{display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);font:600 12.5px var(--body)}
 @media(max-width:900px){.pro-g{grid-template-columns:minmax(0,1fr)}.modo-t{width:100%}}
+/* ----- plano individual ----- */
+.ind-bloco{display:grid;grid-template-columns:72px 1fr;gap:2px 14px;padding:14px 0;border-top:1px solid var(--line2)}
+.ind-bloco .min{grid-row:1/3;color:var(--ct-text);font:800 24px/1.1 var(--body)}
+.ind-bloco .min small{display:block;color:var(--muted);font:600 12.5px var(--body)}
+.ind-bloco h5{margin:0;color:var(--text);font:700 15px var(--body)}
+.ind-bloco p{margin:0;color:var(--muted);font-size:14.5px;max-width:70ch}
+.ind-aviso{margin:12px 0 0;padding:10px 14px;border:1px solid var(--red);border-radius:var(--r-md);background:rgba(var(--red-rgb),.08);color:var(--text);font-size:14.5px;max-width:78ch}
+.ind-aviso[hidden]{display:none}
+.ind-graf{display:block;width:100%;max-width:640px;height:auto;color:var(--ct-text)}
+.ind-gloss{margin:14px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px;max-width:78ch}
+.ind-gloss li{margin:4px 0}
+.ind-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;max-width:640px}
+@media (max-width:760px){.ind-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 <meta name="theme-color" content="#e6af0c">
 <script>(function(){
@@ -1450,8 +1463,9 @@ function montarPerfil(j,p,propria,grupo){
    +'</div>';
  }else corpo='<div class="dr-sec" style="padding-bottom:6px"><p class="note" style="margin:0">'+(propria?'Ainda não temos partidas suas. Ligue a leitura em <b>Opções</b>, no canto superior direito: leva 2 minutos, uma vez só, e já puxamos as últimas partidas que a Steam guarda.':'Esse jogador ainda não ligou a leitura das partidas, então não há números dele por aqui.')+'</p></div>';
  var claSec=(propria&&!(ME&&ME.cla))?'<div class="cla-sec" id="clasec">'+claCardHtml()+'</div>':'';
- view('<div class="pagina-perfil"><div class="me-card"><div class="dr-hero">'+cab+lado+'</div>'+(p.hltv!=null&&!p.erro?'<div class="cartao-acoes"><button class="btn g sm" type="button" data-acao="cartao">Baixar cartão para postar</button><span class="msg" id="msg-cartao"></span></div>':'')+corpo+(p.hltv!=null&&!p.erro?'<div class="dr-sec wide hist-sec" id="hist-sec"></div>':'')+'<div class="dr-sec wide func-sec" id="func-sec"></div>'+claSec+(p.hltv!=null&&!p.erro?'<div class="dr-sec wide" style="padding-bottom:26px">'+glossario()+'</div>':'')+'</div></div>');
+ view('<div class="pagina-perfil"><div class="me-card"><div class="dr-hero">'+cab+lado+'</div>'+(p.hltv!=null&&!p.erro?'<div class="cartao-acoes"><button class="btn g sm" type="button" data-acao="cartao">Baixar cartão para postar</button><span class="msg" id="msg-cartao"></span></div>':'')+corpo+(p.hltv!=null&&!p.erro?'<div class="dr-sec wide hist-sec" id="hist-sec"></div>':'')+'<div class="dr-sec wide func-sec" id="func-sec"></div>'+(propria?'<div class="dr-sec wide func-sec" id="ind-sec"></div>':'')+claSec+(p.hltv!=null&&!p.erro?'<div class="dr-sec wide" style="padding-bottom:26px">'+glossario()+'</div>':'')+'</div></div>');
  FUNC_EDIT=false;montarFuncao(j,p,propria);
+ if(propria)montarIndividual();
  if(p.hltv!=null&&!p.erro)carregarHist(p.steam64);
  document.title=p.apelido+' — Ranko';
 }
@@ -1922,6 +1936,7 @@ document.addEventListener('click',function(e){
   });return;
  }
 
+ if(ac.indexOf('ind-')===0){indAcao(ac,b);return}
  if(ac==='funcao-salvar'){salvarFuncao(b);return}
  if(ac==='funcao-editar'||ac==='funcao-cancelar'){FUNC_EDIT=(ac==='funcao-editar');if(FUNC_CTX)montarFuncao(FUNC_CTX.j,FUNC_CTX.p,FUNC_CTX.propria);return}
  if(ac==='abrir-conta'){abrirConta();return}
@@ -2144,6 +2159,153 @@ document.addEventListener('change',function(e){
  var t=e.target;if(!t||!t.id)return;
  if(t.id==='fn-tr'){var s=el('fn-sub');if(s)s.innerHTML=opts(subLista(t.value),'','Nenhuma')}
 });
+
+/* ----- plano individual (Ranko): pretensão, tempo, equilíbrio e hábitos -> rotina de treino ----- */
+var IND={dados:null,edit:false};
+var IND_FAIXAS=[['Cinza',0],['Azul-claro',5000],['Azul',10000],['Roxo',15000],['Rosa',20000],['Vermelho',25000],['Amarelo',30000]];
+var IND_HORAS=[['30','Até 30 min'],['60','1 hora'],['90','1h30'],['120','2 horas'],['180','3 horas ou mais']];
+var IND_HAB=[['sim','Sim, com frequência'],['as_vezes','Às vezes'],['nao','Não'],['nao_sei','Não sei o que é']];
+function indFaixa(r){var i=0;for(var k=0;k<IND_FAIXAS.length;k++)if(r>=IND_FAIXAS[k][1])i=k;return i}
+function indMilhar(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.')}
+function indRotulo(i){return IND_FAIXAS[i][0]+' '+indMilhar(IND_FAIXAS[i][1])+'+'}
+function indRad(nome,val,rot,sel){return '<label class="chk"><input type="radio" name="'+nome+'" value="'+val+'"'+(sel?' checked':'')+'><span>'+esc(rot)+'</span></label>'}
+function indOpts(lista,sel){return lista.map(function(x){return '<option value="'+x[0]+'"'+(String(x[0])===String(sel)?' selected':'')+'>'+esc(x[1])+'</option>'}).join('')}
+function montarIndividual(){
+ var box=el('ind-sec');if(!box)return;
+ if(!box._ind){box._ind=1;box.addEventListener('change',indAtualizar);box.addEventListener('input',indAtualizar)}
+ box.innerHTML='<h4>Plano individual</h4><p class="note" style="margin:0">Carregando…</p>';
+ chamar('GET','/eu/individual',undefined,true).then(function(r){
+  if(el('ind-sec')!==box)return;
+  if(!r.ok){box.innerHTML='<h4>Plano individual</h4><p class="note" style="margin:0">'+esc(r.j.erro||'Não consegui carregar agora.')+'</p>';return}
+  IND.dados=r.j;IND.edit=false;indDesenhar();
+ });
+}
+function indDesenhar(){
+ var box=el('ind-sec'),d=IND.dados;if(!box||!d)return;
+ if(!d.pro){box.innerHTML='<h4>Plano individual</h4><p class="note" style="margin:0 0 6px">Uma rotina de treino montada com o seu objetivo, o seu tempo livre e os pontos fracos das suas partidas.</p><p class="note" style="margin:0">Ainda está em teste e é liberado manualmente, conta por conta.</p>';return}
+ if(d.perfil&&d.rotina&&!IND.edit)box.innerHTML=indResumo(d);
+ else{box.innerHTML=indForm(d);indAtualizar()}
+}
+function indForm(d){
+ var p=d.perfil||{},rt=d.rating||{};
+ var dias=[1,2,3,4,5,6,7].map(function(n){return [n,n+(n===1?' dia':' dias')+' por semana']});
+ var rating=rt.origem==='steam'
+  ?'<p class="note" style="margin:0">Rating Premier lido da Steam: <b>'+indMilhar(rt.atual)+'</b> ('+esc(rt.faixa||'')+').</p>'
+  :'<div class="campo" style="max-width:300px;margin:0"><label for="ind-rating">Seu rating Premier atual (opcional)</label><input id="ind-rating" type="text" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Ex.: 14500" value="'+(p.rating_manual!=null?esc(p.rating_manual):'')+'"></div>'
+   +'<p class="note" style="margin:6px 0 0">Sem rating? Ele aparece depois de 10 vitórias no Premier. Enquanto isso, escolha “Jogar melhor”.</p>';
+ return '<h4>Plano individual</h4><p class="note" style="margin:0 0 16px">Responda em 1 minuto. A rotina sai das suas respostas e das suas partidas.</p>'
+  +'<h4>O que você quer com o CS2 agora?</h4><div class="chips-m" id="ind-pret">'
+  +indRad('ind-pret','rank','Chegar a um rank',p.pretensao==='rank')
+  +indRad('ind-pret','melhor','Jogar melhor',p.pretensao==='melhor')
+  +indRad('ind-pret','divertir','Me divertir mais',p.pretensao==='divertir')+'</div>'
+  +'<div style="margin-top:14px">'+rating+'</div>'
+  +'<div id="ind-alvo-box" style="margin-top:14px;max-width:320px"><div class="campo" style="margin:0"><label for="ind-alvo">Qual rank?</label><select id="ind-alvo" data-ini="'+(p.alvo||'')+'"></select></div></div>'
+  +'<p class="ind-aviso" id="ind-alvo-aviso" hidden></p>'
+  +'<h4 style="margin-top:22px">Quanto tempo você tem para o CS2?</h4><div class="ind-grid">'
+  +'<div class="campo"><label for="ind-horas">Por dia (jogo e treino juntos)</label><select id="ind-horas">'+indOpts(IND_HORAS,p.horas||'60')+'</select></div>'
+  +'<div class="campo"><label for="ind-dias">Dias por semana</label><select id="ind-dias">'+indOpts(dias,p.dias||5)+'</select></div></div>'
+  +'<div id="ind-eq-box"><h4 style="margin-top:10px">Neste primeiro momento, você prefere…</h4><div class="chips-m">'
+  +indRad('ind-eq','treino','Treinar mais do que jogar',p.equilibrio==='treino')
+  +indRad('ind-eq','equilibrado','Um pouco de cada',!p.equilibrio||p.equilibrio==='equilibrado')
+  +indRad('ind-eq','jogo','Jogar mais e treinar menos',p.equilibrio==='jogo')+'</div></div>'
+  +'<h4 style="margin-top:22px">Você já treina fora das partidas?</h4><div class="ind-grid">'
+  +'<div class="campo"><label for="ind-dm">Joga deathmatch (DM)?</label><select id="ind-dm">'+indOpts(IND_HAB,p.hab_dm||'nao')+'</select></div>'
+  +'<div class="campo"><label for="ind-bots">Treina em mapa de bots?</label><select id="ind-bots">'+indOpts(IND_HAB,p.hab_bots||'nao')+'</select></div></div>'
+  +'<div class="func-bt"><button class="btn y sm" type="button" data-acao="ind-salvar">Gerar minha rotina</button>'+(d.perfil?'<button class="btn g sm" type="button" data-acao="ind-cancelar">Cancelar</button>':'')+'</div><p class="msg" id="msg-ind"></p>';
+}
+function indRatingAtual(){
+ var d=IND.dados,rt=d&&d.rating;
+ if(rt&&rt.origem==='steam')return rt.atual;
+ var i=el('ind-rating');if(!i)return rt&&rt.atual!=null?rt.atual:null;
+ var n=parseInt(String(i.value).replace(/\D/g,''),10);
+ return isNaN(n)||n>40000?null:n;
+}
+function indAtualizar(){
+ var box=el('ind-sec');if(!box||!el('ind-pret'))return;
+ var rat=indRatingAtual();
+ var rank=box.querySelector('input[name="ind-pret"][value="rank"]');
+ if(rank){
+  rank.disabled=(rat==null);
+  if(rat==null&&rank.checked){rank.checked=false;var m=box.querySelector('input[name="ind-pret"][value="melhor"]');if(m)m.checked=true}
+ }
+ var sel=box.querySelector('input[name="ind-pret"]:checked'),v=sel?sel.value:'';
+ var ab=el('ind-alvo-box'),av=el('ind-alvo-aviso'),sa=el('ind-alvo'),eq=el('ind-eq-box');
+ if(eq)eq.style.display=(v==='divertir')?'none':'';
+ var mostrar=(v==='rank'&&rat!=null);
+ if(ab)ab.style.display=mostrar?'':'none';
+ if(!mostrar){if(av)av.hidden=true;return}
+ var ia=indFaixa(rat);
+ if(sa.getAttribute('data-faixa')!==String(ia)){
+  var h='';
+  for(var i=ia+1;i<IND_FAIXAS.length;i++)h+='<option value="'+IND_FAIXAS[i][1]+'">'+esc(indRotulo(i))+'</option>';
+  sa.innerHTML=h||'<option value="">Você já está na última faixa</option>';
+  sa.setAttribute('data-faixa',String(ia));
+  var ini=sa.getAttribute('data-ini');if(ini&&sa.querySelector('option[value="'+ini+'"]'))sa.value=ini;
+ }
+ var alvo=Number(sa.value);
+ if(alvo&&indFaixa(alvo)-ia>=2){
+  av.hidden=false;
+  av.textContent='Não recomendamos ir direto para '+indRotulo(indFaixa(alvo))+': exige uma rotina bem mais pesada e mais tempo do que você tem. O ideal é subir de escadinha, começando por '+indRotulo(ia+1)+'. Você pode manter esse alvo se quiser.';
+ }else av.hidden=true;
+}
+function indSalvar(b){
+ var box=el('ind-sec');if(!box)return;
+ var sel=box.querySelector('input[name="ind-pret"]:checked');
+ if(!sel){dizer('msg-ind','Escolha o que você quer com o CS2 agora.',false);return}
+ var corpo={pretensao:sel.value,horas:el('ind-horas').value,dias:Number(el('ind-dias').value),hab_dm:el('ind-dm').value,hab_bots:el('ind-bots').value};
+ var eq=box.querySelector('input[name="ind-eq"]:checked');corpo.equilibrio=eq?eq.value:'equilibrado';
+ if(sel.value==='rank'){
+  corpo.alvo=Number(el('ind-alvo').value);
+  if(!corpo.alvo){dizer('msg-ind','Escolha o rank que você quer alcançar.',false);return}
+ }
+ var ri=el('ind-rating'),dig=ri?ri.value.replace(/\D/g,''):'';
+ if(dig!=='')corpo.rating_manual=Number(dig);
+ b.disabled=true;dizer('msg-ind','Montando a sua rotina…',true);
+ chamar('POST','/eu/individual',corpo,true).then(function(r){
+  b.disabled=false;
+  if(!r.ok){dizer('msg-ind',r.j.erro||'Não consegui salvar agora.',false);return}
+  IND.dados=r.j;IND.edit=false;indDesenhar();
+ });
+}
+function indAcao(ac,b){
+ if(ac==='ind-salvar'){indSalvar(b);return}
+ if(ac==='ind-editar'||ac==='ind-cancelar'){IND.edit=(ac==='ind-editar');indDesenhar();return}
+}
+function indGrafico(h,alvo){
+ if(!h||h.length<2)return '';
+ var W=600,H=120,pad=14,min=Infinity,max=-Infinity;
+ h.forEach(function(x){min=Math.min(min,x.r);max=Math.max(max,x.r)});
+ if(alvo){min=Math.min(min,alvo);max=Math.max(max,alvo)}
+ if(max===min){max+=500;min-=500}
+ function X(i){return pad+(W-2*pad)*i/(h.length-1)}
+ function Y(v){return H-pad-(H-2*pad)*(v-min)/(max-min)}
+ var pts=h.map(function(x,i){return X(i).toFixed(1)+','+Y(x.r).toFixed(1)}).join(' ');
+ function dm(d){return d.slice(8,10)+'/'+d.slice(5,7)}
+ return '<svg class="ind-graf" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Rating Premier de '+dm(h[0].d)+' a '+dm(h[h.length-1].d)+'"><title>Rating Premier ao longo do tempo</title>'
+  +(alvo?'<line x1="'+pad+'" x2="'+(W-pad)+'" y1="'+Y(alvo).toFixed(1)+'" y2="'+Y(alvo).toFixed(1)+'" stroke="currentColor" stroke-dasharray="5 5" opacity=".55"/>':'')
+  +'<polyline points="'+pts+'" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>'
+  +'<p class="note" style="margin:4px 0 0">De '+dm(h[0].d)+' a '+dm(h[h.length-1].d)+(alvo?'. A linha tracejada é a sua meta.':'.')+'</p>';
+}
+function indResumo(d){
+ var p=d.perfil,ro=d.rotina,rt=d.rating||{};
+ var meta=ro.pretensao==='rank'&&p.alvo?'Meta: <b>'+esc(indRotulo(indFaixa(p.alvo)))+'</b>':ro.pretensao==='divertir'?'Foco: <b>se divertir mais</b>':'Foco: <b>jogar melhor</b>';
+ var etapa=ro.pretensao==='rank'&&ro.etapa?' · primeira etapa: <b>'+esc(ro.etapa.nome+' '+indMilhar(ro.etapa.rating)+'+')+'</b>':'';
+ var h='<div class="func-h"><h4>Plano individual</h4><span class="ok-b">Rotina pronta</span></div>'
+  +'<p class="note" style="margin:0">'+meta+etapa+'</p>'
+  +'<p class="note" style="margin:6px 0 4px">Por dia: <b>'+ro.total+' min</b> de CS2, sendo <b>'+ro.treino+' min de treino</b> e '+ro.jogo+' min jogando · '+ro.dias+(ro.dias===1?' dia':' dias')+' por semana ('+ro.semana.treino+' min de treino na semana).</p>';
+ (ro.avisos||[]).forEach(function(a){h+='<p class="ind-aviso">'+esc(a)+'</p>'});
+ h+='<h4 style="margin-top:18px">A sua rotina de treino</h4>';
+ ro.blocos.forEach(function(b){h+='<div class="ind-bloco"><div class="min">'+b.min+'<small>min</small></div><h5>'+esc(b.titulo)+'</h5><p>'+esc(b.texto)+'</p></div>'});
+ h+='<div class="ind-bloco"><div class="min">'+ro.jogo+'<small>min</small></div><h5>Jogar</h5><p>O resto do tempo é para jogar de verdade, com um objetivo pequeno por partida: aplicar o que você treinou.</p></div>';
+ if((ro.glossario||[]).length)h+='<ul class="ind-gloss">'+ro.glossario.map(function(g){return '<li>'+esc(g)+'</li>'}).join('')+'</ul>';
+ if(rt.atual!=null){
+  h+='<h4 style="margin-top:18px">Rating Premier</h4><p class="note" style="margin:0 0 8px">Agora: <b>'+indMilhar(rt.atual)+'</b> ('+esc(rt.faixa||'')+')'+(rt.origem==='manual'?' · informado por você':'')+'</p>'
+   +(rt.hist&&rt.hist.length>=2?indGrafico(rt.hist,ro.pretensao==='rank'?p.alvo:null):'<p class="note" style="margin:0">'+(rt.origem==='manual'?'O gráfico aparece quando o robô passar a ler o seu rating.':'O gráfico aparece depois de alguns dias de leitura.')+'</p>');
+ }
+ h+='<div class="func-bt"><button class="btn g sm" type="button" data-acao="ind-editar">Editar respostas</button></div>'
+  +'<p class="note" style="margin:0">Rotina montada por regras escritas à mão, ainda em calibragem. Ela muda sozinha conforme as suas partidas novas.</p>';
+ return h;
+}
 
 /* ----- mapas e composição do time ----- */
 function ratingSomas(m){
