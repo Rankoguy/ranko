@@ -100,8 +100,8 @@ log('✔ conta-robô conectada');
 
 // Rating Premier (só de quem tem o plano individual). Nunca imprime o número: o log do GitHub é público.
 const ratings = [];
-function premierDe(perfil) {
-  // procura, no perfil devolvido pela Valve, a entrada de ranking do Premier (rank_type_id 11)
+function rankingsDe(perfil) {
+  // junta todas as entradas de ranking (rank_type_id + rank_id) que a Valve devolveu no perfil
   const achados = [];
   (function varrer(o, d = 0) {
     if (!o || typeof o !== 'object' || d > 4) return;
@@ -109,17 +109,35 @@ function premierDe(perfil) {
     if ('rank_type_id' in o && 'rank_id' in o) achados.push(o);
     Object.values(o).forEach((x) => varrer(x, d + 1));
   })(perfil);
-  const p = achados.find((x) => Number(x.rank_type_id) === 11);
+  return achados;
+}
+function premierDe(perfil) {
+  const p = rankingsDe(perfil).find((x) => Number(x.rank_type_id) === 11);
   return p ? Number(p.rank_id) : null;
 }
+const DEP = process.env.DEPURAR_RATING === 'sim';
+async function perfilDe(f) {
+  // tenta o pedido de dois jeitos; no modo depuração diz por que cada um falhou (nunca imprime valores)
+  const tentativas = [['id de conta (número)', Number(BigInt(f.steam64) & 0xFFFFFFFFn)], ['steam64 (texto)', f.steam64]];
+  for (const [nome, arg] of tentativas) {
+    try {
+      const perfil = await comTempo(new Promise((res) => { csgo.requestPlayersProfile(arg, res); }), 20000, 'sem resposta do perfil');
+      if (DEP) log(`  (rating: a Valve respondeu à tentativa "${nome}")`);
+      return perfil || {};
+    } catch (e) {
+      if (DEP) log(`  (rating: tentativa "${nome}" falhou: ${String((e && e.message) || e).slice(0, 120)})`);
+    }
+  }
+  return null;
+}
 for (const f of querRating) {
-  try {
-    const contaId = Number(BigInt(f.steam64) & 0xFFFFFFFFn); // os 32 bits de baixo do Steam ID são o id da conta
-    const perfil = await comTempo(new Promise((res) => csgo.requestPlayersProfile(contaId, res)), 20000, 'sem resposta do perfil');
+  const perfil = await perfilDe(f);
+  if (!perfil) log('  (rating indisponível para uma pessoa)');
+  else {
     const r = premierDe(perfil);
     if (Number.isInteger(r) && r > 0) ratings.push({ steam64: f.steam64, rating: r });
-    else if (process.env.DEPURAR_RATING === 'sim') log('  (rating: o perfil não trouxe entrada Premier; campos do perfil:', Object.keys(perfil || {}).join(', '), ')');
-  } catch (e) { log('  (rating indisponível para uma pessoa)'); }
+    else if (DEP) log('  (rating: o perfil não trouxe entrada Premier. Campos:', Object.keys(perfil).join(', '), '| tipos de ranking:', rankingsDe(perfil).map((x) => x.rank_type_id).join(', ') || 'nenhum', ')');
+  }
   await espera(1500);
 }
 log(`Ratings lidos: ${ratings.length} de ${querRating.length}`);
