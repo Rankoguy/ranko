@@ -762,6 +762,20 @@ body.modo-pro .pro-sec{display:block}
 .ind-gloss{margin:14px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px;max-width:78ch}
 .ind-gloss li{margin:4px 0}
 .ind-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;max-width:640px}
+/* selo de rating Premier (desenho próprio do Ranko; a cor segue a faixa) */
+.rt{--rc:#aab4c0;display:inline-flex;align-items:center;height:24px;border-radius:7px;background:var(--rc);color:#0b0e14;font:700 13px var(--body);font-variant-numeric:tabular-nums;white-space:nowrap;vertical-align:middle;overflow:hidden}
+.rt b{padding:0 9px;font-weight:700}
+.rt i{font-style:normal;font-weight:600;padding:0 8px;height:100%;display:inline-flex;align-items:center;background:rgba(255,255,255,.38)}
+.pl .rt{margin-left:8px}
+.rt-l{margin-top:6px}
+.dr-tags .rt{height:26px}
+.rt-op{position:relative;display:inline-flex;cursor:pointer}
+.rt-op input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.rt-op .rt{height:34px;font-size:14px;outline:2px solid transparent;outline-offset:3px;transition:outline-color .15s var(--ease)}
+.rt-op .rt b{padding:0 13px}
+.rt-op input:checked+.rt,.rt-op input:focus-visible+.rt{outline-color:var(--text)}
+.rt-op input:not(:checked)+.rt{opacity:.72}
+.rt-op:hover .rt{opacity:1}
 @media (max-width:760px){.ind-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 <meta name="theme-color" content="#e6af0c">
@@ -964,6 +978,15 @@ function f(n,d){return Number(n).toFixed(d).replace('.',',')}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function av(p,x,ring){return '<div class="av '+(x||'')+' '+(ring||'')+'">'+(p.avatar?'<img src="'+esc(p.avatar)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':esc(p.apelido.slice(0,2).toUpperCase()))+'</div>'}
 function el(id){return document.getElementById(id)}
+var RT_F=[['Cinza',0,'#aab4c0'],['Azul-claro',5000,'#7ab8ea'],['Azul',10000,'#7b8cf5'],['Roxo',15000,'#b87bf5'],['Rosa',20000,'#e65aea'],['Vermelho',25000,'#f26a67'],['Amarelo',30000,'#ffd21a']];
+function rtNum(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.')}
+function rtFaixa(r){var i=0;for(var k=0;k<RT_F.length;k++)if(r>=RT_F[k][1])i=k;return i}
+function selo(r,grande){
+ if(r==null||isNaN(r)||r<=0)return '';
+ var fx=RT_F[rtFaixa(r)];
+ return '<span class="rt" style="--rc:'+fx[2]+'" title="Premier '+rtNum(r)+' · faixa '+fx[0]+'">'+(grande?'<i>Premier</i>':'')+'<b>'+rtNum(r)+'</b></span>';
+}
+function seloFaixa(i){var fx=RT_F[i];return '<span class="rt" style="--rc:'+fx[2]+'"><b>'+esc(fx[0])+' · '+rtNum(fx[1])+'+</b></span>'}
 function z(p,k){var v=p.zoeira&&p.zoeira[k];return v==null?0:v}
 function cu(v,d,pre){return '<span class="cu" data-v="'+v+'" data-d="'+d+'" data-pre="'+(pre||'')+'">'+(pre||'')+f(v,d)+'</span>'}
 
@@ -1002,7 +1025,7 @@ function drawRows(q){
  var h=P.filter(function(p){return p.apelido.toLowerCase().indexOf(q)>-1}).map(function(p){
   var i=P.indexOf(p);
   function bar(v){return v==null?'–':'<span class="bar"><i style="width:'+Math.max(0,Math.min(100,v))+'%"></i></span><span class="mono">'+f(v,0)+'</span>'}
-  return '<tr data-p="'+p.steam64+'" tabindex="0" class="'+(i<3?'top'+(i+1):'')+'"><td class="pos"><span class="rk">'+(i+1)+'</span></td><td><div class="pl">'+av(p)+esc(p.apelido)+'</div></td>'
+  return '<tr data-p="'+p.steam64+'" tabindex="0" class="'+(i<3?'top'+(i+1):'')+'"><td class="pos"><span class="rk">'+(i+1)+'</span></td><td><div class="pl">'+av(p)+esc(p.apelido)+selo(p.rating)+'</div></td>'
   +'<td><b class="hv '+(p.hltv>=1?'up':'dn')+'">'+f(p.hltv,2)+'</b></td>'
   +'<td data-l="Mira">'+bar(p.mira)+'</td><td data-l="Utilidade">'+bar(p.utilidade)+'</td><td data-l="Posição">'+bar(p.posicionamento)+'</td>'
   +'<td class="mono" data-l="Vitórias">'+(p.vitorias_pct==null?'–':f(p.vitorias_pct*100,0)+'%')+'</td><td class="mono" data-l="Estrelas">'+(p.mvps==null?'–':p.mvps)+'</td><td class="mono" data-l="Partidas">'+p.partidas_analisadas+'</td></tr>'}).join('');
@@ -1044,7 +1067,7 @@ function drawL(d){
   var ord=cand.length>=3?[1,0,2]:cand.length===2?[1,0]:[0];
   box.innerHTML='<p class="lid-k">'+(modo==='mes'?'Pódio de '+MES[mi]:modo==='semana'?'Pódio da semana':'Pódio')+'</p><div class="podio">'
    +ord.map(function(i){var p=cand[i],r=i+1;
-    return '<div class="pd p'+r+'" data-p="'+p.steam64+'">'+av(p,'xxl',r===1?'ring-gold':'')+'<div class="nm">'+esc(p.apelido)+'</div><div class="big">'+cu(p.hltv,2)+'</div><div class="sub">'+p.partidas_analisadas+' partidas'+(p.mvps!=null?' · '+p.mvps+(p.mvps===1?' estrela':' estrelas'):'')+'</div><div class="base" aria-hidden="true">'+r+'</div></div>'}).join('')
+    return '<div class="pd p'+r+'" data-p="'+p.steam64+'">'+av(p,'xxl',r===1?'ring-gold':'')+'<div class="nm">'+esc(p.apelido)+'</div>'+(p.rating?'<div class="rt-l">'+selo(p.rating)+'</div>':'')+'<div class="big">'+cu(p.hltv,2)+'</div><div class="sub">'+p.partidas_analisadas+' partidas'+(p.mvps!=null?' · '+p.mvps+(p.mvps===1?' estrela':' estrelas'):'')+'</div><div class="base" aria-hidden="true">'+r+'</div></div>'}).join('')
    +'</div>';
  }
  var ms=Object.keys(h.meses||{}).filter(function(k){return k!==per.mes_id}).sort().reverse().slice(0,3).map(function(k){return MES[+k.split('-')[1]-1]+' · '+esc(h.meses[k].lider.apelido)});
@@ -1143,7 +1166,7 @@ function forcasHtml(p){
   +'<div class="w"><h5>Pontos fracos e trollagem</h5><ul>'+(W.length?W.map(function(x){return li(x,1)}).join(''):'<li class="vz">Nenhum ponto fraco claro.</li>')+'</ul></div></div>'
   +'<p class="note" style="margin:12px 0 0">Comparado com a média do grupo neste período.</p></div>';
 }
-function perfilCab(p,pos,tags){return '<div class="dr-id">'+av(p,'xxl',pos===1?'ring-gold':'ring-t')+'<div><h3>'+esc(p.apelido)+'</h3><div class="dr-tags">'+tags+'</div></div></div>'}
+function perfilCab(p,pos,tags){return '<div class="dr-id">'+av(p,'xxl',pos===1?'ring-gold':'ring-t')+'<div><h3>'+esc(p.apelido)+'</h3><div class="dr-tags">'+selo(p.rating,1)+tags+'</div></div></div>'}
 function perfilSecoes(p){
  var kd=p.mortes?p.abates/p.mortes:null;
  var ach=[];
@@ -1293,8 +1316,8 @@ var CT_POS=['A','B','meio','rotação'];
 var SUG_ROT={entry:'Entry',suporte:'Suporte',awp:'AWP'};
 function membroDados(m){
  var d=m.dados;
- if(!d||typeof d!=='object')return{steam64:m.steam64,apelido:m.nome||'Jogador',avatar:m.avatar||null,pendente:true};
- var o=Object.assign({},d);o.steam64=m.steam64;o.apelido=d.apelido||m.nome||'Jogador';o.avatar=m.avatar||d.avatar||null;o.funcao=m.funcao||null;return o;
+ if(!d||typeof d!=='object')return{steam64:m.steam64,apelido:m.nome||'Jogador',avatar:m.avatar||null,pendente:true,rating:m.rating==null?null:m.rating};
+ var o=Object.assign({},d);o.steam64=m.steam64;o.apelido=d.apelido||m.nome||'Jogador';o.avatar=m.avatar||d.avatar||null;o.funcao=m.funcao||null;o.rating=m.rating==null?null:m.rating;return o;
 }
 function periodoDe(ms){
  var t=new Date((ms||Date.now())-3*3600*1000),dow=(t.getUTCDay()+6)%7;
@@ -1428,7 +1451,7 @@ function telaJogador(id,meu){
   var j=r.j,pr=j.cla?chamar('GET','/cla/'+j.cla.slug):Promise.resolve(null);
   pr.then(function(rc){
    if(meu!==TOK)return;
-   var me1=membroDados({steam64:j.steam64,nome:j.nome,avatar:j.avatar,dados:j.dados});
+   var me1=membroDados({steam64:j.steam64,nome:j.nome,avatar:j.avatar,dados:j.dados,rating:j.rating});
    var grupo=[];
    if(rc&&rc.ok)grupo=(rc.j.membros||[]).map(membroDados).filter(function(x){return !x.erro&&x.hltv!=null});
    if(!grupo.some(function(x){return x.steam64===j.steam64})&&me1.hltv!=null&&!me1.erro)grupo.push(me1);
@@ -2190,7 +2213,7 @@ function indForm(d){
  var p=d.perfil||{},rt=d.rating||{};
  var dias=[1,2,3,4,5,6,7].map(function(n){return [n,n+(n===1?' dia':' dias')+' por semana']});
  var rating=rt.origem==='steam'
-  ?'<p class="note" style="margin:0">Rating Premier lido da Steam: <b>'+indMilhar(rt.atual)+'</b> ('+esc(rt.faixa||'')+').</p>'
+  ?'<p class="note" style="margin:0">Rating Premier lido da Steam: '+selo(rt.atual,1)+'</p>'
   :'<div class="campo" style="max-width:300px;margin:0"><label for="ind-rating">Seu rating Premier atual (opcional)</label><input id="ind-rating" type="text" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Ex.: 14500" value="'+(p.rating_manual!=null?esc(p.rating_manual):'')+'"></div>'
    +'<p class="note" style="margin:6px 0 0">Sem rating? Ele aparece depois de 10 vitórias no Premier. Enquanto isso, escolha “Jogar melhor”.</p>';
  return '<h4>Plano individual</h4><p class="note" style="margin:0 0 16px">Responda em 1 minuto. A rotina sai das suas respostas e das suas partidas.</p>'
@@ -2199,7 +2222,7 @@ function indForm(d){
   +indRad('ind-pret','melhor','Jogar melhor',p.pretensao==='melhor')
   +indRad('ind-pret','divertir','Me divertir mais',p.pretensao==='divertir')+'</div>'
   +'<div style="margin-top:14px">'+rating+'</div>'
-  +'<div id="ind-alvo-box" style="margin-top:14px;max-width:320px"><div class="campo" style="margin:0"><label for="ind-alvo">Qual rank?</label><select id="ind-alvo" data-ini="'+(p.alvo||'')+'"></select></div></div>'
+  +'<div id="ind-alvo-box" style="margin-top:14px"><div class="campo" style="margin:0"><label id="ind-alvo-l">Qual rank?</label><div class="chips-m" id="ind-alvo" role="radiogroup" aria-labelledby="ind-alvo-l" data-ini="'+(p.alvo||'')+'"></div></div></div>'
   +'<p class="ind-aviso" id="ind-alvo-aviso" hidden></p>'
   +'<h4 style="margin-top:22px">Quanto tempo você tem para o CS2?</h4><div class="ind-grid">'
   +'<div class="campo"><label for="ind-horas">Por dia (jogo e treino juntos)</label><select id="ind-horas">'+indOpts(IND_HORAS,p.horas||'60')+'</select></div>'
@@ -2236,13 +2259,13 @@ function indAtualizar(){
  if(!mostrar){if(av)av.hidden=true;return}
  var ia=indFaixa(rat);
  if(sa.getAttribute('data-faixa')!==String(ia)){
-  var h='';
-  for(var i=ia+1;i<IND_FAIXAS.length;i++)h+='<option value="'+IND_FAIXAS[i][1]+'">'+esc(indRotulo(i))+'</option>';
-  sa.innerHTML=h||'<option value="">Você já está na última faixa</option>';
+  var ant=sa.querySelector('input[name="ind-alvo"]:checked'),ini=ant?ant.value:sa.getAttribute('data-ini'),h='';
+  for(var i=ia+1;i<RT_F.length;i++)h+='<label class="rt-op"><input type="radio" name="ind-alvo" value="'+RT_F[i][1]+'"'+(String(RT_F[i][1])===String(ini)?' checked':'')+'>'+seloFaixa(i)+'</label>';
+  sa.innerHTML=h||'<p class="note" style="margin:0">Você já está na última faixa.</p>';
   sa.setAttribute('data-faixa',String(ia));
-  var ini=sa.getAttribute('data-ini');if(ini&&sa.querySelector('option[value="'+ini+'"]'))sa.value=ini;
+  if(h&&!sa.querySelector('input:checked'))sa.querySelector('input').checked=true;
  }
- var alvo=Number(sa.value);
+ var ck=sa.querySelector('input[name="ind-alvo"]:checked'),alvo=ck?Number(ck.value):0;
  if(alvo&&indFaixa(alvo)-ia>=2){
   av.hidden=false;
   av.textContent='Não recomendamos ir direto para '+indRotulo(indFaixa(alvo))+': exige uma rotina bem mais pesada e mais tempo do que você tem. O ideal é subir de escadinha, começando por '+indRotulo(ia+1)+'. Você pode manter esse alvo se quiser.';
@@ -2255,7 +2278,7 @@ function indSalvar(b){
  var corpo={pretensao:sel.value,horas:el('ind-horas').value,dias:Number(el('ind-dias').value),hab_dm:el('ind-dm').value,hab_bots:el('ind-bots').value};
  var eq=box.querySelector('input[name="ind-eq"]:checked');corpo.equilibrio=eq?eq.value:'equilibrado';
  if(sel.value==='rank'){
-  corpo.alvo=Number(el('ind-alvo').value);
+  var ck=el('ind-alvo').querySelector('input:checked');corpo.alvo=ck?Number(ck.value):0;
   if(!corpo.alvo){dizer('msg-ind','Escolha o rank que você quer alcançar.',false);return}
  }
  var ri=el('ind-rating'),dig=ri?ri.value.replace(/\D/g,''):'';
@@ -2288,7 +2311,7 @@ function indGrafico(h,alvo){
 }
 function indResumo(d){
  var p=d.perfil,ro=d.rotina,rt=d.rating||{};
- var meta=ro.pretensao==='rank'&&p.alvo?'Meta: <b>'+esc(indRotulo(indFaixa(p.alvo)))+'</b>':ro.pretensao==='divertir'?'Foco: <b>se divertir mais</b>':'Foco: <b>jogar melhor</b>';
+ var meta=ro.pretensao==='rank'&&p.alvo?'Meta: '+seloFaixa(indFaixa(p.alvo)):ro.pretensao==='divertir'?'Foco: <b>se divertir mais</b>':'Foco: <b>jogar melhor</b>';
  var etapa=ro.pretensao==='rank'&&ro.etapa?' · primeira etapa: <b>'+esc(ro.etapa.nome+' '+indMilhar(ro.etapa.rating)+'+')+'</b>':'';
  var h='<div class="func-h"><h4>Plano individual</h4><span class="ok-b">Rotina pronta</span></div>'
   +'<p class="note" style="margin:0">'+meta+etapa+'</p>'
@@ -2299,7 +2322,7 @@ function indResumo(d){
  h+='<div class="ind-bloco"><div class="min">'+ro.jogo+'<small>min</small></div><h5>Jogar</h5><p>O resto do tempo é para jogar de verdade, com um objetivo pequeno por partida: aplicar o que você treinou.</p></div>';
  if((ro.glossario||[]).length)h+='<ul class="ind-gloss">'+ro.glossario.map(function(g){return '<li>'+esc(g)+'</li>'}).join('')+'</ul>';
  if(rt.atual!=null){
-  h+='<h4 style="margin-top:18px">Rating Premier</h4><p class="note" style="margin:0 0 8px">Agora: <b>'+indMilhar(rt.atual)+'</b> ('+esc(rt.faixa||'')+')'+(rt.origem==='manual'?' · informado por você':'')+'</p>'
+  h+='<h4 style="margin-top:18px">Rating Premier</h4><p class="note" style="margin:0 0 8px">Agora: '+selo(rt.atual,1)+(rt.origem==='manual'?' · informado por você':'')+'</p>'
    +(rt.hist&&rt.hist.length>=2?indGrafico(rt.hist,ro.pretensao==='rank'?p.alvo:null):'<p class="note" style="margin:0">'+(rt.origem==='manual'?'O gráfico aparece quando o robô passar a ler o seu rating.':'O gráfico aparece depois de alguns dias de leitura.')+'</p>');
  }
  h+='<div class="func-bt"><button class="btn g sm" type="button" data-acao="ind-editar">Editar respostas</button></div>'
