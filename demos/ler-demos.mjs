@@ -70,7 +70,9 @@ log(`Partidas novas encontradas: ${total}`);
 
 const avancos = new Map(); // steam64 -> { ultimo_codigo, erro }
 for (const p of pessoas) avancos.set(p.f.steam64, { steam64: p.f.steam64, ultimo_codigo: null, erro: p.erro });
-if (!total) {
+// quem tem o plano individual também tem o rating Premier lido (mesmo sem partida nova)
+const querRating = fontes.filter((f) => f.quer_rating);
+if (!total && !querRating.length) {
   await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas: [], avancos: [...avancos.values()] }) });
   log('Nada novo. Fim.');
   process.exit(0);
@@ -95,6 +97,32 @@ await comTempo(logado, 60000, 'não conseguiu entrar na Steam (o token de renova
 steam.gamesPlayed([730]);
 await comTempo(noGC, 90000, 'não conectou ao servidor do CS2');
 log('✔ conta-robô conectada');
+
+// Rating Premier (só de quem tem o plano individual). Nunca imprime o número: o log do GitHub é público.
+const ratings = [];
+function premierDe(perfil) {
+  // procura, no perfil devolvido pela Valve, a entrada de ranking do Premier (rank_type_id 11)
+  const achados = [];
+  (function varrer(o, d = 0) {
+    if (!o || typeof o !== 'object' || d > 4) return;
+    if (Array.isArray(o)) { o.forEach((x) => varrer(x, d + 1)); return; }
+    if ('rank_type_id' in o && 'rank_id' in o) achados.push(o);
+    Object.values(o).forEach((x) => varrer(x, d + 1));
+  })(perfil);
+  const p = achados.find((x) => Number(x.rank_type_id) === 11);
+  return p ? Number(p.rank_id) : null;
+}
+for (const f of querRating) {
+  try {
+    const contaId = Number(BigInt(f.steam64) & 0xFFFFFFFFn); // os 32 bits de baixo do Steam ID são o id da conta
+    const perfil = await comTempo(new Promise((res) => csgo.requestPlayersProfile(contaId, res)), 20000, 'sem resposta do perfil');
+    const r = premierDe(perfil);
+    if (Number.isInteger(r) && r > 0) ratings.push({ steam64: f.steam64, rating: r });
+    else if (process.env.DEPURAR_RATING === 'sim') log('  (rating: o perfil não trouxe entrada Premier; campos do perfil:', Object.keys(perfil || {}).join(', '), ')');
+  } catch (e) { log('  (rating indisponível para uma pessoa)'); }
+  await espera(1500);
+}
+log(`Ratings lidos: ${ratings.length} de ${querRating.length}`);
 
 function acharUrlDemo(obj, vistos = new Set()) {
   if (!obj || typeof obj !== 'object' || vistos.has(obj)) return null;
@@ -265,7 +293,7 @@ for (const p of pessoas) {
   }
   const a = avancos.get(p.f.steam64); a.ultimo_codigo = ultimo;
 }
-await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas, analises, avancos: [...avancos.values()] }) });
+await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas, analises, ratings, avancos: [...avancos.values()] }) });
 log(`Enviado: ${partidas.length} registros de partida.`);
 steam.logOff();
 await espera(500);
