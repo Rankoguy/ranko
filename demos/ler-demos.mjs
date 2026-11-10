@@ -117,12 +117,11 @@ function premierDe(perfil) {
 }
 const DEP = process.env.DEPURAR_RATING === 'sim';
 async function perfilDe(f) {
-  // o pedido da Valve só responde para amigo da conta-robô que esteja com o CS aberto.
-  // No modo depuração diz se a amizade existe e por que falhou (nunca imprime valores).
-  if (DEP) {
-    const rel = steam.myFriends && steam.myFriends[f.steam64];
-    log(`  (rating: amizade com a conta-robô: ${rel === SteamUser.EFriendRelationship.Friend ? 'SIM' : 'NÃO (relação ' + (rel === undefined ? 'nenhuma' : rel) + ')'})`);
-  }
+  // a Valve só responde para amigo da conta Ranko; quem ainda não é amigo é pulado (sem esperar o tempo limite)
+  const lista = steam.myFriends || {};
+  const amigo = lista[f.steam64] === SteamUser.EFriendRelationship.Friend;
+  if (Object.keys(lista).length && !amigo) return 'nao_amigo';
+  if (DEP) log(`  (rating: amizade com a conta-robô: ${amigo ? 'SIM' : 'não confirmada'})`);
   try {
     const perfil = await comTempo(new Promise((res) => { csgo.requestPlayersProfile(f.steam64, res); }), 30000, 'sem resposta da Valve em 30 s');
     if (DEP) log('  (rating: a Valve respondeu ao pedido)');
@@ -132,17 +131,20 @@ async function perfilDe(f) {
     return null;
   }
 }
+let naoAmigos = 0;
 for (const f of querRating) {
   const perfil = await perfilDe(f);
+  if (perfil === 'nao_amigo') { naoAmigos++; continue; }
   if (!perfil) log('  (rating indisponível para uma pessoa)');
   else {
-    const r = premierDe(perfil);
-    if (Number.isInteger(r) && r > 0) ratings.push({ steam64: f.steam64, rating: r });
+    const rt = premierDe(perfil);
+    if (Number.isInteger(rt) && rt > 0) ratings.push({ steam64: f.steam64, rating: rt });
     else if (DEP) log('  (rating: o perfil não trouxe entrada Premier. Campos:', Object.keys(perfil).join(', '), '| tipos de ranking:', rankingsDe(perfil).map((x) => x.rank_type_id).join(', ') || 'nenhum', ')');
   }
   await espera(1500);
 }
-log(`Ratings lidos: ${ratings.length} de ${querRating.length}`);
+if (naoAmigos) log(`  (${naoAmigos} pessoa(s) ainda não são amigas da conta Ranko: sem rating)`);
+log(`Ratings lidos: ${ratings.length} de ${querRating.length - naoAmigos}`);
 
 function acharUrlDemo(obj, vistos = new Set()) {
   if (!obj || typeof obj !== 'object' || vistos.has(obj)) return null;
