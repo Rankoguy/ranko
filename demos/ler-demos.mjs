@@ -118,7 +118,13 @@ try {
     else if (rel === REL.RequestInitiator) estados[f.steam64] = 'convidado';
     else if (rel === REL.None && convites < 5 && !semConvite) {
       try { await steam.addFriend(f.steam64); convites++; estados[f.steam64] = 'convidado'; await espera(1500); }
-      catch (e) { estados[f.steam64] = 'nenhum'; semConvite = true; log('  (a conta-robô não conseguiu enviar convite:', String((e && e.message) || e).slice(0, 80), ')'); }
+      catch (e) {
+        const msg = String((e && e.message) || e);
+        estados[f.steam64] = 'nenhum';
+        // demora da Steam não é bloqueio: segue para a próxima pessoa (o estado real aparece na próxima rodada)
+        if (!/timed out|timeout/i.test(msg)) semConvite = true;
+        log('  (a conta-robô não conseguiu enviar convite:', msg.slice(0, 80), ')');
+      }
     } else estados[f.steam64] = 'nenhum';
   }
   await worker('/interno/amizades', { method: 'POST', body: JSON.stringify({ estados }) });
