@@ -762,22 +762,25 @@ body.modo-pro .pro-sec{display:block}
 .ind-gloss{margin:14px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px;max-width:78ch}
 .ind-gloss li{margin:4px 0}
 .ind-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;max-width:640px}
-/* selo de rating Premier (desenho próprio do Ranko): faixa reta com a cor da faixa, cantos retos e brilho que cresce a cada faixa */
-.rt{--rc:#aab4c0;--gf:0px;--gb:0px;display:inline-flex;align-items:stretch;height:26px;border-radius:0;background:color-mix(in srgb,var(--rc) 14%,#14161b);color:var(--rc);font:800 14px var(--body);font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:nowrap;vertical-align:middle;box-shadow:0 0 var(--gb) color-mix(in srgb,var(--rc) 45%,transparent)}
-.rt::before{content:"";width:5px;flex:none;background:var(--rf,var(--rc));box-shadow:0 0 var(--gf) var(--rc);position:relative;z-index:1}
-.rt b{display:inline-flex;align-items:center;padding:0 11px 0 9px;font-weight:800}
-.rt em{display:inline-flex;align-items:center;padding-left:10px;font:700 13px var(--body);font-style:normal;color:#a9abb3}
-.rt em+b{padding-left:7px}
-.rt-3{--gf:6px;text-shadow:0 0 3px var(--rc)}
-.rt-4{--gf:10px;--gb:8px;text-shadow:0 0 5px var(--rc)}
-.rt-5{--gf:14px;--gb:14px;text-shadow:0 0 7px var(--rc)}
-.rt-6{--gf:22px;--gb:24px;--rf:linear-gradient(#fff3a0,#ffd21a 45%,#e0a800);text-shadow:0 0 10px var(--rc)}
-.pl .rt{margin-left:8px;height:22px;font-size:13px}
+/* selo de rating Premier (desenho próprio do Ranko): faixa reta com a cor da faixa, cantos retos e brilho que cresce a cada faixa.
+   As cores são fixas (iguais nos modos claro e escuro) e o número sempre usa a cor da faixa. */
+.rt{--rc:#aab4c0;--gf:0px;--gb:0px;display:inline-flex;align-items:stretch;height:32px;border-radius:0;background:color-mix(in srgb,var(--rc) 20%,#14161b);color:var(--rc);font:800 16px var(--body);font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:nowrap;vertical-align:middle;box-shadow:0 0 var(--gb) color-mix(in srgb,var(--rc) 45%,transparent)}
+.rt::before{content:"";width:6px;flex:none;background:var(--rf,var(--rc));box-shadow:0 0 var(--gf) var(--rc);position:relative;z-index:1}
+span.rt>b{display:inline-flex;align-items:center;padding:0 14px 0 12px;font-weight:800;color:var(--rc)!important}
+.rt-3{--gf:5px;text-shadow:0 0 2px var(--rc)}
+.rt-4{--gf:8px;--gb:6px;text-shadow:0 0 3px var(--rc)}
+.rt-5{--gf:11px;--gb:10px;text-shadow:0 0 5px var(--rc)}
+.rt-6{--gf:16px;--gb:16px;--rf:linear-gradient(#fff3a0,#ffd21a 45%,#e0a800);text-shadow:0 0 7px var(--rc)}
+.note .rt{margin:0 10px;vertical-align:middle}
+.note .rt:first-child{margin-left:0}
+.sep{margin:0 9px;color:var(--dim)}
+.pl .rt{margin-left:8px;height:26px;font-size:14px}
+.pl .rt>b{padding:0 11px 0 9px}
 .rt-l{margin-top:6px}
-.dr-tags .rt{height:28px}
+.dr-tags .rt{height:34px}
 .rt-op{position:relative;display:inline-flex;cursor:pointer}
 .rt-op input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
-.rt-op .rt{height:34px;font-size:14px;box-shadow:none;outline:2px solid transparent;outline-offset:3px;transition:outline-color .15s var(--ease)}
+.rt-op .rt{height:38px;font-size:15px;box-shadow:none;outline:2px solid transparent;outline-offset:3px;transition:outline-color .15s var(--ease)}
 .rt-op input:checked+.rt,.rt-op input:focus-visible+.rt{outline-color:var(--text)}
 .rt-op input:not(:checked)+.rt{opacity:.72}
 .rt-op:hover .rt{opacity:1}
@@ -989,9 +992,9 @@ function rtFaixa(r){var i=0;for(var k=0;k<RT_F.length;k++)if(r>=RT_F[k][1])i=k;r
 function selo(r,grande){
  if(r==null||isNaN(r)||r<=0)return '';
  var i=rtFaixa(r),fx=RT_F[i];
- return '<span class="rt rt-'+i+'" style="--rc:'+fx[2]+'" title="Premier '+rtNum(r)+' · faixa '+fx[0]+'">'+(grande?'<em>Premier</em>':'')+'<b>'+rtNum(r)+'</b></span>';
+ return '<span class="rt rt-'+i+'" style="--rc:'+fx[2]+'" title="Premier '+rtNum(r)+' · faixa '+fx[0]+'"><b>'+rtNum(r)+'</b></span>';
 }
-function seloFaixa(i){var fx=RT_F[i];return '<span class="rt rt-'+i+'" style="--rc:'+fx[2]+'"><b>'+esc(fx[0])+' · '+rtNum(fx[1])+'+</b></span>'}
+function seloFaixa(i){var fx=RT_F[i];return '<span class="rt rt-'+i+'" style="--rc:'+fx[2]+'" title="Faixa '+esc(fx[0])+'"><b>'+rtNum(fx[1])+'+</b></span>'}
 function z(p,k){var v=p.zoeira&&p.zoeira[k];return v==null?0:v}
 function cu(v,d,pre){return '<span class="cu" data-v="'+v+'" data-d="'+d+'" data-pre="'+(pre||'')+'">'+(pre||'')+f(v,d)+'</span>'}
 
@@ -2317,17 +2320,17 @@ function indGrafico(h,alvo){
 function indResumo(d){
  var p=d.perfil,ro=d.rotina,rt=d.rating||{};
  var meta=ro.pretensao==='rank'&&p.alvo?'Meta: '+seloFaixa(indFaixa(p.alvo)):ro.pretensao==='divertir'?'Foco: <b>se divertir mais</b>':'Foco: <b>jogar melhor</b>';
- var etapa=ro.pretensao==='rank'&&ro.etapa?' · primeira etapa: <b>'+esc(ro.etapa.nome+' '+indMilhar(ro.etapa.rating)+'+')+'</b>':'';
+ var etapa=ro.pretensao==='rank'&&ro.etapa?'<span class="sep">·</span>primeira etapa: <b>'+esc(ro.etapa.nome+' '+indMilhar(ro.etapa.rating)+'+')+'</b>':'';
  var h='<div class="func-h"><h4>Plano individual</h4><span class="ok-b">Rotina pronta</span></div>'
   +'<p class="note" style="margin:0">'+meta+etapa+'</p>'
-  +'<p class="note" style="margin:6px 0 4px">Por dia: <b>'+ro.total+' min</b> de CS2, sendo <b>'+ro.treino+' min de treino</b> e '+ro.jogo+' min jogando · '+ro.dias+(ro.dias===1?' dia':' dias')+' por semana ('+ro.semana.treino+' min de treino na semana).</p>';
+  +'<p class="note" style="margin:6px 0 4px">Por dia: <b>'+ro.total+' min</b> de CS2, sendo <b>'+ro.treino+' min de treino</b> e '+ro.jogo+' min jogando<span class="sep">·</span>'+ro.dias+(ro.dias===1?' dia':' dias')+' por semana ('+ro.semana.treino+' min de treino na semana).</p>';
  (ro.avisos||[]).forEach(function(a){h+='<p class="ind-aviso">'+esc(a)+'</p>'});
  h+='<h4 style="margin-top:18px">A sua rotina de treino</h4>';
  ro.blocos.forEach(function(b){h+='<div class="ind-bloco"><div class="min">'+b.min+'<small>min</small></div><h5>'+esc(b.titulo)+'</h5><p>'+esc(b.texto)+'</p></div>'});
  h+='<div class="ind-bloco"><div class="min">'+ro.jogo+'<small>min</small></div><h5>Jogar</h5><p>O resto do tempo é para jogar de verdade, com um objetivo pequeno por partida: aplicar o que você treinou.</p></div>';
  if((ro.glossario||[]).length)h+='<ul class="ind-gloss">'+ro.glossario.map(function(g){return '<li>'+esc(g)+'</li>'}).join('')+'</ul>';
  if(rt.atual!=null){
-  h+='<h4 style="margin-top:18px">Rating Premier</h4><p class="note" style="margin:0 0 8px">Agora: '+selo(rt.atual,1)+(rt.origem==='manual'?' · informado por você':'')+'</p>'
+  h+='<h4 style="margin-top:18px">Rating Premier</h4><p class="note" style="margin:0 0 8px">Agora: '+selo(rt.atual,1)+(rt.origem==='manual'?'<span class="sep">·</span>informado por você':'')+'</p>'
    +(rt.hist&&rt.hist.length>=2?indGrafico(rt.hist,ro.pretensao==='rank'?p.alvo:null):'<p class="note" style="margin:0">'+(rt.origem==='manual'?'O gráfico aparece quando o robô passar a ler o seu rating.':'O gráfico aparece depois de alguns dias de leitura.')+'</p>');
  }
  h+='<div class="func-bt"><button class="btn g sm" type="button" data-acao="ind-editar">Editar respostas</button></div>'
