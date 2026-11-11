@@ -98,6 +98,33 @@ steam.gamesPlayed([730]);
 await comTempo(noGC, 90000, 'não conectou ao servidor do CS2');
 log('✔ conta-robô conectada');
 
+// Amizades com a conta-robô: o rating só é lido de quem é amigo. Aceita convite de quem já entrou no painel e
+// convida (no máximo 5 por execução) quem ligou a leitura e ainda não é amigo. Nunca imprime ids.
+const REL = SteamUser.EFriendRelationship;
+const estados = {};
+try {
+  await espera(5000); // a lista de amigos chega logo depois do login
+  const conhecidos = new Set(((await worker('/interno/conhecidos')) || []).map(String));
+  let aceitos = 0, convites = 0, semConvite = false;
+  for (const [id, rel] of Object.entries(steam.myFriends || {})) {
+    if (Number(rel) === REL.RequestRecipient && conhecidos.has(id)) {
+      try { await steam.addFriend(id); aceitos++; await espera(1000); } catch (e) { log('  (não aceitou um convite:', String((e && e.message) || e).slice(0, 80), ')'); }
+    }
+  }
+  if (aceitos) await espera(3000);
+  for (const f of fontes) {
+    const rel = Number((steam.myFriends || {})[f.steam64] || 0);
+    if (rel === REL.Friend) estados[f.steam64] = 'amigo';
+    else if (rel === REL.RequestInitiator) estados[f.steam64] = 'convidado';
+    else if (rel === REL.None && convites < 5 && !semConvite) {
+      try { await steam.addFriend(f.steam64); convites++; estados[f.steam64] = 'convidado'; await espera(1500); }
+      catch (e) { estados[f.steam64] = 'nenhum'; semConvite = true; log('  (a conta-robô não conseguiu enviar convite:', String((e && e.message) || e).slice(0, 80), ')'); }
+    } else estados[f.steam64] = 'nenhum';
+  }
+  await worker('/interno/amizades', { method: 'POST', body: JSON.stringify({ estados }) });
+  log(`Amizades: ${aceitos} convite(s) aceito(s), ${convites} enviado(s)`);
+} catch (e) { log('aviso (amizades):', String((e && e.message) || e).slice(0, 120)); }
+
 // Rating Premier (só de quem tem o plano individual). Nunca imprime o número: o log do GitHub é público.
 const ratings = [];
 function rankingsDe(perfil) {
