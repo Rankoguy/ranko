@@ -788,6 +788,7 @@ span.rt>b{display:inline-flex;align-items:center;padding:0 14px 0 12px;font-weig
 .ii{display:inline-grid;place-items:center;width:19px;height:19px;margin-left:9px;border:1.5px solid var(--dim);border-radius:50%;color:var(--dim);font:italic 700 13px/1 Georgia,"Times New Roman",serif;cursor:help;vertical-align:middle;position:relative;top:-1px;user-select:none;text-transform:none;letter-spacing:0;transition:color .14s var(--ease),border-color .14s var(--ease)}
 .ii:hover,.ii:focus-visible,.ii.on{color:var(--text);border-color:var(--text);outline:none}
 .sh p.sp-i{display:none}
+.fonte-bt{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
 #ii-tip{position:fixed;z-index:300;max-width:300px;padding:10px 13px;border:1px solid var(--line2);border-radius:var(--r-md);background:var(--panel2);color:var(--text);font:500 13.5px/1.45 var(--body);box-shadow:0 18px 40px -16px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .12s var(--ease)}
 #ii-tip.on{opacity:1}
 @media (max-width:760px){.ind-grid{grid-template-columns:minmax(0,1fr)}}
@@ -1276,7 +1277,7 @@ function init(d){
  DISP={semana:Wk.length>=2,mes:M.length>=2,geral:true};
  modo=(PER&&DISP[PER])?PER:(DISP.mes?'mes':'geral');
  P=(modo==='mes'?M.map(function(p){return vis(p,'mes')}):modo==='semana'?Wk.map(function(p){return vis(p,'semana')}):B.slice()).sort(function(a,b){return b.hltv-a.hltv});
- if(!P.length){NB=0;el('rows').innerHTML='<tr><td colspan="9" class="note">Nenhum jogador com dados ainda. Os números chegam na próxima atualização (a cada hora).</td></tr>';return}
+ if(!P.length){NB=0;el('rows').innerHTML='<tr><td colspan="9" class="note">Nenhum jogador com dados ainda. Os números chegam em poucos minutos.</td></tr>';return}
  var mi=per.mes_id?(+per.mes_id.split('-')[1]-1):new Date(d.atualizado_em).getMonth();
  var ano=per.mes_id?per.mes_id.split('-')[0]:new Date(d.atualizado_em).getFullYear();
  var jan=modo==='mes'?'neste mês':modo==='semana'?'nesta semana':'nas últimas partidas';
@@ -1526,7 +1527,7 @@ function montarPerfil(j,p,propria,grupo){
   if(c&&c.kd!=null)k.push('<div><b>'+f(c.kd,2)+'</b><span>K/D de carreira</span></div>');
   if(c&&c.headshot_pct!=null)k.push('<div><b>'+f(c.headshot_pct,0)+'%</b><span>headshots</span></div>');
   corpo='<div class="dr-sec" style="padding-bottom:26px">'+(k.length?'<div class="sc-k" style="margin-bottom:14px">'+k.join('')+'</div>':'')
-   +'<p class="note" style="margin:0 0 14px">'+(propria?'Os seus números aparecem aqui assim que o robô ler as suas partidas (até 2 horas depois de ligar). Ligue em <b>Opções</b>, no canto superior direito, e já puxamos as últimas partidas que a Steam ainda guarda.':'Esse jogador ainda não ligou a leitura das partidas, então ainda não há números.')+'</p>'
+   +'<p class="note" style="margin:0 0 14px">'+(propria?'Os seus números aparecem aqui assim que o robô ler as suas partidas (em poucos minutos depois de ligar). Ligue em <b>Opções</b>, no canto superior direito, e já puxamos as últimas partidas que a Steam ainda guarda.':'Esse jogador ainda não ligou a leitura das partidas, então ainda não há números.')+'</p>'
    +'</div>';
  }else corpo='<div class="dr-sec" style="padding-bottom:6px"><p class="note" style="margin:0">'+(propria?'Ainda não temos partidas suas. Ligue a leitura em <b>Opções</b>, no canto superior direito: leva 2 minutos, uma vez só, e já puxamos as últimas partidas que a Steam guarda.':'Esse jogador ainda não ligou a leitura das partidas, então não há números dele por aqui.')+'</p></div>';
  var claSec=(propria&&!(ME&&ME.cla))?'<div class="cla-sec" id="clasec">'+claCardHtml()+'</div>':'';
@@ -1551,6 +1552,14 @@ function claCardHtml(){
 
 /* ----- leitura das minhas partidas ----- */
 var LINK_CODIGOS='https://help.steampowered.com/pt-br/wizard/HelpWithGameIssue/?appid=730&issueid=128';
+function amizadeAviso(j,mt){
+ if(!j||j.amizade==='amigo')return '';
+ var lk=j.link_amizade?' <a href="'+esc(j.link_amizade)+'" target="_blank" rel="noopener">Adicionar o Ranko na Steam</a>':'';
+ var t=j.amizade==='convidado'
+  ?'Para o painel ler o seu rating Premier, <b>aceite o convite de amizade do Ranko</b> na Steam.'+lk
+  :'Para o painel ler o seu rating Premier, o Ranko precisa ser seu amigo na Steam.'+(lk||' O convite chega em alguns minutos.');
+ return '<p class="note" style="margin:'+(mt||'14px 0 0')+'">'+t+'</p>';
+}
 function haQuanto(ms){if(!ms)return 'ainda não checou';var m=Math.round((Date.now()-ms)/60000);if(m<2)return 'agora há pouco';if(m<60)return 'há '+m+' min';var h=Math.round(m/60);if(h<24)return 'há '+h+' h';return 'há '+Math.round(h/24)+' dia(s)'}
 function carregarFonte(){
  var box=el('fonte-sec');if(!box)return;
@@ -1559,9 +1568,10 @@ function carregarFonte(){
   var j=r.j;
   if(j.ativa){
    box.innerHTML='<h4>Minhas partidas</h4><div class="fonte-on"><div><b>Leitura ligada</b><small>'+(j.partidas?j.partidas+' partida(s) lida(s)':'Nenhuma partida lida ainda')+' · última checagem '+haQuanto(j.lido_em)+'</small></div>'
-    +'<button class="btn red sm" type="button" data-acao="fonte-desligar">Desligar e apagar</button></div>'
+    +'<span class="fonte-bt"><button class="btn g sm" type="button" data-acao="fonte-atualizar">Atualizar agora</button> <button class="btn red sm" type="button" data-acao="fonte-desligar">Desligar e apagar</button></span></div>'
+    +amizadeAviso(j,'10px 0 0')
     +(j.erro?'<p class="msg err" style="display:block">'+esc(j.erro)+'</p>':'')
-    +'<p class="note">Novas partidas de Premier e competitivo entram sozinhas, em até 2 horas depois de acabarem. Desligar apaga todas as estatísticas guardadas de você.</p><p class="msg" id="msg-fonte"></p>';
+    +'<p class="note">Novas partidas de Premier e competitivo entram sozinhas, em poucos minutos depois de acabarem. Desligar apaga todas as estatísticas guardadas de você.</p><p class="msg" id="msg-fonte"></p>';
    return;
   }
   box.innerHTML='<h4>Ligar minhas partidas</h4><p class="note" style="margin:0 0 12px">O painel lê as suas partidas direto do CS2 e calcula tudo sozinho. Você faz isso uma única vez:</p>'
@@ -2032,6 +2042,13 @@ document.addEventListener('click',function(e){
    carregarFonte();
   });return;
  }
+ if(ac==='fonte-atualizar'){
+  b.disabled=true;dizer('msg-fonte','Chamando o robô…',true);
+  chamar('POST','/eu/atualizar',{},true).then(function(r){
+   dizer('msg-fonte',r.ok?(r.j.msg||'Pronto.'):(r.j.erro||'Não consegui chamar o robô agora.'),!!r.ok);
+   setTimeout(function(){b.disabled=false},r.ok?60000:5000);
+  });return;
+ }
  if(ac==='fonte-desligar'){
   if(!armar(b,'Apagar tudo e desligar?'))return;
   b.disabled=true;
@@ -2269,7 +2286,7 @@ function indForm(d){
  var rating=rt.origem==='steam'
   ?'<p class="note" style="margin:0">Rating Premier lido da Steam: '+selo(rt.atual,1)+'</p>'
   :'<div class="campo" style="max-width:300px;margin:0"><label for="ind-rating">Seu rating Premier atual (opcional)</label><input id="ind-rating" type="text" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Ex.: 14500" value="'+(p.rating_manual!=null?esc(p.rating_manual):'')+'"></div>'
-   +'<p class="note" style="margin:6px 0 0">Sem rating? Ele aparece depois de 10 vitórias no Premier. Enquanto isso, escolha “Jogar melhor”.</p>';
+   +'<p class="note" style="margin:6px 0 0">Sem rating? Ele aparece depois de 10 vitórias no Premier. Enquanto isso, escolha “Jogar melhor”.</p>'+amizadeAviso(d,'8px 0 0');
  return '<h4>Plano individual</h4><p class="note" style="margin:0 0 16px">Responda em 1 minuto. A rotina sai das suas respostas e das suas partidas.</p>'
   +'<h4>O que você quer com o CS2 agora?</h4><div class="chips-m" id="ind-pret">'
   +indRad('ind-pret','rank','Chegar a um rank',p.pretensao==='rank')
