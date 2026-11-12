@@ -415,7 +415,9 @@ for (const pt of porPartida.values()) {
     log(`✔ partida ${n}/${porPartida.size} lida (${Object.keys(s).length} pessoas do painel)`);
   } catch (e) {
     ruins.set(pt.id, e.message === 'DEMO_INDISPONIVEL' ? 'indisponivel' : 'falha');
-    log(`✖ partida ${n}/${porPartida.size}: ${e.message === 'DEMO_INDISPONIVEL' ? 'demo indisponível (expirou)' : 'falhou, tentamos de novo na próxima'}`);
+    // o motivo vai para o log sem endereços nem números longos (códigos e ids), que o log é público
+    const motivo = String((e && e.message) || e).replace(/https?:\/\/\S+/g, '[endereço]').replace(/\d{9,}/g, '#').replace(/\s+/g, ' ').slice(0, 110);
+    log(`✖ partida ${n}/${porPartida.size}: ${e.message === 'DEMO_INDISPONIVEL' ? 'demo indisponível (expirou)' : 'falhou (' + motivo + '), tentamos de novo na próxima'}`);
   }
 }
 
