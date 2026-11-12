@@ -472,6 +472,10 @@ body.lock{overflow:hidden}
 .hist th{padding:8px 10px;text-align:left;color:var(--muted);font:500 13px var(--body);border-bottom:1px solid var(--line)}
 .hist td{padding:11px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
 .hist td:first-child{font-weight:600}
+.hist tr.pt-lk{cursor:pointer;transition:background .15s}
+.hist tr.pt-lk:hover,.hist tr.pt-lk:focus-visible{background:color-mix(in srgb,var(--text) 5%,transparent);outline:0}
+.pt-seta{color:var(--muted);font-weight:700;margin-left:2px}
+.pt-comp{display:inline-flex;align-items:center;padding:3px 9px;border:1px dashed var(--line2);border-radius:999px;color:var(--muted);font:600 12.5px var(--body);white-space:nowrap}
 .res{display:inline-block;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);background:rgba(var(--w),.06)}
 .res.v{color:var(--ct-text);background:rgba(var(--ct-rgb),.12)}
 .res.d{color:var(--red-text);background:rgba(var(--red-rgb),.12)}
@@ -1721,20 +1725,25 @@ function carregarPartidasTime(slug){
  chamar('GET','/cla/'+encodeURIComponent(slug)+'/partidas').then(function(r){
   box=el('pt-c');if(!box)return;
   if(!r.ok){box.innerHTML='<div class="vazio">Não consegui carregar as partidas agora.</div>';return}
-  PT={L:r.j.partidas||[],mn:r.j.minimo||4};
+  PT={L:r.j.partidas||[],mn:r.j.minimo||3};
   desenharPartidasTime();
  });
 }
 function desenharPartidasTime(){
  var box=el('pt-c');if(!box||!PT)return;
  var L=PT.L,mn=PT.mn;
-  if(!L.length){box.innerHTML='<div class="vazio">Nenhuma partida do time ainda. Quando '+(mn>=4?'4 ou mais de vocês':'todos de vocês')+' jogarem a mesma partida, ela aparece aqui sozinha.</div>';return}
+  if(!L.length){box.innerHTML='<div class="vazio">Nenhuma partida do time ainda. Quando '+mn+' ou mais de vocês jogarem a mesma partida, ela aparece aqui sozinha.</div>';return}
  var temAn=ANL&&ANL.pro!==null&&ANL.pro!==undefined;
  box.innerHTML='<div class="hist-w"><table class="hist"><thead><tr><th>Data</th><th>Mapa</th><th>Resultado</th><th>Quem jogou (abates / mortes)</th>'+(temAn?'<th>Analyst</th>':'')+'</tr></thead><tbody>'
   +L.map(function(m){var d=new Date(m.t);
    var dt=('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2);
    var res=m.w==null?'<span class="res">–</span>':m.w?'<span class="res v">Vitória</span>':'<span class="res d">Derrota</span>';
    var q=(m.jogadores||[]).slice().sort(function(a,b){return (b.k||0)-(a.k||0)}).map(function(x){var o={steam64:x.steam64,apelido:x.nome||'?',avatar:x.avatar};return '<span class="pj">'+av(o,'sm')+esc(x.nome||'?')+' <b>'+(x.k==null?'–':x.k)+' / '+(x.d==null?'–':x.d)+'</b></span>'}).join('');
+   var nj=(m.jogadores||[]).length,comp=nj<5?5-nj:0;
+   if(comp)q+='<span class="pt-comp" title="Jogadores de fora do time completaram a partida">+'+comp+(comp>1?' completes':' complete')+'</span>';
+   var foco='';(m.jogadores||[]).forEach(function(x){if(SES&&x.steam64===SES.sid)foco=x.steam64});
+   if(!foco&&m.jogadores&&m.jogadores[0])foco=m.jogadores.slice().sort(function(a,b){return (b.k||0)-(a.k||0)})[0].steam64;
+   var abre=m.p?' class="pt-lk" data-ir="#/partida/'+m.p+'/'+foco+'" tabindex="0" title="Ver a partida"':'';
    var an=analiseDe(m.t),cel='',det='';
    if(temAn){
     if(!ANL.pro)cel='<td><button type="button" class="an-bt trav" data-acao="an-travado"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z"/></svg>Pro</button></td>';
@@ -1742,10 +1751,15 @@ function desenharPartidasTime(){
     else cel='<td class="an-sem">sem análise</td>';
     if(an)det='<tr class="an-linha" id="an-d'+an.i+'" hidden><td colspan="5">'+htmlAnalisePartida(an.v)+'</td></tr>';
    }
-   return '<tr><td>'+dt+'</td><td>'+esc(nomeMapa(m.mapa))+'</td><td>'+res+'</td><td class="qj">'+q+'</td>'+cel+'</tr>'+det}).join('')
+   return '<tr'+abre+'><td>'+dt+'</td><td>'+esc(nomeMapa(m.mapa))+(m.p?' <span class="pt-seta" aria-hidden="true">›</span>':'')+'</td><td>'+res+'</td><td class="qj">'+q+'</td>'+cel+'</tr>'+det}).join('')
   +'</tbody></table></div>'
   +(temAn&&!ANL.pro?'<div class="an-aviso" id="an-aviso" hidden><b>A análise de cada partida faz parte do Time Pro.</b> Ela mostra round a round por que o time ganhou ou perdeu. <button type="button" class="btn g sm" data-mt="pro">Conhecer o Time Pro</button></div>':'')
-  +'<p class="pj-n">Partidas em que '+(mn>=4?'4 ou mais':'todos')+' do time jogaram juntos.'+(temAn&&ANL.pro?' A análise só existe para partidas lidas depois que o Analyst foi ligado.':'')+'</p>';
+  +'<p class="pj-n">Partidas em que '+mn+' ou mais do time jogaram juntos. "Complete" é quem jogou com vocês sem ser do time. Clique numa partida para ver os 10 jogadores (só nas partidas lidas a partir de 12/11).'+(temAn&&ANL.pro?' A análise só existe para partidas lidas depois que o Analyst foi ligado.':'')+'</p>';
+ [].forEach.call(box.querySelectorAll('tr.pt-lk'),function(tr){
+  var ir=function(){location.hash=tr.getAttribute('data-ir')};
+  tr.addEventListener('click',function(e){if(e.target.closest('button,a'))return;ir()});
+  tr.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.target.closest('button,a'))ir()});
+ });
 }
 function chipRound(r,j){
  var nm=function(s){var x=null;(j||[]).forEach(function(p){if(p.steam64===s)x=p});return x?x.nome:'?'};
@@ -1786,7 +1800,7 @@ function desenharAnalise(){
    +'<ul><li>Panorama geral do time</li><li>Análise partida a partida, na aba Partidas</li><li>Erros que mais se repetem</li><li>Diagnóstico individual</li></ul>'
    +'<p class="an-pre">'+(ANL.disponiveis?'Já há <b>'+ANL.disponiveis+(ANL.disponiveis===1?' partida':' partidas')+' do time analisadas</b>, esperando o plano Pro do time.':'Assim que o time jogar junto, as partidas são analisadas.')+' A assinatura ainda não está aberta: nada é cobrado hoje.</p></article>';return}
  var P=ANL.panorama;
- if(!P){box.innerHTML=h+'<h3>Panorama do time</h3><p>Ainda não há partidas analisadas. O robô analisa as próximas partidas em que 4 ou mais do time jogarem juntos.</p></article>';return}
+ if(!P){box.innerHTML=h+'<h3>Panorama do time</h3><p>Ainda não há partidas analisadas. O robô analisa as próximas partidas em que 3 ou mais do time jogarem juntos.</p></article>';return}
  var c=P.coletivo,nAb=c.aberturas_positivas+c.aberturas_negativas;
  var tile=function(k,v,s){return '<div class="an-t"><span>'+k+'</span><b>'+v+'</b><small>'+s+'</small></div>'};
  var tiles='<div class="an-tiles">'
