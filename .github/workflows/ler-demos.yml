@@ -7,6 +7,9 @@ on:
       incluir_inicial:
         description: 'Teste: ler também a partida do código colado (digite sim)'
         default: 'nao'
+      testar_leitores:
+        description: 'Teste dos leitores de demo: abre 2 demos com cada leitor e mostra o resultado, sem gravar nada (digite sim)'
+        default: 'nao'
       depurar_rating:
         description: 'Teste do rating: mostra no log os nomes dos campos do perfil, sem valores (digite sim)'
         default: 'nao'
@@ -26,6 +29,27 @@ jobs:
           node-version: 22
       - run: npm install --no-audit --no-fund
         working-directory: demos
+      - name: Instalar leitores extras (só no teste dos leitores)
+        if: ${{ inputs.testar_leitores == 'sim' }}
+        working-directory: demos
+        run: npm install --no-save --no-audit --no-fund dp0413@npm:@laihoe/demoparser2@0.41.3 dp0410@npm:@laihoe/demoparser2@0.41.0 dp0403@npm:@laihoe/demoparser2@0.40.3 cs2parser
+      - name: Preparar o Go (só no teste dos leitores)
+        if: ${{ inputs.testar_leitores == 'sim' }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: false
+      - name: Compilar o leitor Go (só no teste dos leitores)
+        if: ${{ inputs.testar_leitores == 'sim' }}
+        working-directory: demos/leitor-go
+        run: |
+          go mod init leitor-go
+          go get github.com/markus-wa/demoinfocs-golang/v5@v5.2.0
+          go mod tidy
+          go build -o go-estavel .
+          go get github.com/markus-wa/demoinfocs-golang/v5@master
+          go mod tidy
+          go build -o go-master . || echo "a versão em desenvolvimento não compilou"
       - name: Ler partidas novas
         working-directory: demos
         env:
@@ -35,4 +59,5 @@ jobs:
           ROBO_SECRET: ${{ secrets.ROBO_SECRET }}
           INCLUIR_INICIAL: ${{ inputs.incluir_inicial }}
           DEPURAR_RATING: ${{ inputs.depurar_rating }}
+          TESTAR_LEITORES: ${{ inputs.testar_leitores }}
         run: node ler-demos.mjs
