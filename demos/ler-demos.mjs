@@ -194,6 +194,11 @@ function urlDaDemo(codigo, id) {
     const aoReceber = (matches) => {
       const m = (matches || []).find((x) => String(x.matchid) === id) || (matches || [])[0];
       const url = acharUrlDemo(m);
+      if (DEP && m) { // só nomes de campos (nunca valores): para descobrir se a Valve informa o modo e o rank da partida
+        const ch = (o) => (o && typeof o === 'object' ? Object.keys(o).join(',') : '-');
+        const ult = Array.isArray(m.roundstatsall) ? m.roundstatsall[m.roundstatsall.length - 1] : null;
+        log('  (partida: campos', ch(m), '| última rodada:', ch(ult), '| reserva:', ch(ult && ult.reservation), ')');
+      }
       if (url) { csgo.removeListener('matchList', aoReceber); res({ url, horario: Number(m.matchtime) ? Number(m.matchtime) * 1000 : Date.now() }); }
     };
     csgo.on('matchList', aoReceber);
@@ -286,6 +291,7 @@ function estatisticas(arquivo, ids) {
   try { const h = parseHeader(arquivo); mapa = String(h.map_name || h.mapName || h.map || '').replace(/^.*\//, '') || null; } catch { /* sem o mapa, a partida fica sem nome de mapa */ }
   const peso = [0, 1, 4, 9, 16, 25];
   const saida = {};
+  Object.defineProperty(saida, '_ev', { value: { mortes, danos, fins }, enumerable: false });
   for (const [id, s] of S) {
     if (!s.k && !s.d && !s.dmg) continue; // não estava nessa partida
     for (const k of Object.values(s._r)) { const n = Math.min(k, 5); s['m' + n]++; }
@@ -296,8 +302,80 @@ function estatisticas(arquivo, ids) {
   return saida;
 }
 
+// 4b) quadro completo da partida: os 10 jogadores (inclusive quem não está no painel), placar e KAST.
+// "eq" é 0 ou 1: quem estava do lado T no começo da partida é o time 0, o outro é o time 1 (vale a partida toda, mesmo com a troca de lado).
+function completa(arquivo, ev) {
+  const { mortes, danos, fins } = ev;
+  const ordem = [...fins].filter((f) => f.tick).sort((a, b) => a.tick - b.tick);
+  const rounds = ordem.length;
+  if (!rounds) throw new Error('demo sem rodadas');
+  const idx = new Map(ordem.map((f, i) => [f.tick, i]));
+  const lado = (w) => (w === 'T' || w === 2 ? 2 : w === 'CT' || w === 3 ? 3 : null);
+  const lin = parseTicks(arquivo, ['name', 'team_num'], ordem.map((f) => f.tick));
+  const porTick = new Map();
+  const J = new Map();
+  for (const l of lin) {
+    const id = String(l.steamid || '');
+    if (!/^\d{17}$/.test(id) || (l.team_num !== 2 && l.team_num !== 3)) continue;
+    (porTick.get(l.tick) || porTick.set(l.tick, []).get(l.tick)).push({ id, lado: l.team_num });
+    let j = J.get(id);
+    if (!j) { j = { id, nome: '', eq: null, k: 0, d: 0, a: 0, dmg: 0, hs: 0, m2: 0, m3: 0, m4: 0, m5: 0, _ka: new Set(), _mortos: new Set(), _r: {}, _pres: new Set() }; J.set(id, j); }
+    if (l.name) j.nome = String(l.name).slice(0, 40);
+    j._pres.add(idx.get(l.tick));
+  }
+  // times: no primeiro registro, T = time 0 e CT = time 1; quem chega depois entra no time dos que estão do mesmo lado que ele
+  for (const f of ordem) {
+    const linhas = porTick.get(f.tick) || [];
+    for (const x of linhas) { const j = J.get(x.id); if (j.eq == null && f === ordem[0]) j.eq = x.lado === 2 ? 0 : 1; }
+    const ladoDoTime0 = (linhas.find((x) => J.get(x.id).eq === 0) || {}).lado
+      ?? ((linhas.find((x) => J.get(x.id).eq === 1) || {}).lado === 2 ? 3 : (linhas.find((x) => J.get(x.id).eq === 1) || {}).lado === 3 ? 2 : null);
+    f._l0 = ladoDoTime0;
+    for (const x of linhas) { const j = J.get(x.id); if (j.eq == null && ladoDoTime0 != null) j.eq = x.lado === ladoDoTime0 ? 0 : 1; }
+  }
+  const placar = [0, 0];
+  for (const f of ordem) {
+    const w = lado(f.winner); if (w == null || f._l0 == null) continue;
+    placar[w === f._l0 ? 0 : 1]++;
+  }
+  const ordenadas = [...mortes].filter((e) => (e.total_rounds_played ?? 0) < rounds).sort((a, b) => (a.tick || 0) - (b.tick || 0));
+  const JANELA = 5 * 64;
+  for (let i = 0; i < ordenadas.length; i++) {
+    const e = ordenadas[i], rd = e.total_rounds_played ?? 0;
+    const v = J.get(String(e.user_steamid)), a = J.get(String(e.attacker_steamid)), as = J.get(String(e.assister_steamid));
+    const inimigo = e.attacker_team_num !== e.user_team_num;
+    const suicidio = String(e.attacker_steamid) === String(e.user_steamid);
+    if (v) { v.d++; v._mortos.add(rd); }
+    if (a && !suicidio && inimigo) { a.k++; if (e.headshot) a.hs++; a._ka.add(rd); a._r[rd] = (a._r[rd] || 0) + 1; }
+    if (as && String(e.assister_steamid) !== String(e.user_steamid) && e.assister_team_num !== e.user_team_num) { as.a++; as._ka.add(rd); }
+    if (v && inimigo && !suicidio) { // trocado: um colega do morto mata o assassino em até 5 s
+      for (let k = i + 1; k < ordenadas.length && (ordenadas[k].tick || 0) - (e.tick || 0) <= JANELA; k++) {
+        const e2 = ordenadas[k];
+        if ((e2.total_rounds_played ?? 0) !== rd) break;
+        if (String(e2.user_steamid) === String(e.attacker_steamid) && e2.attacker_team_num === e.user_team_num && String(e2.attacker_steamid) !== String(e2.user_steamid)) { v._ka.add(rd); break; }
+      }
+    }
+  }
+  for (const e of danos) {
+    const a = J.get(String(e.attacker_steamid));
+    if (!a || String(e.attacker_steamid) === String(e.user_steamid) || e.attacker_team_num === e.user_team_num) continue;
+    a.dmg += e.dmg_health || 0;
+  }
+  const jog = [];
+  for (const j of J.values()) {
+    if (j.eq == null || (!j.k && !j.d && !j.dmg && !j.a)) continue;
+    for (const k of Object.values(j._r)) j['m' + Math.min(k, 5)]++;
+    let ka = 0; for (const r of j._pres) if (j._ka.has(r) || !j._mortos.has(r)) ka++; // K, A, sobreviveu ou foi trocado
+    jog.push({ id: j.id, nome: j.nome || 'Jogador', eq: j.eq, r: j._pres.size, k: j.k, d: j.d, a: j.a, dmg: Math.round(j.dmg), hs: j.hs, ka, m2: j.m2, m3: j.m3, m4: j.m4, m5: j.m5 });
+  }
+  if (jog.length < 2) throw new Error('quadro vazio');
+  let mapa = null;
+  try { const h = parseHeader(arquivo); mapa = String(h.map_name || h.mapName || h.map || '').replace(/^.*\//, '') || null; } catch { /* sem mapa */ }
+  return { mapa, rounds, placar, jog };
+}
+
 mkdirSync('saida', { recursive: true });
 const partidas = [];
+const completas = [];
 const analises = [];
 const ruins = new Map(); // matchId -> 'indisponivel' | 'falha'
 let n = 0;
@@ -321,6 +399,11 @@ for (const pt of porPartida.values()) {
     // lê os números de todas as pessoas do painel que jogaram essa partida
     const todos = fontes.map((f) => f.steam64);
     const s = estatisticas(arq, todos);
+    // quadro dos 10 jogadores (placar, KAST, quem não está no painel). Se falhar, a partida segue só com os números do painel.
+    try {
+      const q = completa(arq, s._ev);
+      completas.push({ partida: pt.id, t: pt.horario, ...q });
+    } catch (e) { log(`  (quadro completo indisponível nesta partida: ${String((e && e.message) || e).slice(0, 60)})`); }
     // Ranko Analyst: resumo por round (só eventos; sem posição por tick). Se falhar, a partida segue só com as estatísticas.
     try {
       const an = calcular(lerEventos(dpLib, arq));
@@ -348,8 +431,8 @@ for (const p of pessoas) {
   }
   const a = avancos.get(p.f.steam64); a.ultimo_codigo = ultimo;
 }
-await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas, analises, ratings, avancos: [...avancos.values()] }) });
-log(`Enviado: ${partidas.length} registros de partida.`);
+await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas, completas, analises, ratings, avancos: [...avancos.values()] }) });
+log(`Enviado: ${partidas.length} registros de partida e ${completas.length} quadro(s) completo(s).`);
 steam.logOff();
 await espera(500);
 process.exit(0);
