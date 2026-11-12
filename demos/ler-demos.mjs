@@ -5,7 +5,7 @@ import GlobalOffensive from 'globaloffensive';
 import { decodeMatchShareCode } from 'csgo-sharecode';
 import { createRequire } from 'node:module';
 import { writeFileSync, mkdirSync, rmSync, statSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
 const dpLib = require('@laihoe/demoparser2');
@@ -384,6 +384,19 @@ function completa(arquivo, ev) {
   return { mapa, rounds, placar, jog };
 }
 
+// Teste dos leitores de demo (só roda com TESTAR_LEITORES=sim): abre a mesma demo com cada leitor, cada um em um processo separado
+// (o leitor em Rust pode derrubar o processo inteiro). Mostra só "abriu / falhou" e contagens.
+function testarLeitores(arq) {
+  const lista = [['atual', `demoparser2 ${VERSAO_LEITOR} (o de hoje)`], ['dp0413', 'demoparser2 0.41.3'], ['dp0410', 'demoparser2 0.41.0'], ['dp0403', 'demoparser2 0.40.3'], ['cs2parser', 'cs2parser'], ['go-estavel', 'Go (demoinfocs v5.2.0)'], ['go-master', 'Go (demoinfocs, versão em desenvolvimento)']];
+  for (const [id, rotulo] of lista) {
+    const r = spawnSync(process.execPath, [new URL('./testar-leitor.mjs', import.meta.url).pathname, id, arq], { encoding: 'utf8', timeout: 300000 });
+    const linha = String(r.stdout || '').trim().split('\n').pop();
+    if (linha) log(`  leitor ${rotulo}: ${linha}`);
+    else log(`  leitor ${rotulo}: FALHOU (o leitor travou${r.signal ? ' (' + r.signal + ')' : ''}${r.status != null ? ', código ' + r.status : ''}${r.error ? ', ' + String(r.error.message).slice(0, 40) : ''})`);
+  }
+}
+let testados = 0;
+
 mkdirSync('saida', { recursive: true });
 const partidas = [];
 const completas = [];
@@ -407,6 +420,13 @@ for (const pt of porPartida.values()) {
     writeFileSync(bz, Buffer.from(await r.arrayBuffer()));
     if (/\.bz2$/i.test(url)) execFileSync('bunzip2', ['-f', bz]);
     const arq = bz.replace(/\.bz2$/, '');
+    if (process.env.TESTAR_LEITORES === 'sim') { // modo de teste: não grava nada, só compara os leitores em 2 demos
+      log(`Teste dos leitores na demo ${testados + 1} (${Math.round(statSync(arq).size / 1e6)} MB):`);
+      testarLeitores(arq);
+      rmSync(arq, { force: true });
+      if (++testados >= 2) { log('Teste dos leitores concluído. Nada foi gravado no painel.'); steam.logOff(); await espera(500); process.exit(0); }
+      continue;
+    }
     // lê os números de todas as pessoas do painel que jogaram essa partida
     const todos = fontes.map((f) => f.steam64);
     let s;
