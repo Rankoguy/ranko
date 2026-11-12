@@ -1527,9 +1527,9 @@ function pagina(titulo,html){return '<div class="pagina"><div class="caixa">'+ti
 function fecharTudo(){closeProfile()}
 function lerRota(){
  var p=location.hash.replace(/^#\/?/,'').split('/');
- var t=p[0]||'home',id='',id2='';try{id=p[1]?decodeURIComponent(p[1]):'';id2=p[2]?decodeURIComponent(p[2]):''}catch(e){}
+ var t=p[0]||'home',id='',id2='',cla='';try{id=p[1]?decodeURIComponent(p[1]):'';id2=p[2]?decodeURIComponent(p[2]):'';if(p[3]==='cla'&&p[4])cla=decodeURIComponent(p[4])}catch(e){}
  if(['jogador','cla','convite','criar','partida'].indexOf(t)<0)t='home';
- return{t:t,id:id,id2:id2};
+ return{t:t,id:id,id2:id2,cla:cla};
 }
 function rotear(manter){
  var r=lerRota();
@@ -1550,7 +1550,7 @@ function rotear(manter){
   else if(r.t==='jogador')telaJogador(r.id,meu);
   else if(r.t==='cla')telaCla(r.id,meu);
   else if(r.t==='convite')telaConvite(r.id,meu);
-  else if(r.t==='partida')telaPartida(r.id,r.id2,meu);
+  else if(r.t==='partida')telaPartida(r.id,r.id2,meu,r.cla);
   else telaCriar();
  }
  /* a cada troca de tela, confere de novo o seu time (alguém pode ter passado a posse ou te expulsado) */
@@ -1725,7 +1725,7 @@ function carregarPartidasTime(slug){
  chamar('GET','/cla/'+encodeURIComponent(slug)+'/partidas').then(function(r){
   box=el('pt-c');if(!box)return;
   if(!r.ok){box.innerHTML='<div class="vazio">Não consegui carregar as partidas agora.</div>';return}
-  PT={L:r.j.partidas||[],mn:r.j.minimo||3};
+  PT={L:r.j.partidas||[],mn:r.j.minimo||3,slug:slug};
   desenharPartidasTime();
  });
 }
@@ -1743,7 +1743,7 @@ function desenharPartidasTime(){
    if(comp)q+='<span class="pt-comp" title="Jogadores de fora do time completaram a partida">+'+comp+(comp>1?' completes':' complete')+'</span>';
    var foco='';(m.jogadores||[]).forEach(function(x){if(SES&&x.steam64===SES.sid)foco=x.steam64});
    if(!foco&&m.jogadores&&m.jogadores[0])foco=m.jogadores.slice().sort(function(a,b){return (b.k||0)-(a.k||0)})[0].steam64;
-   var abre=m.p?' class="pt-lk" data-ir="#/partida/'+m.p+'/'+foco+'" tabindex="0" title="Ver a partida"':'';
+   var abre=m.p?' class="pt-lk" data-ir="#/partida/'+m.p+'/'+foco+(PT.slug?'/cla/'+encodeURIComponent(PT.slug):'')+'" tabindex="0" title="Ver a partida"':'';
    var an=analiseDe(m.t),cel='',det='';
    if(temAn){
     if(!ANL.pro)cel='<td><button type="button" class="an-bt trav" data-acao="an-travado"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z"/></svg>Pro</button></td>';
@@ -1995,8 +1995,24 @@ function desenharHist(){
  var mais=box.querySelector('.hx-mais');if(mais)mais.addEventListener('click',function(){HX.n+=15;desenharHist()});
 }
 
-/* ----- tela da partida (#/partida/<id>/<jogador>) ----- */
-function telaPartida(id,foco,meu){
+/* ----- tela da partida (#/partida/<id>/<jogador>[/cla/<slug>]) ----- */
+// aberta pela lista do time: mostra a análise do time (Time Pro), a mesma do botão "Ver análise" da lista
+function analiseDoTimeNaPartida(box,cla,pa,meu){
+ var h='<h3>Análise da partida</h3>';
+ chamar('GET','/cla/'+encodeURIComponent(cla)+'/analise',undefined,true).then(function(r){
+  if(meu!==TOK||!el('dx-an'))return;
+  if(!r.ok){box.innerHTML=h+'<p class="note">'+esc((r.j&&r.j.erro)||'Não consegui carregar a análise agora.')+'</p>';return}
+  if(r.j.pro===false){
+   box.className='dx-an trava';
+   box.innerHTML=h+'<div class="bl">O que decidiu a partida, round a round. Os primeiros duelos, as mortes sem troca, os clutches e a vantagem que escapou.</div>'
+    +'<div class="dx-lock"><b>Análise com o Time Pro</b><span>Veja por que o time ganhou ou perdeu, round a round.</span><a class="btn y sm" href="#/cla/'+encodeURIComponent(cla)+'">Ver o Time Pro</a></div>';
+   return;
+  }
+  var v=null;(r.j.partidas||[]).forEach(function(x){if(!v&&Math.abs(x.t-pa.t)<120000)v=x});
+  box.innerHTML=h+(v?htmlAnalisePartida(v):'<p class="note">Essa partida não tem análise do time. A análise existe para partidas em que 3 ou mais do time jogaram, lidas depois que o Analyst foi ligado.</p>');
+ });
+}
+function telaPartida(id,foco,meu,cla){
  setCtx('Partida');
  view('<div class="pagina-perfil"><div class="skeleton"></div></div>');
  var volta=/^\d{17}$/.test(foco)?foco:(SES?SES.sid:'');
@@ -2005,7 +2021,7 @@ function telaPartida(id,foco,meu){
  chamar('GET','/partida/'+id).then(function(r){
   if(meu!==TOK)return;
   if(!r.ok){view(pagina('<h2>Partida <u>não achada</u></h2>','<p>'+esc(r.j.erro||'Não consegui carregar a partida.')+'</p>'+btn));return}
-  desenharPartida(r.j,volta,meu);
+  desenharPartida(r.j,volta,meu,cla);
  });
 }
 function linhaJog(p,focoId){
@@ -2020,23 +2036,25 @@ function tabEquipe(rotulo,pl,venceu,lista,focoId){
  return '<div class="dx-t"><div class="dx-eq"><b>'+esc(rotulo)+'</b>'+(pl==null?'':'<span class="'+(venceu?'w':'')+'">'+pl+' rounds</span>')+'</div><table><colgroup><col style="width:236px"><col style="width:110px"><col span="6" style="width:66px"><col span="4" style="width:46px"></colgroup><thead><tr><th>Jogador</th><th class="c">Rank</th><th>Abates</th><th>Assist.</th><th>Mortes</th><th>K/D</th><th>ADR</th><th>KAST</th><th>2K</th><th>3K</th><th>4K</th><th>5K</th></tr></thead><tbody>'
   +lista.map(function(p){return linhaJog(p,focoId)}).join('')+'</tbody></table></div>';
 }
-function desenharPartida(j,volta,meu){
+function desenharPartida(j,volta,meu,cla){
  var pa=j.partida,J=j.jogadores,foco=null;
  J.forEach(function(p){if(p.steam64&&p.steam64===volta)foco=p});
  var eqF=foco?foco.eq:null,mine=eqF==null?0:eqF,outro=1-mine;
  var gm=pa.placar[mine],go=pa.placar[outro],res=eqF==null?'':(gm>go?'v':gm<go?'d':'');
  var minha=J.filter(function(p){return p.eq===mine}),deles=J.filter(function(p){return p.eq===outro});
  var euSou=!!(SES&&foco&&foco.steam64===SES.sid);
- var rot1=eqF==null?'Time 1':euSou?'Seu time':'Time de '+foco.nome,rot2=eqF==null?'Time 2':'Adversários';
+ var rot1=eqF==null?'Time 1':cla&&!euSou?'Time':euSou?'Seu time':'Time de '+foco.nome,rot2=eqF==null?'Time 2':'Adversários';
  var top='<div class="dx-top '+res+'">'+(eqF==null?'':'<span class="dx-res">'+(gm>go?'VITÓRIA':gm<go?'DERROTA':'EMPATE')+'</span>')+'<span class="dx-pl">'+gm+' : '+go+'</span>'
   +'<span class="dx-info"><b>'+esc(nomeMapa(pa.mapa))+'</b> · '+dataHoraBR(pa.t)+' · '+pa.rounds+' rounds</span></div>';
  var nm=foco?foco.nome:'';
- view('<div class="pagina-perfil dx"><a class="dx-volta" href="#/jogador/'+esc(volta||'')+'">'+(volta?'← Voltar ao perfil'+(nm?' de '+esc(nm):''):'')+'</a>'+top
+ var vt=cla?'<a class="dx-volta" href="#/cla/'+encodeURIComponent(cla)+'">← Voltar ao time</a>':'<a class="dx-volta" href="#/jogador/'+esc(volta||'')+'">'+(volta?'← Voltar ao perfil'+(nm?' de '+esc(nm):''):'')+'</a>';
+ view('<div class="pagina-perfil dx">'+vt+top
   +tabEquipe(rot1,gm,gm>go,minha,volta)+tabEquipe(rot2,go,go>gm,deles,volta)
   +(SES?'<div class="dx-an" id="dx-an"><h3>Análise da partida</h3><p class="note">Carregando…</p></div>':'')+'</div>');
- if(!volta)[].forEach.call(document.querySelectorAll('.dx-volta'),function(a){a.style.display='none'});
+ if(!volta&&!cla)[].forEach.call(document.querySelectorAll('.dx-volta'),function(a){a.style.display='none'});
  if(!SES)return;
  var box=el('dx-an');
+ if(cla){analiseDoTimeNaPartida(box,cla,pa,meu);return}
  if(!euSou){box.innerHTML='<h3>Análise da partida</h3><p class="note">A análise de cada partida é de quem jogou, com o plano individual. Abra a partida pelo seu próprio perfil para ver a sua.</p>';return}
  chamar('GET','/partida/'+pa.p+'/analise',undefined,true).then(function(r){
   if(meu!==TOK||!el('dx-an'))return;
