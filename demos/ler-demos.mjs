@@ -9,8 +9,12 @@ import { execFileSync, spawnSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
 const dpLib = require('@laihoe/demoparser2');
-const { parseEvent, parseTicks, parseHeader } = dpLib;
+// leitor em uso: o demoparser2 primeiro; quando ele não abrir a demo, o cs2parser (reserva)
+let { parseEvent, parseTicks, parseHeader } = dpLib;
+let libAtual = dpLib;
+function usar(lib) { libAtual = lib; ({ parseEvent, parseTicks, parseHeader } = lib); }
 import { lerEventos, calcular, compactar } from './analise.mjs';
+import { lerComCs2 } from './leitor-cs2.mjs';
 let VERSAO_LEITOR = '?';
 try { VERSAO_LEITOR = require('@laihoe/demoparser2/package.json').version; } catch { /* sem a versão, segue */ }
 
@@ -396,6 +400,7 @@ function testarLeitores(arq) {
   }
 }
 let testados = 0;
+const CONFERIR = process.env.CONFERIR === 'sim';
 
 mkdirSync('saida', { recursive: true });
 const partidas = [];
@@ -430,8 +435,18 @@ for (const pt of porPartida.values()) {
     // lê os números de todas as pessoas do painel que jogaram essa partida
     const todos = fontes.map((f) => f.steam64);
     let s;
+    usar(dpLib);
     try { s = estatisticas(arq, todos); }
-    catch (e) {
+    catch (e0) {
+      // o demoparser2 não abriu: tenta o leitor reserva antes de desistir
+      try {
+        usar(await lerComCs2(arq));
+        s = estatisticas(arq, todos);
+        log(`  (partida ${n}: lida pelo leitor reserva cs2parser)`);
+      } catch (e1) {
+        log(`  (leitor reserva também falhou: ${String((e1 && e1.message) || e1).replace(/\d{9,}/g, '#').slice(0, 80)})`);
+        usar(dpLib);
+        const e = e0;
       // diagnóstico da demo que o leitor não conseguiu abrir: só números de versão e tamanho (nada de nomes de servidor ou jogadores)
       try {
         const h = parseHeader(arq) || {};
@@ -439,17 +454,24 @@ for (const pt of porPartida.values()) {
         log(`  (demo que falhou: ${v || 'sem campos de versão'}; ${Math.round(statSync(arq).size / 1e6)} MB)`);
       } catch { /* sem o cabeçalho, segue */ }
       throw e;
+      }
     }
     // quadro dos 10 jogadores (placar, KAST, quem não está no painel). Se falhar, a partida segue só com os números do painel.
     try {
       const q = completa(arq, s._ev);
       completas.push({ partida: pt.id, t: pt.horario, ...q });
+      if (CONFERIR) { // só totais por time: nada de nomes nem ids no log público
+        const tot = [0, 1].map((eq) => q.jog.filter((x) => x.eq === eq).reduce((a, x) => ({ j: a.j + 1, k: a.k + x.k, d: a.d + x.d }), { j: 0, k: 0, d: 0 }));
+        const d = new Date((pt.horario || 0) - 3 * 3600e3);
+        log(`  Conferência: ${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')} ${String(d.getUTCHours()).padStart(2, '0')}h, ${q.mapa || 'mapa ?'}, ${q.rounds} rodadas, placar ${q.placar[0]} x ${q.placar[1]} | time 1: ${tot[0].j} jogadores, ${tot[0].k} abates, ${tot[0].d} mortes | time 2: ${tot[1].j} jogadores, ${tot[1].k} abates, ${tot[1].d} mortes | do painel: ${Object.values(s).map((x) => x.k + '/' + x.d).join(', ') || 'ninguém'}`);
+      }
     } catch (e) { log(`  (quadro completo indisponível nesta partida: ${String((e && e.message) || e).slice(0, 60)})`); }
     // Ranko Analyst: resumo por round (só eventos; sem posição por tick). Se falhar, a partida segue só com as estatísticas.
     try {
-      const an = calcular(lerEventos(dpLib, arq));
+      const an = calcular(lerEventos(libAtual, arq));
       if (an) analises.push({ partida: pt.id, t: pt.horario, a: compactar(an) });
     } catch (e) { log('  (análise de rounds indisponível nesta partida)'); }
+    usar(dpLib);
     rmSync(arq, { force: true });
     pt.stats = s;
     for (const [id, st] of Object.entries(s)) partidas.push({ steam64: id, partida: pt.id, t: pt.horario, s: st });
@@ -474,6 +496,7 @@ for (const p of pessoas) {
   }
   const a = avancos.get(p.f.steam64); a.ultimo_codigo = ultimo;
 }
+if (CONFERIR) { log('Conferência concluída. Nada foi gravado e a fila não andou.'); steam.logOff(); await espera(500); process.exit(0); }
 await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas, completas, analises, ratings, avancos: [...avancos.values()] }) });
 log(`Enviado: ${partidas.length} registros de partida e ${completas.length} quadro(s) completo(s).`);
 steam.logOff();
