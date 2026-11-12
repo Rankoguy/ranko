@@ -792,6 +792,84 @@ span.rt>b{display:inline-flex;align-items:center;padding:0 14px 0 12px;font-weig
 #ii-tip{position:fixed;z-index:300;max-width:300px;padding:10px 13px;border:1px solid var(--line2);border-radius:var(--r-md);background:var(--panel2);color:var(--text);font:500 13.5px/1.45 var(--body);box-shadow:0 18px 40px -16px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .12s var(--ease)}
 #ii-tip.on{opacity:1}
 @media (max-width:760px){.ind-grid{grid-template-columns:minmax(0,1fr)}}
+/* ----- histórico de partidas e tela da partida ----- */
+.hx,.dx{--win:#34d399;--lose:var(--red)}
+:root[data-modo="claro"] .hx,:root[data-modo="claro"] .dx{--win:#0f9d6b}
+.hx-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 14px;margin:0 0 12px}
+.hx-h h4{margin:0}
+.hx-f{display:flex;flex-wrap:wrap;gap:8px}
+.hx-fb{padding:6px 12px;border:1px solid var(--line2);border-radius:999px;background:transparent;color:var(--muted);font:600 13px var(--body);cursor:pointer;transition:background .15s,color .15s}
+.hx-fb:hover{color:var(--text)}
+.hx-fb.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.hx-sum{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 14px;color:var(--muted);font:500 14px var(--body)}
+.hx-sum b{color:var(--text);font-weight:800}
+.hx-l{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.hx-r{display:grid;grid-template-columns:minmax(150px,1.5fr) 80px 96px 108px 76px 76px 76px;align-items:center;gap:8px;padding:11px 18px 11px 22px;border-bottom:1px solid var(--line);position:relative;color:var(--text);text-decoration:none}
+.hx-r:last-child{border-bottom:0}
+a.hx-r{cursor:pointer;transition:background .15s}
+a.hx-r:hover,a.hx-r:focus-visible{background:color-mix(in srgb,var(--text) 5%,transparent);outline:0}
+.hx-r::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--rc,transparent)}
+.hx-r.v{--rc:var(--win)}.hx-r.d{--rc:var(--lose)}
+.hx-th{color:var(--muted);font:600 12.5px var(--body);letter-spacing:.02em;padding-top:13px;padding-bottom:13px}
+.hx-th::before{display:none}
+.hx-m{display:flex;align-items:center;gap:12px;font:700 15px var(--body);min-width:0}
+.hx-m i{flex:none;width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font:800 12px var(--body);font-style:normal;letter-spacing:.04em;color:#fff;background:var(--mc)}
+.hx-m span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hx-dt{color:var(--muted);font:500 14px var(--body)}
+.hx-sc{font:800 16px var(--body);font-variant-numeric:tabular-nums}
+.hx-sc.v{color:var(--win)}.hx-sc.d{color:var(--lose)}.hx-sc.e{color:var(--muted);font-weight:600}
+.hx-rk{display:flex;justify-content:center;color:var(--dim)}
+.hx-n{font:700 15px var(--body);font-variant-numeric:tabular-nums;text-align:right}
+.hx-th .hx-n{font:600 12.5px var(--body)}
+.hx-kd.p{color:var(--win)}.hx-kd.n{color:var(--lose)}
+.hx-th .hx-rk{color:var(--muted)}
+.hx-mais{display:block;width:100%;padding:13px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--muted);font:600 14px var(--body);cursor:pointer}
+.hx-mais:hover{color:var(--text)}
+/* o selo do Rank tem a mesma largura em toda linha: o número fica centrado e a barra colorida sempre na ponta esquerda */
+.hx .rt,.dx .rt{width:86px;height:26px;font-size:14px}
+.hx .rt>b,.dx .rt>b{flex:1;justify-content:center;padding:0 8px 0 6px}
+@media (max-width:640px){
+ .hx-th{display:none}
+ .hx-r{grid-template-columns:1fr auto auto;grid-template-areas:"m sc kd" "dt rk rk";row-gap:8px;padding:12px 14px 12px 18px}
+ .hx-r>.hx-m{grid-area:m}.hx-r>.hx-sc{grid-area:sc}.hx-r>.hx-kd{grid-area:kd}.hx-r>.hx-dt{grid-area:dt}.hx-r>.hx-rk{grid-area:rk;justify-self:end}
+ .hx-r>.hx-ab,.hx-r>.hx-mo{display:none}
+}
+.dx-volta{display:inline-block;margin:0 0 14px;color:var(--muted);font:600 14px var(--body);text-decoration:none}
+.dx-volta:hover{color:var(--text)}
+.dx-top{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:18px 22px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:14px;position:relative;overflow:hidden}
+.dx-top::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--rc,var(--line2))}
+.dx-top.v{--rc:var(--win)}.dx-top.d{--rc:var(--lose)}
+.dx-res{font:800 13px var(--body);letter-spacing:.08em;padding:5px 10px;border-radius:6px;color:#06110c;background:var(--rc)}
+.dx-top.d .dx-res{color:#fff}
+.dx-pl{font:900 34px/1 var(--disp);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.dx-info{color:var(--muted);font:500 14px var(--body)}.dx-info b{color:var(--text);font-weight:700}
+.dx-t{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow-x:auto;margin-bottom:14px}
+.dx-eq{display:flex;align-items:center;gap:10px;padding:11px 20px;color:var(--muted);font:700 12.5px var(--body);letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--line);min-width:880px}
+.dx-eq b{color:var(--text);font-weight:800}.dx-eq .w{color:var(--win)}
+.dx-t table{width:100%;min-width:880px;table-layout:fixed;border-collapse:collapse}
+.dx-t th,.dx-t td{padding:11px 8px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;overflow:hidden}
+.dx-t th{color:var(--muted);font:600 12.5px var(--body);border-bottom:1px solid var(--line)}
+.dx-t th:first-child,.dx-t td:first-child{text-align:left;padding-left:20px;position:sticky;left:0;background:var(--panel);z-index:1}
+.dx-t th.c,.dx-t td.c{text-align:center}
+.dx-t tr+tr td{border-top:1px solid var(--line)}
+.dx-t td{font:700 15px var(--body)}
+.dx-t tr.eu td{background:color-mix(in srgb,var(--t) 8%,var(--panel))}
+.dx-t .z{color:var(--dim);font-weight:500}
+.dx-t td.p{color:var(--win)}.dx-t td.n{color:var(--lose)}
+.dx-j{display:flex;align-items:center;gap:12px;font:700 15px var(--body);color:var(--text);text-decoration:none;min-width:0}
+a.dx-j:hover span{text-decoration:underline}
+.dx-j .av{flex:none}
+.dx-j .nm{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.dx-j .nm>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dx-ini{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--raise);color:var(--muted);font:800 12px var(--body)}
+.dx-fora{color:var(--dim);font:500 11.5px var(--body);font-style:normal}
+.dx-an{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.dx-an>h3{margin:0;padding:20px 20px 0;font:800 18px var(--disp)}
+.dx-an.trava{min-height:210px}
+.dx-an .bl{padding:10px 20px 20px;filter:blur(5px);opacity:.55;pointer-events:none;user-select:none;color:var(--muted);line-height:1.7}
+.dx-lock{position:absolute;inset:48px 0 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:0 20px;text-align:center;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--panel) 88%,transparent) 40%)}
+.dx-lock b{font:800 16px var(--body)}.dx-lock span{color:var(--muted);font:500 14px var(--body);max-width:440px}
+.dx-an .note{padding:10px 20px 20px;margin:0}
 </style>
 <meta name="theme-color" content="#e6af0c">
 <script>(function(){
@@ -1445,9 +1523,9 @@ function pagina(titulo,html){return '<div class="pagina"><div class="caixa">'+ti
 function fecharTudo(){closeProfile()}
 function lerRota(){
  var p=location.hash.replace(/^#\/?/,'').split('/');
- var t=p[0]||'home',id='';try{id=p[1]?decodeURIComponent(p[1]):''}catch(e){}
- if(['jogador','cla','convite','criar'].indexOf(t)<0)t='home';
- return{t:t,id:id};
+ var t=p[0]||'home',id='',id2='';try{id=p[1]?decodeURIComponent(p[1]):'';id2=p[2]?decodeURIComponent(p[2]):''}catch(e){}
+ if(['jogador','cla','convite','criar','partida'].indexOf(t)<0)t='home';
+ return{t:t,id:id,id2:id2};
 }
 function rotear(manter){
  var r=lerRota();
@@ -1468,6 +1546,7 @@ function rotear(manter){
   else if(r.t==='jogador')telaJogador(r.id,meu);
   else if(r.t==='cla')telaCla(r.id,meu);
   else if(r.t==='convite')telaConvite(r.id,meu);
+  else if(r.t==='partida')telaPartida(r.id,r.id2,meu);
   else telaCriar();
  }
  /* a cada troca de tela, confere de novo o seu time (alguém pode ter passado a posse ou te expulsado) */
@@ -1861,16 +1940,101 @@ function nomeMapa(m){
  return s.charAt(0).toUpperCase()+s.slice(1);
 }
 function dataBR(t){var d=new Date(t-3*3600*1000);return ('0'+d.getUTCDate()).slice(-2)+'/'+('0'+(d.getUTCMonth()+1)).slice(-2)}
+function dataHoraBR(t){var d=new Date(t-3*3600*1000),p=function(n){return ('0'+n).slice(-2)};return p(d.getUTCDate())+'/'+p(d.getUTCMonth()+1)+'/'+d.getUTCFullYear()+' às '+p(d.getUTCHours())+':'+p(d.getUTCMinutes())}
+var MAPA_COR={mirage:'#c0532e',inferno:'#a63b3b',nuke:'#3d7fb8',ancient:'#8a7a3a',cache:'#b0602f',dust2:'#9a7f4e',anubis:'#2f8f8a',vertigo:'#4d6fa8',overpass:'#3f8a5f',train:'#6b7280'};
+function mapaIcone(m){
+ var k=String(m||'').toLowerCase().replace(/^.*\//,'').replace(/^(de|cs|ar)_/,'').replace(/[^a-z0-9]/g,'');
+ return '<i style="--mc:'+(MAPA_COR[k]||'#5b6472')+'">'+esc((k||'?').slice(0,3).toUpperCase())+'</i>';
+}
+function seloRank(r){return r>0?selo(r):'<span title="Sem rating lido nesse dia">–</span>'}
+function kdTxt(k,d){return f(d?k/d:k,2)}
+var HX={L:[],f:'todas',n:15,id:''};
 function carregarHist(id){
  chamar('GET','/jogador/'+id+'/partidas').then(function(r){
   var box=el('hist-sec');if(!box||!r.ok)return;
   var L=(r.j&&r.j.partidas)||[];
   if(!L.length){box.style.display='none';return}
-  box.innerHTML='<h4>Últimas partidas</h4><div class="hist-w"><table class="hist"><thead><tr><th>Mapa</th><th>Data</th><th>Resultado</th><th>K / D</th><th>ADR</th><th>HS</th></tr></thead><tbody>'
-   +L.map(function(m){
-    var res=m.w===1?'<span class="res v">Vitória</span>':m.w===0?'<span class="res d">Derrota</span>':'<span class="res">–</span>';
-    return '<tr><td>'+esc(nomeMapa(m.mapa))+'</td><td>'+dataBR(m.t)+'</td><td>'+res+'</td><td><b>'+m.k+'</b> / '+m.d+'</td><td>'+(m.adr==null?'–':f(m.adr,0))+'</td><td>'+(m.hs==null?'–':f(m.hs*100,0)+'%')+'</td></tr>';
-   }).join('')+'</tbody></table></div>';
+  HX={L:L,f:'todas',n:15,id:id};desenharHist();
+ });
+}
+function linhaHist(p){
+ var c=p.w===1?'v':p.w===0?'d':'',kd=p.d?p.k/p.d:p.k;
+ var sc=p.pl?'<div class="hx-sc '+c+'">'+p.pl[0]+' : '+p.pl[1]+'</div>':'<div class="hx-sc e">'+(p.w===1?'Vitória':p.w===0?'Derrota':'–')+'</div>';
+ var cel='<div class="hx-m">'+mapaIcone(p.mapa)+'<span>'+esc(nomeMapa(p.mapa))+'</span></div><div class="hx-dt">'+dataBR(p.t)+'</div>'+sc
+  +'<div class="hx-rk">'+seloRank(p.rk)+'</div><div class="hx-n hx-ab">'+p.k+'</div><div class="hx-n hx-mo">'+p.d+'</div><div class="hx-n hx-kd '+(kd>=1?'p':'n')+'">'+kdTxt(p.k,p.d)+'</div>';
+ return p.p?'<a class="hx-r '+c+'" href="#/partida/'+p.p+'/'+HX.id+'">'+cel+'</a>':'<div class="hx-r '+c+'">'+cel+'</div>';
+}
+function desenharHist(){
+ var box=el('hist-sec');if(!box)return;
+ var L=HX.L,v=0,d=0,k=0,m=0,cont={};
+ L.forEach(function(p){if(p.w===1)v++;else if(p.w===0)d++;k+=p.k;m+=p.d;var n=nomeMapa(p.mapa);cont[n]=(cont[n]||0)+1});
+ var top=Object.keys(cont).sort(function(a,b){return cont[b]-cont[a]})[0];
+ var vis=L.filter(function(p){return HX.f==='todas'||(HX.f==='v'?p.w===1:p.w===0)});
+ var FB=[['todas','Todas'],['v','Vitórias'],['d','Derrotas']];
+ box.innerHTML='<div class="hx"><div class="hx-h"><h4>Histórico de partidas '+info('Clique em uma partida para ver os 10 jogadores. As partidas lidas antes dessa função mostram só os seus números. O Rank é o rating Premier lido no dia da partida.')+'</h4>'
+  +'<div class="hx-f">'+FB.map(function(x){return '<button type="button" class="hx-fb'+(HX.f===x[0]?' on':'')+'" data-f="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div></div>'
+  +'<div class="hx-sum"><span>Últimas '+L.length+': <b>'+v+'V · '+d+'D</b></span><span>K/D médio <b>'+kdTxt(k,m)+'</b></span>'+(top?'<span>Mapa mais jogado <b>'+esc(top)+'</b></span>':'')+'</div>'
+  +'<div class="hx-l"><div class="hx-r hx-th"><div>Mapa</div><div>Data</div><div>Placar</div><div class="hx-rk">Rank</div><div class="hx-n">Abates</div><div class="hx-n">Mortes</div><div class="hx-n">K/D</div></div>'
+  +(vis.length?vis.slice(0,HX.n).map(linhaHist).join(''):'<div class="hx-r" style="display:block;color:var(--muted)">Nenhuma partida nesse filtro.</div>')
+  +(vis.length>HX.n?'<button type="button" class="hx-mais">Mostrar mais ('+(vis.length-HX.n)+')</button>':'')+'</div></div>';
+ [].forEach.call(box.querySelectorAll('.hx-fb'),function(b){b.addEventListener('click',function(){HX.f=b.getAttribute('data-f');HX.n=15;desenharHist()})});
+ var mais=box.querySelector('.hx-mais');if(mais)mais.addEventListener('click',function(){HX.n+=15;desenharHist()});
+}
+
+/* ----- tela da partida (#/partida/<id>/<jogador>) ----- */
+function telaPartida(id,foco,meu){
+ setCtx('Partida');
+ view('<div class="pagina-perfil"><div class="skeleton"></div></div>');
+ var volta=/^\d{17}$/.test(foco)?foco:(SES?SES.sid:'');
+ var btn=volta?'<a class="btn g" href="#/jogador/'+volta+'">Voltar ao perfil</a>':'';
+ if(!/^\d{6,25}$/.test(id)){view(pagina('<h2>Partida <u>não achada</u></h2>','<p>Esse endereço de partida não existe.</p>'+btn));return}
+ chamar('GET','/partida/'+id).then(function(r){
+  if(meu!==TOK)return;
+  if(!r.ok){view(pagina('<h2>Partida <u>não achada</u></h2>','<p>'+esc(r.j.erro||'Não consegui carregar a partida.')+'</p>'+btn));return}
+  desenharPartida(r.j,volta,meu);
+ });
+}
+function linhaJog(p,focoId){
+ var nome=p.steam64?'<a class="dx-j" href="#/jogador/'+p.steam64+'" title="'+esc(p.nome)+'">'+av({avatar:p.avatar,apelido:p.nome},'sm')+'<span class="nm"><span>'+esc(p.nome)+'</span></span></a>'
+  :'<span class="dx-j" title="'+esc(p.nome)+'"><i class="dx-ini">'+esc(iniciais(p.nome))+'</i><span class="nm"><span>'+esc(p.nome)+'</span><em class="dx-fora">fora do painel</em></span></span>';
+ var z=function(n){return n?n:'<span class="z">0</span>'};
+ var kd=p.d?p.k/p.d:p.k;
+ return '<tr'+(focoId&&p.steam64===focoId?' class="eu"':'')+'><td>'+nome+'</td><td class="c">'+seloRank(p.rk)+'</td><td>'+p.k+'</td><td>'+p.a+'</td><td>'+p.d+'</td><td class="'+(kd>=1?'p':'n')+'">'+kdTxt(p.k,p.d)+'</td>'
+  +'<td>'+(p.adr==null?'–':f(p.adr,0))+'</td><td>'+(p.kast==null?'–':f(p.kast*100,0)+'%')+'</td><td>'+z(p.m2)+'</td><td>'+z(p.m3)+'</td><td>'+z(p.m4)+'</td><td>'+z(p.m5)+'</td></tr>';
+}
+function tabEquipe(rotulo,pl,venceu,lista,focoId){
+ return '<div class="dx-t"><div class="dx-eq"><b>'+esc(rotulo)+'</b>'+(pl==null?'':'<span class="'+(venceu?'w':'')+'">'+pl+' rounds</span>')+'</div><table><colgroup><col style="width:236px"><col style="width:110px"><col span="6" style="width:66px"><col span="4" style="width:46px"></colgroup><thead><tr><th>Jogador</th><th class="c">Rank</th><th>Abates</th><th>Assist.</th><th>Mortes</th><th>K/D</th><th>ADR</th><th>KAST</th><th>2K</th><th>3K</th><th>4K</th><th>5K</th></tr></thead><tbody>'
+  +lista.map(function(p){return linhaJog(p,focoId)}).join('')+'</tbody></table></div>';
+}
+function desenharPartida(j,volta,meu){
+ var pa=j.partida,J=j.jogadores,foco=null;
+ J.forEach(function(p){if(p.steam64&&p.steam64===volta)foco=p});
+ var eqF=foco?foco.eq:null,mine=eqF==null?0:eqF,outro=1-mine;
+ var gm=pa.placar[mine],go=pa.placar[outro],res=eqF==null?'':(gm>go?'v':gm<go?'d':'');
+ var minha=J.filter(function(p){return p.eq===mine}),deles=J.filter(function(p){return p.eq===outro});
+ var euSou=!!(SES&&foco&&foco.steam64===SES.sid);
+ var rot1=eqF==null?'Time 1':euSou?'Seu time':'Time de '+foco.nome,rot2=eqF==null?'Time 2':'Adversários';
+ var top='<div class="dx-top '+res+'">'+(eqF==null?'':'<span class="dx-res">'+(gm>go?'VITÓRIA':gm<go?'DERROTA':'EMPATE')+'</span>')+'<span class="dx-pl">'+gm+' : '+go+'</span>'
+  +'<span class="dx-info"><b>'+esc(nomeMapa(pa.mapa))+'</b> · '+dataHoraBR(pa.t)+' · '+pa.rounds+' rounds</span></div>';
+ var nm=foco?foco.nome:'';
+ view('<div class="pagina-perfil dx"><a class="dx-volta" href="#/jogador/'+esc(volta||'')+'">'+(volta?'← Voltar ao perfil'+(nm?' de '+esc(nm):''):'')+'</a>'+top
+  +tabEquipe(rot1,gm,gm>go,minha,volta)+tabEquipe(rot2,go,go>gm,deles,volta)
+  +(SES?'<div class="dx-an" id="dx-an"><h3>Análise da partida</h3><p class="note">Carregando…</p></div>':'')+'</div>');
+ if(!volta)[].forEach.call(document.querySelectorAll('.dx-volta'),function(a){a.style.display='none'});
+ if(!SES)return;
+ var box=el('dx-an');
+ if(!euSou){box.innerHTML='<h3>Análise da partida</h3><p class="note">A análise de cada partida é de quem jogou, com o plano individual. Abra a partida pelo seu próprio perfil para ver a sua.</p>';return}
+ chamar('GET','/partida/'+pa.p+'/analise',undefined,true).then(function(r){
+  if(meu!==TOK||!el('dx-an'))return;
+  if(!r.ok){box.innerHTML='<h3>Análise da partida</h3><p class="note">'+esc(r.j.erro||'Não consegui carregar a análise agora.')+'</p>';return}
+  if(r.j.pro===false){
+   box.className='dx-an trava';
+   box.innerHTML='<h3>Análise da partida</h3><div class="bl">O que decidiu a partida, round a round. Os primeiros duelos ganhos e perdidos, as mortes sem troca, os clutches e a vantagem que escapou. Tudo explicado para você saber o que treinar antes da próxima.</div>'
+    +'<div class="dx-lock"><b>Análise com o plano individual</b><span>Veja por que a partida foi ganha ou perdida, round a round. O plano ainda está em teste e é liberado manualmente.</span><a class="btn y sm" href="#/jogador/'+SES.sid+'">Ver o plano individual</a></div>';
+   return;
+  }
+  if(r.j.indisponivel||!r.j.analise){box.innerHTML='<h3>Análise da partida</h3><p class="note">A análise dessa partida não está disponível. Ela é guardada por 60 dias e só existe para partidas lidas depois que a função foi ligada.</p>';return}
+  box.innerHTML='<h3>Análise da partida</h3>'+htmlAnalisePartida(r.j.analise);
  });
 }
 
