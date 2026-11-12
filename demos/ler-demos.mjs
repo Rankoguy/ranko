@@ -391,7 +391,7 @@ function completa(arquivo, ev) {
 // Teste dos leitores de demo (só roda com TESTAR_LEITORES=sim): abre a mesma demo com cada leitor, cada um em um processo separado
 // (o leitor em Rust pode derrubar o processo inteiro). Mostra só "abriu / falhou" e contagens.
 function testarLeitores(arq) {
-  const lista = [['atual', `demoparser2 ${VERSAO_LEITOR} (o de hoje)`], ['dp0413', 'demoparser2 0.41.3'], ['dp0410', 'demoparser2 0.41.0'], ['dp0403', 'demoparser2 0.40.3'], ['cs2parser', 'cs2parser'], ['go-estavel', 'Go (demoinfocs v5.2.0)'], ['go-master', 'Go (demoinfocs, versão em desenvolvimento)']];
+  const lista = [['atual', `demoparser2 ${VERSAO_LEITOR} (o de hoje)`], ['dp0413', 'demoparser2 0.41.3'], ['dp0410', 'demoparser2 0.41.0'], ['dp0403', 'demoparser2 0.40.3'], ['cs2parser', 'cs2parser']];
   for (const [id, rotulo] of lista) {
     const r = spawnSync(process.execPath, [new URL('./testar-leitor.mjs', import.meta.url).pathname, id, arq], { encoding: 'utf8', timeout: 300000 });
     const linha = String(r.stdout || '').trim().split('\n').pop();
