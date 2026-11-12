@@ -7,6 +7,7 @@
     "@laihoe/demoparser2": "^0.42.0",
     "csgo-sharecode": "^7.0.1",
     "globaloffensive": "^3.3.0",
-    "steam-user": "^5.2.3"
+    "steam-user": "^5.2.3",
+    "cs2parser": "^2.8.0"
   }
 }
