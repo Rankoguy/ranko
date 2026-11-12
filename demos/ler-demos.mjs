@@ -11,6 +11,8 @@ const require = createRequire(import.meta.url);
 const dpLib = require('@laihoe/demoparser2');
 const { parseEvent, parseTicks, parseHeader } = dpLib;
 import { lerEventos, calcular, compactar } from './analise.mjs';
+let VERSAO_LEITOR = '?';
+try { VERSAO_LEITOR = require('@laihoe/demoparser2/package.json').version; } catch { /* sem a versão, segue */ }
 
 const env = (k) => {
   const v = (process.env[k] || '').trim();
@@ -34,6 +36,7 @@ async function worker(caminho, opcoes = {}) {
   return r.json();
 }
 
+console.log(`Leitor de demos: demoparser2 ${VERSAO_LEITOR}`);
 const fontes = await worker('/interno/fontes');
 log(`Pessoas com leitura ligada: ${fontes.length}`);
 if (!fontes.length) process.exit(0);
@@ -207,13 +210,21 @@ function urlDaDemo(codigo, id) {
 }
 
 // 4) números por jogador de uma demo (só para quem tem a leitura ligada)
+function etapa(nome, fn) { try { return fn(); } catch (e) { throw new Error(`${nome}: ${String((e && e.message) || e)}`); } }
 function estatisticas(arquivo, ids) {
-  const mortes = parseEvent(arquivo, 'player_death', ['team_num'], ['total_rounds_played']);
-  const danos = parseEvent(arquivo, 'player_hurt', ['team_num']);
-  const cegos = parseEvent(arquivo, 'player_blind', ['team_num']);
-  const fins = parseEvent(arquivo, 'round_end');
+  const fins = etapa('fim de rodada', () => parseEvent(arquivo, 'round_end'));
   const rounds = fins.length;
   if (!rounds) throw new Error('demo sem rodadas');
+  // mortes: o número da rodada normalmente vem do jogo; se essa leitura falhar, contamos pelos fins de rodada
+  let mortes;
+  try { mortes = parseEvent(arquivo, 'player_death', ['team_num'], ['total_rounds_played']); }
+  catch (e1) {
+    mortes = etapa('mortes', () => parseEvent(arquivo, 'player_death', ['team_num']));
+    const tf = fins.map((f) => f.tick || 0).sort((a, b) => a - b);
+    for (const m of mortes) { let r = 0; while (r < tf.length && tf[r] < (m.tick || 0)) r++; m.total_rounds_played = r; }
+  }
+  const danos = etapa('dano', () => parseEvent(arquivo, 'player_hurt', ['team_num']));
+  const cegos = etapa('cegueira', () => parseEvent(arquivo, 'player_blind', ['team_num']));
   const S = new Map(ids.map((id) => [id, { r: rounds, k: 0, d: 0, a: 0, hs: 0, dmg: 0, m1: 0, m2: 0, m3: 0, m4: 0, m5: 0, ff: 0, fa: 0, fl: 0, fas: 0, he: 0, ot: 0, og: 0, um: null, w: null, awp: 0, sm: 0, eb: 0, tk: 0, ud: 0, v2: 1, _r: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
