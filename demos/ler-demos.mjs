@@ -4,7 +4,7 @@ import SteamUser from 'steam-user';
 import GlobalOffensive from 'globaloffensive';
 import { decodeMatchShareCode } from 'csgo-sharecode';
 import { createRequire } from 'node:module';
-import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import { writeFileSync, mkdirSync, rmSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
@@ -409,7 +409,17 @@ for (const pt of porPartida.values()) {
     const arq = bz.replace(/\.bz2$/, '');
     // lê os números de todas as pessoas do painel que jogaram essa partida
     const todos = fontes.map((f) => f.steam64);
-    const s = estatisticas(arq, todos);
+    let s;
+    try { s = estatisticas(arq, todos); }
+    catch (e) {
+      // diagnóstico da demo que o leitor não conseguiu abrir: só números de versão e tamanho (nada de nomes de servidor ou jogadores)
+      try {
+        const h = parseHeader(arq) || {};
+        const v = Object.entries(h).filter(([k, x]) => /protocol|build|patch|version/i.test(k) && !/guid|name/i.test(k) && (typeof x === 'number' || (typeof x === 'string' && x.length <= 20))).map(([k, x]) => `${k}=${x}`).join(' ');
+        log(`  (demo que falhou: ${v || 'sem campos de versão'}; ${Math.round(statSync(arq).size / 1e6)} MB)`);
+      } catch { /* sem o cabeçalho, segue */ }
+      throw e;
+    }
     // quadro dos 10 jogadores (placar, KAST, quem não está no painel). Se falhar, a partida segue só com os números do painel.
     try {
       const q = completa(arq, s._ev);
