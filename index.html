@@ -1072,7 +1072,7 @@ var NAV=['<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>'
 
 
 function f(n,d){return Number(n).toFixed(d).replace('.',',')}
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function av(p,x,ring){return '<div class="av '+(x||'')+' '+(ring||'')+'">'+(p.avatar?'<img src="'+esc(p.avatar)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':esc(p.apelido.slice(0,2).toUpperCase()))+'</div>'}
 function el(id){return document.getElementById(id)}
 var RT_F=[['Cinza',0,'#aab4c0'],['Azul-claro',5000,'#7ab8ea'],['Azul',10000,'#7b8cf5'],['Roxo',15000,'#b87bf5'],['Rosa',20000,'#e65aea'],['Vermelho',25000,'#f26a67'],['Amarelo',30000,'#ffd21a']];
