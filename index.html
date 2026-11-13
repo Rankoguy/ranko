@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* =====================================================================
-   Ranko · sistema visual único
+   Ranko · sistema visual único
    Fundo neutro, uma cor de destaque (--t, escolhida no seletor "Cor"),
    verde/azul (--ct) e vermelho (--red) só para dado bom e ruim.
    ===================================================================== */
@@ -231,7 +231,7 @@ nav a.on em{background:rgba(0,0,0,.18)}
 .sp-k::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
 .sp-b{display:flex;align-items:center;gap:16px;margin-top:16px}
 .sp-b>div{min-width:0}
-.sp-b b{display:block;font:800 clamp(26px,2.6vw,36px)/1.05 var(--disp);letter-spacing:-.025em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-b b{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font:800 clamp(24px,2vw,28px)/1.08 var(--disp);letter-spacing:-.025em;overflow:hidden;overflow-wrap:anywhere}
 .sp.mv .sp-b b{color:var(--t-text)}
 .sp-b>div>span{display:block;margin-top:4px;color:var(--muted);font-size:14px}
 .sp{display:flex;flex-direction:column}.sp small{margin-top:auto}.sp-b{margin-bottom:16px}
@@ -304,6 +304,7 @@ nav a.on em{background:rgba(0,0,0,.18)}
 .tbl tbody tr+tr td{border-top:1px solid var(--line)}
 .tbl tbody tr:hover td{background:rgba(var(--w),.03)}
 td.pos{width:64px}
+.sem-mvp th:nth-child(8),.sem-mvp td:nth-child(8){display:none}
 .pl{display:flex;align-items:center;gap:12px;font-weight:600}
 .hv{font:700 16px var(--body)}
 .up{color:var(--ct-text)}.dn{color:var(--red-text)}
@@ -542,6 +543,8 @@ body.lock-gate{overflow:hidden}
   .mlogo{display:grid;width:36px;height:36px}
   .ctx{display:none}
   .search{flex:1 1 auto;min-width:0;height:44px}
+  .clabar .gr{gap:8px}
+  .per{flex:1 1 auto;width:auto}
   .tema-b,.usr button{min-width:44px;height:44px;justify-content:center}
   .tema-b span,.usr>span{display:none}
   .tema-p{position:fixed;left:12px;right:12px;top:64px;min-width:0}
@@ -550,12 +553,11 @@ body.lock-gate{overflow:hidden}
   .wrap{padding:20px 16px 48px;gap:56px}
   .clabar,.aviso-ligar{margin-bottom:-32px}
   .clabar .gr,.cla-row .gr{margin-left:0;width:100%}
-  .per{display:flex;width:100%}.per button{flex:1;height:38px}
+  .per{display:flex}.per button{flex:1;height:38px}
   .btn,.chip,.btn.sm{min-height:44px}
   .chip{height:40px}
   .hero{padding:28px 20px;border-radius:var(--r-lg)}
   .hero p{font-size:16px}
-  .spot{grid-template-columns:minmax(0,1fr)}
   .duo,.zgrid,.me-body,.pf,.cla-vazio,.func-grid{grid-template-columns:minmax(0,1fr)}
   .duo{gap:28px}
   .cla-vazio{gap:20px}
@@ -585,7 +587,15 @@ body.lock-gate{overflow:hidden}
   .chips::-webkit-scrollbar{display:none}
   .chip{flex:none}
 }
-@media(max-width:640px){.usr .opt-t,.usr>.av{display:none}.usr .opt{padding:0}}
+@media(max-width:640px){.usr .opt-t,.usr>.av{display:none}.usr .opt{padding:0}
+  .spot{grid-template-columns:minmax(0,1fr)}
+  /* busca vira botão de lupa e abre por cima da barra ao tocar */
+  .search{flex:0 0 44px;width:44px;padding:0;justify-content:center;cursor:pointer}
+  .search input{position:absolute;width:1px;opacity:0}
+  .search:focus-within,.search:has(input:not(:placeholder-shown)){position:absolute;left:12px;right:12px;top:50%;width:auto;margin-top:-22px;z-index:3;padding:0 12px;justify-content:flex-start;background:var(--bg)}
+  .search:focus-within input,.search:has(input:not(:placeholder-shown)) input{position:static;width:auto;opacity:1}
+  .gate-btns .btn{flex:1 1 100%}
+}
 @media(max-width:700px){
   .tbl{padding:0;overflow:visible;background:none;border:0}
   .tbl table,.tbl thead,.tbl tbody,.tbl tr,.tbl td{display:block;min-width:0}
@@ -764,7 +774,7 @@ body.modo-pro .pro-sec{display:block}
 .pro-c li{display:flex;align-items:center;gap:10px;font:500 15px var(--body)}
 .pro-c li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--t);flex:none}
 .pro-s{position:absolute;top:24px;right:24px;display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);font:600 12.5px var(--body)}
-@media(max-width:900px){.pro-g{grid-template-columns:minmax(0,1fr)}.modo-t{width:100%}}
+@media(max-width:900px){.pro-g{grid-template-columns:minmax(0,1fr)}}
 /* ----- plano individual ----- */
 .ind-bloco{display:grid;grid-template-columns:72px 1fr;gap:2px 14px;padding:14px 0;border-top:1px solid var(--line2)}
 .ind-bloco .min{grid-row:1/3;color:var(--ct-text);font:800 24px/1.1 var(--body)}
@@ -786,6 +796,8 @@ span.rt>b{display:inline-flex;align-items:center;padding:0 14px 0 12px;font-weig
 .rt-4{--gf:8px;--gb:6px;text-shadow:0 0 3px var(--rc)}
 .rt-5{--gf:11px;--gb:10px;text-shadow:0 0 5px var(--rc)}
 .rt-6{--gf:16px;--gb:16px;--rf:linear-gradient(#fff3a0,#ffd21a 45%,#e0a800);text-shadow:0 0 7px var(--rc)}
+/* selo sem brilho: a cor da faixa basta, e o vermelho fica livre para "dado ruim" */
+.rt,.rt-3,.rt-4,.rt-5,.rt-6{--gf:0px;--gb:0px;text-shadow:none}
 .note .rt{margin:0 10px;vertical-align:middle}
 .note .rt:first-child{margin-left:0}
 .sep{margin:0 9px;color:var(--dim)}
@@ -908,6 +920,8 @@ a.dx-j:hover span{text-decoration:underline}
 .abas a:focus-visible{outline:2px solid var(--text);outline-offset:-4px;border-radius:6px}
 .me-card .abas{padding:0 20px}
 #cla-abas{margin:14px 0 0;border:1px solid var(--line);border-radius:var(--r-lg);padding:0 10px}
+/* as seções do time já estão na barra lateral (desktop) e na barra de baixo (celular) */
+#cla-abas{display:none}
 .abas a.on{background:none;color:var(--text)}
 .cla-topo{display:grid;margin-bottom:-48px}
 .cla-topo .clabar{margin-bottom:0}
@@ -1066,7 +1080,7 @@ function montar(){
   [].forEach.call(p.querySelectorAll('[data-fonte]'),function(x){x.setAttribute('aria-checked',String(x.getAttribute('data-fonte')===fonte))});
   document.getElementById('fonte-l').setAttribute('data-ativo',String(fonte.indexOf('livre:')===0));
   var tinta=getComputedStyle(document.documentElement).getPropertyValue('--on-t').trim(),r=ctr(atual.c,tinta),q=r>=7?['ótimo','ok']:r>=4.5?['bom','ok']:r>=3?['baixo','mau']:['ruim, difícil de ler','mau'];
-  document.getElementById('fonte-r').innerHTML='<i aria-hidden="true">Aa</i><span>Contraste <b class="'+q[1]+'">'+r.toFixed(1).replace('.',',')+':1 · '+q[0]+'</b></span>';
+  document.getElementById('fonte-r').innerHTML='<i aria-hidden="true">Aa</i><span>Contraste <b class="'+q[1]+'">'+r.toFixed(1).replace('.',',')+':1 · '+q[0]+'</b></span>';
  }
  p.addEventListener('click',function(e){var o=e.target.closest('[data-fonte]');if(!o)return;fonte=o.getAttribute('data-fonte');gravarFonte(fonte);aplicar(atual);marcarFonte()});
  var fc=document.getElementById('fonte-c');
@@ -1111,7 +1125,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <template id="cla-tpl"><section class="hero" id="painel">
         <div class="hero-l">
           
-          <h1>Ranking<em>da semana</em></h1>
+          <h1>Resumo<em>da semana</em></h1>
           <p>Quem está carregando o time e quem mais trollou nesta semana.</p><span class="semana" id="kick"></span>
         </div>
         <div class="spot" id="spot"></div>
@@ -1234,7 +1248,7 @@ function info(t){return '<span class="ii" tabindex="0" role="img" aria-label="'+
 function selo(r,grande){
  if(r==null||isNaN(r)||r<=0)return '';
  var i=rtFaixa(r),fx=RT_F[i];
- return '<span class="rt rt-'+i+'" style="--rc:'+fx[2]+'" title="Premier '+rtNum(r)+' · faixa '+fx[0]+'"><b>'+rtNum(r)+'</b></span>';
+ return '<span class="rt rt-'+i+'" style="--rc:'+fx[2]+'" title="Premier '+rtNum(r)+' · faixa '+fx[0]+'"><b>'+rtNum(r)+'</b></span>';
 }
 function seloFaixa(i){var fx=RT_F[i];return '<span class="rt rt-'+i+'" style="--rc:'+fx[2]+'" title="Faixa '+esc(fx[0])+'"><b>'+rtNum(fx[1])+'+</b></span>'}
 function z(p,k){var v=p.zoeira&&p.zoeira[k];return v==null?0:v}
@@ -1285,6 +1299,7 @@ function drawRows(q){
  if(s2.length)vazio=s2.map(function(p){return p.apelido}).join(', ')+': só perfil Steam, sem dados de partidas ainda (veja mais abaixo).';
  if(e.length)vazio=e.map(function(p){return p.apelido}).join(', ')+': sem dados de partidas ainda.';
  el('rows').innerHTML=h||'<tr><td colspan="9" class="note">'+esc(vazio)+'</td></tr>';
+ var tb=el('rows').closest('table');if(tb)tb.classList.toggle('sem-mvp',!P.some(function(p){return p.mvps!=null}));
 }
 function drawZ(){
  var c=CAT[zi],o=order(c),mx=c.g(o[0])||1;
@@ -1298,15 +1313,20 @@ function spotlight(){
  var sem=W.length>=2;
  var F=P.filter(function(p){return p.partidas_analisadas>=3});
  var Q=sem?W:(F.length>=2?F:P);
- var fb='Poucas partidas nesta semana · mostrando '+(modo==='mes'?'o mês':modo==='semana'?'a semana':'as últimas partidas');
+ var fb='Poucas partidas nesta semana · mostrando '+(modo==='mes'?'o mês':modo==='semana'?'a semana':'as últimas partidas');
  var mv=Q.reduce(function(m,p){return p.hltv>m.hltv?p:m},Q[0]);
  var pts={},lid={};Q.forEach(function(p){pts[p.steam64]=0});
  CAT.forEach(function(c){var o=order(c,Q);o.forEach(function(p,i){pts[p.steam64]+=Q.length-i});(lid[o[0].steam64]=lid[o[0].steam64]||[]).push(c.t)});
  var tr=Q.reduce(function(m,p){return pts[p.steam64]>pts[m.steam64]?p:m},Q[0]);
  var lt=lid[tr.steam64]||[];
+ /* o hero mostra a semana quando há dados; o rótulo e o título seguem o que é mostrado */
+ var rot=sem?'da semana':(modo==='mes'?'do mês':modo==='semana'?'da semana':'geral');
+ var h1e=document.querySelector('#painel h1 em'),hp=document.querySelector('#painel p[data-per]');
+ if(sem&&h1e){h1e.textContent='da semana';if(hp){hp.setAttribute('data-per','nesta semana');hp.textContent=proOn()?'Quem está carregando o time nesta semana.':'Quem está carregando o time e quem mais trollou nesta semana.'}
+  var sd=DADOS&&DADOS.periodo&&DADOS.periodo.semana_id?DADOS.periodo.semana_id.split('-'):null;var kk=el('kick');if(kk)kk.textContent=sd?'CS2 · Semana de '+sd[2]+'/'+sd[1]:'CS2 · Esta semana'}
  el('spot').innerHTML=
-  '<div class="sp mv" data-p="'+mv.steam64+'"><div class="sp-k">'+svg('Líder do ranking')+'Carregando o time</div><div class="sp-b">'+av(mv,'xl','ring-ct')+'<div><b>'+esc(mv.apelido)+'</b><span>HLTV <span class="num">'+cu(mv.hltv,2)+'</span> · '+mv.partidas_analisadas+' partidas</span></div></div><small>'+(sem?'Destaque positivo '+(modo==='mes'?'do mês':modo==='semana'?'da semana':'geral')+'':fb)+'</small></div>'
-  +'<div class="sp tr" data-p="'+tr.steam64+'"><div class="sp-k">'+svg('Fogo amigo')+'Maior troll</div><div class="sp-b">'+av(tr,'xl','ring-red')+'<div><b>'+esc(tr.apelido)+'</b><span>'+(lt.length?'Lidera em '+esc(lt.join(', ')):pts[tr.steam64]+' pontos de trollagem')+'</span></div></div><small>'+(sem?'Destaque negativo '+(modo==='mes'?'do mês':modo==='semana'?'da semana':'geral')+'':fb)+'</small></div>';
+  '<div class="sp mv" data-p="'+mv.steam64+'"><div class="sp-k">'+svg('Líder do ranking')+'Carregando o time</div><div class="sp-b">'+av(mv,'xl','ring-ct')+'<div><b title="'+esc(mv.apelido)+'">'+esc(mv.apelido)+'</b><span>HLTV <span class="num">'+cu(mv.hltv,2)+'</span> · '+mv.partidas_analisadas+' partidas</span></div></div><small>'+(sem?'Destaque positivo '+rot:fb)+'</small></div>'
+  +'<div class="sp tr" data-p="'+tr.steam64+'"><div class="sp-k">'+svg('Fogo amigo')+'Maior troll</div><div class="sp-b">'+av(tr,'xl','ring-red')+'<div><b title="'+esc(tr.apelido)+'">'+esc(tr.apelido)+'</b><span>'+(lt.length?'Lidera em '+esc(lt.join(', ')):pts[tr.steam64]+' pontos de trollagem')+'</span></div></div><small>'+(sem?'Destaque negativo '+rot:fb)+'</small></div>';
 }
 function drawL(d){
  var per=d.periodo||{},h=d.historico||{};
@@ -1317,14 +1337,14 @@ function drawL(d){
   var ord=cand.length>=3?[1,0,2]:cand.length===2?[1,0]:[0];
   box.innerHTML='<p class="lid-k">'+(modo==='mes'?'Pódio de '+MES[mi]:modo==='semana'?'Pódio da semana':'Pódio')+'</p><div class="podio">'
    +ord.map(function(i){var p=cand[i],r=i+1;
-    return '<div class="pd p'+r+'" data-p="'+p.steam64+'">'+av(p,'xxl',r===1?'ring-gold':'')+'<div class="nm">'+esc(p.apelido)+'</div>'+(p.rating?'<div class="rt-l">'+selo(p.rating)+'</div>':'')+'<div class="big">'+cu(p.hltv,2)+'</div><div class="sub">'+p.partidas_analisadas+' partidas'+(p.mvps!=null?' · '+p.mvps+(p.mvps===1?' estrela':' estrelas'):'')+'</div><div class="base" aria-hidden="true">'+r+'</div></div>'}).join('')
+    return '<div class="pd p'+r+'" data-p="'+p.steam64+'">'+av(p,'xxl',r===1?'ring-gold':'')+'<div class="nm">'+esc(p.apelido)+'</div>'+(p.rating?'<div class="rt-l">'+selo(p.rating)+'</div>':'')+'<div class="big">'+cu(p.hltv,2)+'</div><div class="sub">'+p.partidas_analisadas+' partidas'+(p.mvps!=null?' · '+p.mvps+(p.mvps===1?' estrela':' estrelas'):'')+'</div><div class="base" aria-hidden="true">'+r+'</div></div>'}).join('')
    +'</div>';
  }
- var ms=Object.keys(h.meses||{}).filter(function(k){return k!==per.mes_id}).sort().reverse().slice(0,3).map(function(k){return MES[+k.split('-')[1]-1]+' · '+esc(h.meses[k].lider.apelido)});
- var ws=Object.keys(h.semanas||{}).filter(function(k){return k!==per.semana_id}).sort().reverse().slice(0,4).map(function(k){var a=k.split('-');return a[2]+'/'+a[1]+' · '+esc(h.semanas[k].lider.apelido)});
+ var ms=Object.keys(h.meses||{}).filter(function(k){return k!==per.mes_id}).sort().reverse().slice(0,3).map(function(k){return MES[+k.split('-')[1]-1]+' · '+esc(h.meses[k].lider.apelido)});
+ var ws=Object.keys(h.semanas||{}).filter(function(k){return k!==per.semana_id}).sort().reverse().slice(0,4).map(function(k){var a=k.split('-');return a[2]+'/'+a[1]+' · '+esc(h.semanas[k].lider.apelido)});
  var t=[];
- if(ms.length)t.push('<b>Líderes dos meses anteriores:</b> '+ms.join(' · '));
- if(ws.length)t.push('<b>Líderes das semanas anteriores:</b> '+ws.join(' · '));
+ if(ms.length)t.push('<b>Líderes dos meses anteriores:</b> '+ms.join(' · '));
+ if(ws.length)t.push('<b>Líderes das semanas anteriores:</b> '+ws.join(' · '));
  el('hist').innerHTML=t.join('<br>');
 }
 function drawS(){
@@ -1344,7 +1364,7 @@ function drawS(){
 function drawJ(){
  function n(v,d){return v==null?'–':f(v,d)}
  el('jl').innerHTML=P.map(function(p,i){
-  return '<article class="sc" data-p="'+p.steam64+'" tabindex="0"><div class="sc-h">'+av(p,'l',i===0?'ring-gold':'')+'<div><b>'+esc(p.apelido)+'</b><span class="tagx">'+(i+1)+'º · '+p.partidas_analisadas+' partidas</span></div></div>'
+  return '<article class="sc" data-p="'+p.steam64+'" tabindex="0"><div class="sc-h">'+av(p,'l',i===0?'ring-gold':'')+'<div><b>'+esc(p.apelido)+'</b><span class="tagx">'+(i+1)+'º · '+p.partidas_analisadas+' partidas</span></div></div>'
   +'<div class="sc-k"><div><b>'+n(p.hltv,2)+'</b><span>HLTV</span></div><div><b>'+n(p.mira,0)+'</b><span>Mira</span></div><div><b>'+n(p.utilidade,0)+'</b><span>Util.</span></div><div><b>'+n(p.posicionamento,0)+'</b><span>Pos.</span></div></div></article>'}).join('');
 }
 
@@ -1354,7 +1374,7 @@ function eixos(p){return [
  ['Mira',p.mira==null?0:clamp(p.mira)],
  ['Utilidade',p.utilidade==null?0:clamp(p.utilidade)],
  ['Posição',p.posicionamento==null?0:clamp(p.posicionamento)],
- ['Rating',p.hltv==null?0:clamp((p.hltv-0.6)/0.9*100)],
+ ['Impacto',p.hltv==null?0:clamp((p.hltv-0.6)/0.9*100)],
  ['Vitórias',p.vitorias_pct==null?0:clamp(p.vitorias_pct*100)]]}
 function radar(p){
  var A=eixos(p),n=A.length,cx=160,cy=150,R=100;
@@ -1472,7 +1492,7 @@ function anim(n){
 function init(d){
  DADOS=d;
  var all=d.jogadores||[],per=d.periodo||{};
- if(per.semana_id){var a=per.semana_id.split('-');el('kick').textContent='CS2 · Semana de '+a[2]+'/'+a[1]}
+ if(per.semana_id){var a=per.semana_id.split('-');el('kick').textContent='CS2 · Semana de '+a[2]+'/'+a[1]}
  el('rodape').textContent=!d.atualizado_em?'Aguardando a primeira atualização.':'Última atualização: '+new Date(d.atualizado_em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'}).replace(', ',' às ');
  B=all.filter(function(p){return !p.erro&&p.hltv!=null});
  E=all.filter(function(p){return p.erro||(p.hltv==null&&!p.so_steam)});
@@ -1487,8 +1507,8 @@ function init(d){
  var ano=per.mes_id?per.mes_id.split('-')[0]:new Date(d.atualizado_em).getFullYear();
  var jan=modo==='mes'?'neste mês':modo==='semana'?'nesta semana':'nas últimas partidas';
  var sd=per.semana_id?per.semana_id.split('-'):null;
- var PL=modo==='mes'?['do mês','neste mês','mês']:modo==='semana'?['da semana','nesta semana','semana']:['geral','nas últimas partidas','período'];var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=PL[0]==='geral'?'geral':PL[0];h1e.parentNode.nextElementSibling.setAttribute('data-per',PL[1]);h1e.parentNode.nextElementSibling.textContent=proOn()?'Quem está carregando o time '+PL[1]+'.':'Quem está carregando o time e quem mais trollou '+PL[1]+'.'}var kk=el('kick');if(kk)kk.textContent=modo==='mes'?'CS2 · '+MES[mi]+' de '+ano:modo==='semana'&&sd?'CS2 · Semana de '+sd[2]+'/'+sd[1]:'CS2 · últimas 100 partidas';el('rk-t').innerHTML=modo==='mes'?'Ranking do mês':modo==='semana'?'Ranking da semana':'Ranking geral';
- el('rk-p').textContent=(modo==='mes'?MES[mi].charAt(0).toUpperCase()+MES[mi].slice(1)+' de '+ano:modo==='semana'?'Semana de '+(sd?sd[2]+'/'+sd[1]:''):'Últimas 100 partidas')+' · ordenado pelo Rating HLTV, calculado com abates, mortes e rodadas com multikills.';
+ var PL=modo==='mes'?['do mês','neste mês','mês']:modo==='semana'?['da semana','nesta semana','semana']:['geral','nas últimas partidas','período'];var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=PL[0]==='geral'?'geral':PL[0];h1e.parentNode.nextElementSibling.setAttribute('data-per',PL[1]);h1e.parentNode.nextElementSibling.textContent=proOn()?'Quem está carregando o time '+PL[1]+'.':'Quem está carregando o time e quem mais trollou '+PL[1]+'.'}var kk=el('kick');if(kk)kk.textContent=modo==='mes'?'CS2 · '+MES[mi]+' de '+ano:modo==='semana'&&sd?'CS2 · Semana de '+sd[2]+'/'+sd[1]:'CS2 · últimas 100 partidas';el('rk-t').innerHTML=modo==='mes'?'Ranking do mês':modo==='semana'?'Ranking da semana':'Ranking geral';
+ el('rk-p').textContent=(modo==='mes'?MES[mi].charAt(0).toUpperCase()+MES[mi].slice(1)+' de '+ano:modo==='semana'?'Semana de '+(sd?sd[2]+'/'+sd[1]:''):'Últimas 100 partidas')+' · ordenado pelo Rating HLTV, calculado com abates, mortes e rodadas com multikills.';
  el('rk-n').textContent='Clique num jogador para abrir o perfil.';
  el('dest-p').textContent='Quem está mandando bem em cada categoria '+jan+'.';
  el('zo-p').textContent='Quem está atrapalhando mais o time '+jan+'. Quanto mais alto na lista, pior.';
@@ -1500,7 +1520,7 @@ function init(d){
  if(modo!=='geral'){var fora=B.filter(function(p){return (modo==='mes'?M:Wk).indexOf(p)<0});if(fora.length)avisos.push('Sem partidas '+(modo==='mes'?'neste mês':'nesta semana')+': '+fora.map(function(p){return p.apelido}).join(', ')+'.')}
  el('semperfil').textContent=avisos.join(' ');
  el('cards').innerHTML=APOS.filter(function(a){return !a.ok||a.ok()}).map(function(a){return cardHl(a,false)}).join('');
- el('cards2').innerHTML=ANEG.map(function(a){return cardHl(a,true)}).join('');
+ el('cards2').innerHTML=ANEG.filter(function(a){return a.k(best(a))>0}).map(function(a){return cardHl(a,true)}).join('')||'<div class="vazio">Ninguém atrapalhou '+jan+'.</div>';
  var pts={};P.forEach(function(p){pts[p.steam64]=0});
  CAT.forEach(function(c){order(c).forEach(function(p,pos){pts[p.steam64]+=P.length-pos})});
  var t=P.reduce(function(m,p){return pts[p.steam64]>pts[m.steam64]?p:m},P[0]);
@@ -1776,7 +1796,7 @@ function montarPerfil(j,p,propria,grupo){
 function claCardHtml(){
  var c=ME&&ME.cla;
  if(c){
-  return '<h4>Meu time</h4><div class="cla-row">'+claImg(c,'lg')+'<div><div class="cn">'+esc(c.nome)+'</div><small>'+c.total+'/'+c.max+' membros'+(c.eu_sou_dono?' · você é o dono':'')+'</small></div><div class="gr">'
+  return '<h4>Meu time</h4><div class="cla-row">'+claImg(c,'lg')+'<div><div class="cn">'+esc(c.nome)+'</div><small>'+c.total+'/'+c.max+' membros'+(c.eu_sou_dono?' · você é o dono':'')+'</small></div><div class="gr">'
    +'<a class="btn y sm" href="#/cla/'+esc(c.slug)+'">Abrir painel do time</a>'
    +(c.eu_sou_dono?'<button class="btn g sm" type="button" data-acao="abrir-opcoes">Opções do time</button>':'<button class="btn red sm" type="button" data-acao="sair-cla">Sair do time</button>')
    +'</div></div><p class="msg" id="msg-cla"></p>';
@@ -1803,7 +1823,7 @@ function carregarFonte(){
   box=el('fonte-sec');if(!box||!r.ok)return;
   var j=r.j;
   if(j.ativa){
-   box.innerHTML='<h4>Minhas partidas</h4><div class="fonte-on"><div><b>Leitura ligada</b><small>'+(j.partidas?j.partidas+' partida(s) lida(s)':'Nenhuma partida lida ainda')+' · última checagem '+haQuanto(j.lido_em)+'</small></div>'
+   box.innerHTML='<h4>Minhas partidas</h4><div class="fonte-on"><div><b>Leitura ligada</b><small>'+(j.partidas?j.partidas+' partida(s) lida(s)':'Nenhuma partida lida ainda')+' · última checagem '+haQuanto(j.lido_em)+'</small></div>'
     +'<span class="fonte-bt"><button class="btn g sm" type="button" data-acao="fonte-atualizar">Atualizar agora</button> <button class="btn red sm" type="button" data-acao="fonte-desligar">Desligar e apagar</button></span></div>'
     +amizadeAviso(j,'10px 0 0')
     +(j.erro?'<p class="msg err" style="display:block">'+esc(j.erro)+'</p>':'')
@@ -1925,13 +1945,13 @@ function chipRound(r,j){
  r.cl.forEach(function(c){t.push('clutch 1x'+c.vs+' de '+nm(c.s)+(c.ganhou?' (venceu)':' (perdeu)'))});
  if(r.semTrade.length)t.push('sem trade: '+r.semTrade.map(nm).join(', '));
  var cls='rd '+(r.v==='nos'?'v':r.v==='eles'?'d':'')+(r.ab&&r.ab.por==='eles'?' abn':'')+(r.dp==='nos'?' dpd':'')+(r.cl.some(function(c){return c.ganhou})?' clw':'');
- return '<button type="button" class="'+cls+'" data-t="'+esc(t.join(' · '))+'" aria-label="'+esc(t.join(', '))+'">'+r.n+'</button>';
+ return '<button type="button" class="'+cls+'" data-t="'+esc(t.join(' · '))+'" aria-label="'+esc(t.join(', '))+'">'+r.n+'</button>';
 }
 // faixa de rounds separada por tempo (troca de lado = novo tempo; depois do 2º, prorrogação)
 function faixaRounds(v){
  var seg=[];v.rounds.forEach(function(r){var u=seg[seg.length-1];if(!u||u.l!==r.l.nos)seg.push(u={l:r.l.nos,rs:[]});u.rs.push(r)});
  return '<div class="an-tempos">'+seg.map(function(g,i){
-  return '<div class="an-tp"><span class="an-tl">'+(i===0?'1º tempo':i===1?'2º tempo':'Prorrogação')+' · '+(g.l==='T'?'TR':'CT')+'</span><div class="an-rds">'+g.rs.map(function(r){return chipRound(r,v.jogadores)}).join('')+'</div></div>'}).join('')+'</div>';
+  return '<div class="an-tp"><span class="an-tl">'+(i===0?'1º tempo':i===1?'2º tempo':'Prorrogação')+' · '+(g.l==='T'?'TR':'CT')+'</span><div class="an-rds">'+g.rs.map(function(r){return chipRound(r,v.jogadores)}).join('')+'</div></div>'}).join('')+'</div>';
 }
 // o: {time:true} = análise vista pelo time (sem diagnóstico pessoal); {semPlacar:true} = o placar já está na tela
 function htmlAnalisePartida(v,o){
@@ -1975,11 +1995,11 @@ function desenharAnalise(){
  var c=P.coletivo,nAb=c.aberturas_positivas+c.aberturas_negativas;
  var tile=function(k,v,s){return '<div class="an-t"><span>'+k+'</span><b>'+v+'</b><small>'+s+'</small></div>'};
  var tiles='<div class="an-tiles">'
-  +tile('Partidas analisadas',P.partidas,P.vitorias+' '+(P.vitorias===1?'vitória':'vitórias')+' · '+P.derrotas+' '+(P.derrotas===1?'derrota':'derrotas'))
+  +tile('Partidas analisadas',P.partidas,P.vitorias+' '+(P.vitorias===1?'vitória':'vitórias')+' · '+P.derrotas+' '+(P.derrotas===1?'derrota':'derrotas'))
   +tile('Primeiro duelo ganho',pc(c.aberturas_positivas,nAb),c.aberturas_positivas+' de '+nAb+' rounds')
   +tile('Mortes trocadas',pc(c.mortes_trocadas,c.mortes_tradaveis),c.mortes_trocadas+' de '+c.mortes_tradaveis+' mortes')
   +tile('Vantagem desperdiçada',c.vantagens_desperdicadas,c.vantagens_desperdicadas===1?'round perdido com vantagem':'rounds perdidos com vantagem')+'</div>';
- var lado='<p class="note">Rounds vencidos: de TR <b>'+P.lados.T.g+' de '+P.lados.T.n+'</b> ('+pc(P.lados.T.g,P.lados.T.n)+') · de CT <b>'+P.lados.CT.g+' de '+P.lados.CT.n+'</b> ('+pc(P.lados.CT.g,P.lados.CT.n)+'). Análise das últimas '+P.partidas+(P.partidas===1?' partida':' partidas')+' do time.</p>';
+ var lado='<p class="note">Rounds vencidos: de TR <b>'+P.lados.T.g+' de '+P.lados.T.n+'</b> ('+pc(P.lados.T.g,P.lados.T.n)+') · de CT <b>'+P.lados.CT.g+' de '+P.lados.CT.n+'</b> ('+pc(P.lados.CT.g,P.lados.CT.n)+'). Análise das últimas '+P.partidas+(P.partidas===1?' partida':' partidas')+' do time.</p>';
  var er=P.erros.filter(function(e){return e.peso>0.05}).slice(0,3);
  var ers=er.length?'<ol class="an-erros">'+er.map(function(e){return '<li><div class="an-e-t"><b>'+esc(e.titulo)+'</b><i style="--w:'+Math.round(e.peso*100)+'%"></i></div><span>'+esc(e.texto)+'</span></li>'}).join('')+'</ol>':'<p class="note">Nenhum erro coletivo se destacou nas últimas partidas. Bom sinal.</p>';
  var jg='<div class="an-jg">'+P.jogadores.map(function(p){
@@ -2016,6 +2036,7 @@ function renderPer(){
 function glossario(){
  return '<details class="gloss"><summary>Como ler os números</summary><dl>'
   +'<dt>Rating HLTV (1.0)</dt><dd>Nota na fórmula do HLTV 1.0, calculada pelo painel com abates, mortes e rodadas com multikills. 1,00 é a média; acima disso o jogador rende mais que o normal.</dd>'
+  +'<dt>Impacto (no gráfico do perfil)</dt><dd>O mesmo Rating HLTV numa escala de 0 a 100, para caber no gráfico: 0,60 vira 0 e 1,50 vira 100.</dd>'
   +'<dt>ADR e Headshots</dt><dd>ADR é o dano médio que você causa nos inimigos por rodada. Headshots é a porcentagem dos seus abates que foram na cabeça.</dd>'
   +'<dt>Mira, Utilidade e Posicionamento</dt><dd>Notas de 0 a 100 calculadas pelo painel a partir das suas partidas: pontaria (dano por rodada e headshots), uso de flashes e posição (quanto você sobrevive).</dd>'
   +'<dt>Estrelas (Estrelinha)</dt><dd>Quantas vezes o jogador foi o MVP da rodada.</dd>'
@@ -2158,7 +2179,7 @@ function desenharHist(){
  var FB=[['todas','Todas'],['v','Vitórias'],['d','Derrotas']];
  box.innerHTML='<div class="hx"><div class="hx-h"><h4>Histórico de partidas '+info('Clique em uma partida para ver os 10 jogadores. As partidas lidas antes dessa função mostram só os seus números. O Rank é o rating Premier lido no dia da partida.')+'</h4>'
   +'<div class="hx-f">'+FB.map(function(x){return '<button type="button" class="hx-fb'+(HX.f===x[0]?' on':'')+'" data-f="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div></div>'
-  +'<div class="hx-sum"><span>Últimas '+L.length+': <b>'+v+'V · '+d+'D</b></span><span>K/D médio <b>'+kdTxt(k,m)+'</b></span>'+(top?'<span>Mapa mais jogado <b>'+esc(top)+'</b></span>':'')+'</div>'
+  +'<div class="hx-sum"><span>Últimas '+L.length+': <b>'+v+'V · '+d+'D</b></span><span>K/D médio <b>'+kdTxt(k,m)+'</b></span>'+(top?'<span>Mapa mais jogado <b>'+esc(top)+'</b></span>':'')+'</div>'
   +'<div class="hx-l"><div class="hx-r hx-th"><div>Mapa</div><div>Data</div><div>Placar</div><div class="hx-rk">Rank</div><div class="hx-n">Abates</div><div class="hx-n">Mortes</div><div class="hx-n">K/D</div></div>'
   +(vis.length?vis.slice(0,HX.n).map(linhaHist).join(''):'<div class="hx-r" style="display:block;color:var(--muted)">Nenhuma partida nesse filtro.</div>')
   +(vis.length>HX.n?'<button type="button" class="hx-mais">Mostrar mais ('+(vis.length-HX.n)+')</button>':'')+'</div></div>';
@@ -2216,7 +2237,7 @@ function desenharPartida(j,volta,meu,cla){
  var euSou=!!(SES&&foco&&foco.steam64===SES.sid);
  var rot1=eqF==null?'Time 1':cla&&!euSou?'Time':euSou?'Seu time':'Time de '+foco.nome,rot2=eqF==null?'Time 2':'Adversários';
  var top='<div class="dx-top '+res+'">'+(eqF==null?'':'<span class="dx-res">'+(gm>go?'VITÓRIA':gm<go?'DERROTA':'EMPATE')+'</span>')+'<span class="dx-pl">'+gm+' : '+go+'</span>'
-  +'<span class="dx-info"><b>'+esc(nomeMapa(pa.mapa))+'</b> · '+dataHoraBR(pa.t)+' · '+pa.rounds+' rounds</span></div>';
+  +'<span class="dx-info"><b>'+esc(nomeMapa(pa.mapa))+'</b> · '+dataHoraBR(pa.t)+' · '+pa.rounds+' rounds</span></div>';
  var nm=foco?foco.nome:'';
  var vt=cla?'<a class="dx-volta" href="#/cla/'+encodeURIComponent(cla)+'">'+ic('<path d="M15 6l-6 6 6 6"/>')+'Voltar ao time</a>':'<a class="dx-volta" href="#/jogador/'+esc(volta||'')+'">'+(volta?ic('<path d="M15 6l-6 6 6 6"/>')+'Voltar ao perfil'+(nm?' de '+esc(nm):''):'')+'</a>';
  view('<div class="pagina-perfil dx">'+vt+top
@@ -2544,7 +2565,7 @@ function lerCodigos(t){
 function extrairCodigo(t){var m=String(t||'').match(/CSGO(-[A-Za-z0-9]{5}){5}/);return m?m[0]:String(t||'').trim()}
 function rotuloFuncao(f){
  if(!f||!f.tr||!TR_F[f.tr])return null;
- var t=TR_F[f.tr];return t[0]+(f.sub&&t[1][f.sub]?' · '+t[1][f.sub]:'');
+ var t=TR_F[f.tr];return t[0]+(f.sub&&t[1][f.sub]?' · '+t[1][f.sub]:'');
 }
 function mapaRot(k){for(var i=0;i<MAPAS.length;i++)if(MAPAS[i][0]===k)return MAPAS[i][1];return nomeMapa(k)}
 function opts(lista,sel,vazio){return '<option value="">'+vazio+'</option>'+lista.map(function(x){return '<option value="'+esc(x[0])+'"'+(x[0]===sel?' selected':'')+'>'+esc(x[1])+'</option>'}).join('')}
