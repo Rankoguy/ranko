@@ -10,9 +10,6 @@ on:
       conferir:
         description: 'Conferência: lê até 4 partidas e mostra placar e totais no log, sem gravar nada (digite sim)'
         default: 'nao'
-      testar_leitores:
-        description: 'Teste dos leitores de demo: abre 2 demos com cada leitor e mostra o resultado, sem gravar nada (digite sim)'
-        default: 'nao'
       depurar_rating:
         description: 'Teste do rating: mostra no log os nomes dos campos do perfil, sem valores (digite sim)'
         default: 'nao'
@@ -26,16 +23,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 55
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # versões travadas por código (não por nome), para ninguém conseguir trocar o que roda aqui
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
-      - run: npm install --no-audit --no-fund
+      # instala exatamente o que está no package-lock.json (versões e conferência de integridade),
+      # sem rodar scripts de instalação das bibliotecas
+      - name: Instalar bibliotecas (lista fechada)
+        run: npm ci --ignore-scripts --no-audit --no-fund
         working-directory: demos
-      - name: Instalar leitores extras (só no teste dos leitores)
-        if: ${{ inputs.testar_leitores == 'sim' }}
-        working-directory: demos
-        run: npm install --no-save --no-audit --no-fund dp0413@npm:@laihoe/demoparser2@0.41.3 dp0410@npm:@laihoe/demoparser2@0.41.0 dp0403@npm:@laihoe/demoparser2@0.40.3 cs2parser
       - name: Ler partidas novas
         working-directory: demos
         env:
@@ -45,6 +44,5 @@ jobs:
           ROBO_SECRET: ${{ secrets.ROBO_SECRET }}
           INCLUIR_INICIAL: ${{ inputs.incluir_inicial }}
           DEPURAR_RATING: ${{ inputs.depurar_rating }}
-          TESTAR_LEITORES: ${{ inputs.testar_leitores }}
           CONFERIR: ${{ inputs.conferir }}
         run: node ler-demos.mjs
