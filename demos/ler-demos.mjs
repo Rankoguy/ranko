@@ -30,7 +30,13 @@ const ROBO = env('ROBO_SECRET');
 const POR_PESSOA = Number(process.env.MAX_POR_PESSOA || 10);     // partidas novas por pessoa a cada execução
 const LIMITE_MIN = Number(process.env.LIMITE_MINUTOS || 40);     // para antes de estourar o tempo do GitHub
 const inicio = Date.now();
-const log = (...a) => console.log(...a);
+// o log do GitHub Actions é PÚBLICO: tudo que sai nele passa por aqui e perde endereços, ids da Steam e códigos
+const limpar = (x) => (typeof x === 'string' ? x
+  .replace(/https?:\/\/\S+/g, '[endereço]')
+  .replace(/CSGO(-[A-Za-z0-9]{5}){5}/g, '[código]')
+  .replace(/\b[A-Z0-9]{4}-[A-Z0-9]{5}-[A-Z0-9]{4}\b/g, '[código]')
+  .replace(/\d{9,}/g, '#') : x);
+const log = (...a) => console.log(...a.map(limpar));
 const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 const comTempo = (p, ms, msg) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
 
@@ -96,7 +102,7 @@ for (const p of pessoas) p.fila.forEach((codigo, i) => {
 // 3) login da conta-robô
 const steam = new SteamUser({ renewRefreshTokens: true });
 const csgo = new GlobalOffensive(steam);
-steam.on('error', (e) => { console.error('ERRO Steam:', e.message); process.exit(1); });
+steam.on('error', (e) => { console.error('ERRO Steam:', limpar(String((e && e.message) || e))); process.exit(1); });
 const logado = new Promise((res) => steam.once('loggedOn', res));
 const noGC = new Promise((res) => csgo.once('connectedToGC', res));
 steam.logOn({ refreshToken: REFRESH });
