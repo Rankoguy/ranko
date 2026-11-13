@@ -2029,7 +2029,7 @@ function linhaJog(p,focoId){
   :'<span class="dx-j" title="'+esc(p.nome)+'"><i class="dx-ini">'+esc(iniciais(p.nome))+'</i><span class="nm"><span>'+esc(p.nome)+'</span><em class="dx-fora">fora do painel</em></span></span>';
  var z=function(n){return n?n:'<span class="z">0</span>'};
  var kd=p.d?p.k/p.d:p.k;
- return '<tr'+(focoId&&p.steam64===focoId?' class="eu"':'')+'><td>'+nome+'</td><td class="c">'+seloRank(p.rk)+'</td><td>'+p.k+'</td><td>'+p.a+'</td><td>'+p.d+'</td><td class="'+(kd>=1?'p':'n')+'">'+kdTxt(p.k,p.d)+'</td>'
+ return '<tr'+(SES&&p.steam64&&p.steam64===SES.sid?' class="eu"':'')+'><td>'+nome+'</td><td class="c">'+seloRank(p.rk)+'</td><td>'+p.k+'</td><td>'+p.a+'</td><td>'+p.d+'</td><td class="'+(kd>=1?'p':'n')+'">'+kdTxt(p.k,p.d)+'</td>'
   +'<td>'+(p.adr==null?'–':f(p.adr,0))+'</td><td>'+(p.kast==null?'–':f(p.kast*100,0)+'%')+'</td><td>'+z(p.m2)+'</td><td>'+z(p.m3)+'</td><td>'+z(p.m4)+'</td><td>'+z(p.m5)+'</td></tr>';
 }
 function tabEquipe(rotulo,pl,venceu,lista,focoId){
@@ -2657,4 +2657,4 @@ function montarMapas(j){
 
 </script>
 </body>
-</html>
+</html>
