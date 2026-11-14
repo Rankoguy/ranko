@@ -382,6 +382,7 @@ function estatisticas(arquivo, ids) {
   const saida = {};
   Object.defineProperty(saida, '_ev', { value: { mortes, danos, fins }, enumerable: false });
   Object.defineProperty(saida, '_hist', { value: S._hist || null, enumerable: false });
+  Object.defineProperty(saida, '_cs', { value: S._cs || null, enumerable: false });
   for (const [id, s] of S) {
     if (!s.k && !s.d && !s.dmg) continue; // não estava nessa partida
     for (const k of Object.values(s._r)) { const n = Math.min(k, 5); s['m' + n]++; }
@@ -448,20 +449,24 @@ function miraV4(arquivo, S, danos, ehArma, nomeArma) {
   if (primeiros.length && primeiros.every((x) => x.v0 == null)) {
     // leitor principal: posição do boneco nos ticks em volta de cada tiro
     const ticks = new Set();
-    for (const x of primeiros) for (const d of [0, 2, 16, 18]) if (x.t - d > 0) ticks.add(x.t - d);
+    for (const x of primeiros) for (const d of [0, 1, 16, 17]) if (x.t - d > 0) ticks.add(x.t - d);
     const pos = new Map();
     try { for (const l of parseTicks(arquivo, ['X', 'Y'], [...ticks])) if (typeof l.X === 'number') pos.set(String(l.steamid) + '|' + l.tick, l); }
     catch { /* sem a posição, o contra-strafe fica sem dado */ }
-    const vel = (id, t) => { const a = pos.get(id + '|' + t), b = pos.get(id + '|' + (t - 2)); return a && b ? (Math.hypot(a.X - b.X, a.Y - b.Y) / 2) * 64 : null; };
+    // velocidade no último tick antes do tiro (a média de 2 ticks pegava o boneco ainda freando e marcava como andando)
+    const vel = (id, t) => { const a = pos.get(id + '|' + t), b = pos.get(id + '|' + (t - 1)); return a && b ? Math.hypot(a.X - b.X, a.Y - b.Y) * 64 : null; };
     v = (x) => [vel(x.id, x.t), vel(x.id, x.t - 16)];
   } else v = (x) => [x.v0, x.v1];
+  const hcs = [0, 0, 0, 0]; // conferência: velocidade no tiro (parado, quase parando, freando, correndo)
   for (const x of primeiros) {
     const [v0, v1] = v(x);
     if (v0 == null || v1 == null || v0 > 400 || v1 > 400) continue; // sem posição ou teleporte: fica de fora
     const lim = 0.34 * (VEL_MAX[x.w] || 230);
     if (v1 <= lim) continue; // já estava parado: não é contra-strafe
     const s = S.get(x.id); s.csn++; if (v0 <= lim) s.csb++;
+    hcs[v0 <= lim ? 0 : v0 <= 1.5 * lim ? 1 : v0 <= 0.7 * (VEL_MAX[x.w] || 230) ? 2 : 3]++;
   }
+  Object.defineProperty(S, '_cs', { value: hcs, enumerable: false, configurable: true });
 }
 
 // 4b) quadro completo da partida: os 10 jogadores (inclusive quem não está no painel), placar e KAST.
@@ -598,7 +603,7 @@ for (const pt of porPartida.values()) {
         const v = Object.values(s).reduce((t, x) => { for (const c of ['tf', 'ta', 'heb', 'mob', 'ks2', 'ffx', 'fax', 'hex', 'uct', 'ugn', 'd']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
         log(`  Coleta nova: tiros ${v.tf || 0}, acertos ${v.ta || 0}, HE boas ${v.heb || 0}, molotov boas ${v.mob || 0}, rounds de 2+ abates vivo ${v.ks2 || 0}, fogo amigo ${v.ffx || 0}, flash em amigo ${v.fax || 0}, HE em amigo ${v.hex || 0}, morreu com 3+ granadas ${v.uct || 0} (inventário lido em ${v.ugn || 0} de ${v.d || 0} mortes)`);
         const m4 = Object.values(s).reduce((t, x) => { for (const c of ['ta', 'hc', 'sp', 'sa', 'csn', 'csb']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
-        log(`  Mira nova (painel): acertos na cabeça ${m4.hc || 0} de ${m4.ta || 0} acertos, tiros em spray ${m4.sp || 0} (acertaram ${m4.sa || 0}), primeiros tiros logo depois de andar ${m4.csn || 0} (saíram parado ${m4.csb || 0})`);
+        log(`  Mira nova (painel): acertos na cabeça ${m4.hc || 0} de ${m4.ta || 0} acertos, tiros em spray ${m4.sp || 0} (acertaram ${m4.sa || 0}), primeiros tiros logo depois de andar ${m4.csn || 0} (saíram parado ${m4.csb || 0})` + (s._cs ? ` | velocidade no tiro: parado ${s._cs[0]}, quase parando ${s._cs[1]}, freando ${s._cs[2]}, correndo ${s._cs[3]}` : ''));
         const h = s._hist, dg = libAtual && libAtual.diag;
         log(`  Granadas na hora da morte (painel): 0 = ${h ? h[0] : '?'}, 1 = ${h ? h[1] : '?'}, 2 = ${h ? h[2] : '?'}, 3+ = ${h ? h[3] : '?'}` + (dg ? ` | leitor reserva (fonte: ${dg.fonte}): ${dg.fotos} fotos de inventário (${dg.fotosComGranada} com granada), granadas pegas ${dg.pegou}, lançadas ${dg.lancou}, mortes com 3+ pela foto ${dg.morte3Foto} e pela contagem ${dg.morte3Conta} (todos os 10 jogadores)` : ''));
       }

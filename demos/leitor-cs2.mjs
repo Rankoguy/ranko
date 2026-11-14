@@ -75,9 +75,9 @@ export async function lerComCs2(arquivo, mod) {
       }
     } catch { /* sem a posição */ }
   });
-  const velocidade = (L, t) => { // unidades por segundo entre o tick t-2 e o tick t
-    const a = L.find((z) => z.t === t), b = L.find((z) => z.t === t - 2);
-    return a && b ? (Math.hypot(a.x - b.x, a.y - b.y) / 2) * 64 : null;
+  const velocidade = (L, t) => { // unidades por segundo no tick t (de t-1 para t)
+    const a = L.find((z) => z.t === t), b = L.find((z) => z.t === t - 1);
+    return a && b ? Math.hypot(a.x - b.x, a.y - b.y) * 64 : null;
   };
   for (const nome of EVENTOS) {
     rd.gameEvents.on(nome, (e) => {
