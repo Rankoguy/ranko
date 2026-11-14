@@ -418,18 +418,28 @@ function miraV4(arquivo, S, danos, ehArma, nomeArma) {
     (tiros.get(id) || tiros.set(id, []).get(id)).push({ t: e.tick || 0, w: nomeArma(e.weapon), v0: e._v0, v1: e._v1 });
   }
   const acertou = (id, t) => { const A = acertos.get(id); return !!A && (A.has(t) || A.has(t + 1)); };
+  // "tinha inimigo na frente": algum tiro dele acertou um inimigo até 1 s depois. Sem ler quem estava vendo quem,
+  // é o jeito de deixar de fora tiro em smoke, spam e prefire, como o Leetify faz com o "inimigo visto".
+  const lista = new Map([...acertos].map(([id, A]) => [id, [...A].sort((a, b) => a - b)]));
+  const engajou = (id, t) => { const L = lista.get(id); if (!L) return false; for (const h of L) { if (h >= t && h <= t + 64) return true; if (h > t + 64) break; } return false; };
   const primeiros = [];
   for (const [id, L] of tiros) {
     L.sort((a, b) => a.t - b.t);
     // spray: 3 tiros ou mais de rifle em sequência (até 12 ticks entre um e outro, com a mesma arma)
     let seq = [];
-    const fecha = () => { if (seq.length >= 3) { const s = S.get(id); s.sp += seq.length; for (const x of seq) if (acertou(id, x.t)) s.sa++; } seq = []; };
+    const fecha = () => {
+      if (seq.length >= 3) {
+        const n = seq.filter((x) => acertou(id, x.t)).length;
+        if (n) { const s = S.get(id); s.sp += seq.length; s.sa += n; } // spray que não acertou ninguém (smoke, spam) fica de fora
+      }
+      seq = [];
+    };
     for (let i = 0; i < L.length; i++) {
       const x = L[i], ant = L[i - 1];
       if (RIFLE.test(x.w)) { if (seq.length && (x.t - seq[seq.length - 1].t > 12 || x.w !== seq[seq.length - 1].w)) fecha(); seq.push(x); }
       else fecha();
       // primeiro tiro de uma troca: nenhum tiro do mesmo jogador no meio segundo anterior
-      if (!ESCOPETA.test(x.w) && (!ant || x.t - ant.t > 32)) primeiros.push({ id, ...x });
+      if (!ESCOPETA.test(x.w) && (!ant || x.t - ant.t > 32) && engajou(id, x.t)) primeiros.push({ id, ...x });
     }
     fecha();
   }
