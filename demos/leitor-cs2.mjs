@@ -63,6 +63,22 @@ export async function lerComCs2(arquivo, mod) {
       invs.set(id, { tick, g, antes: ant ? (ant.tick < tick ? ant.g : ant.antes) : 0 });
     } catch { /* sem a foto */ }
   });
+  // posição de cada boneco nos últimos ticks, para medir a velocidade na hora do tiro (contra-strafe)
+  const trilha = new Map(); // steam64 -> [{t, x, y}] (só os últimos 24 ticks)
+  rd.on('tickend', (t) => {
+    try {
+      for (const p of rd.playerControllers) {
+        const id = String(p.steamId || ''); if (!/^\d{17}$/.test(id)) continue;
+        const q = p.position; if (!q || typeof q.x !== 'number') continue;
+        const L = trilha.get(id) || trilha.set(id, []).get(id);
+        L.push({ t, x: q.x, y: q.y }); if (L.length > 24) L.shift();
+      }
+    } catch { /* sem a posição */ }
+  });
+  const velocidade = (L, t) => { // unidades por segundo entre o tick t-2 e o tick t
+    const a = L.find((z) => z.t === t), b = L.find((z) => z.t === t - 2);
+    return a && b ? (Math.hypot(a.x - b.x, a.y - b.y) / 2) * 64 : null;
+  };
   for (const nome of EVENTOS) {
     rd.gameEvents.on(nome, (e) => {
       const g = regras();
@@ -74,6 +90,15 @@ export async function lerComCs2(arquivo, mod) {
       if (e && 'assister' in e) jogador(row, 'assister', e.assisterPlayer);
       if (row.is_warmup_period && nome !== 'begin_new_match') return; // aquecimento não conta
       if (nome === 'begin_new_match') conta.clear();
+      if (nome === 'weapon_fire' && !ehGranada(e && e.weapon)) {
+        try {
+          const id = String((e && e.player && e.player.steamId) || '');
+          const L = (trilha.get(id) || []).slice();
+          const q = e.player && e.player.position;
+          if (q && typeof q.x === 'number' && !L.some((z) => z.t === tick)) L.push({ t: tick, x: q.x, y: q.y });
+          row._v0 = velocidade(L, tick); row._v1 = velocidade(L, tick - 16);
+        } catch { /* sem a velocidade */ }
+      }
       if (nome === 'weapon_fire' && ehGranada(e && e.weapon)) {
         const id = String((e && e.player && e.player.steamId) || '');
         if (conta.get(id)) { conta.set(id, conta.get(id) - 1); diag.lancou++; }

@@ -238,6 +238,9 @@ function estatisticas(arquivo, ids) {
   const S = new Map(ids.map((id) => [id, { r: rounds, k: 0, d: 0, a: 0, hs: 0, dmg: 0, m1: 0, m2: 0, m3: 0, m4: 0, m5: 0, ff: 0, fa: 0, fl: 0, fas: 0, he: 0, ot: 0, og: 0, um: null, w: null, awp: 0, sm: 0, eb: 0, tk: 0, ud: 0, v2: 1,
     // coleta v3 (14/11): precisão, granadas que funcionaram, rounds de 2+ abates vivo e o alastro em contagens
     v3: 1, tf: 0, ta: 0, heb: 0, mob: 0, ks2: 0, ffx: 0, fax: 0, hex: 0, uct: 0, ugn: 0,
+    // coleta v4 (14/11): mira no modelo do Leetify. hc = acertos na cabeça; sp/sa = tiros em spray e os que acertaram;
+    // csn/csb = primeiros tiros dados logo depois de andar e quantos deles saíram com o boneco já parado (contra-strafe)
+    v4: 1, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0,
     _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
@@ -336,6 +339,8 @@ function estatisticas(arquivo, ids) {
     if (e.attacker_team_num === e.user_team_num && (e.blind_duration || 0) >= 1.5) flAmigo.add(String(e.attacker_steamid) + '|' + e.tick);
   }
   for (const k of flAmigo) S.get(k.split('|')[0]).fax++;
+  // ---- coleta v4: mira ----
+  try { miraV4(arquivo, S, danos, ehArma, nomeArma); } catch { for (const x of S.values()) x.v4 = 0; /* sem esses números, a mira usa o que tiver */ }
   // comprou à toa: morreu com 3 granadas ou mais na mão
   try {
     const comInv = mortes.filter((e) => S.has(String(e.user_steamid)));
@@ -386,6 +391,67 @@ function estatisticas(arquivo, ids) {
     saida[id] = s;
   }
   return saida;
+}
+
+// ---- coleta v4: estatísticas de mira no modelo do Leetify ----
+// Velocidade máxima de cada arma (unidades por segundo). O tiro só é preciso com o boneco a 34% dela ou menos.
+const VEL_MAX = { ak47: 215, m4a1: 225, m4a1_silencer: 225, famas: 220, galilar: 215, aug: 220, sg556: 210, awp: 200, ssg08: 230,
+  deagle: 230, revolver: 220, glock: 240, usp_silencer: 240, hkp2000: 240, p250: 240, fiveseven: 240, tec9: 240, cz75a: 240, elite: 240,
+  mp9: 240, mac10: 240, mp7: 220, mp5sd: 235, ump45: 230, p90: 230, bizon: 240, negev: 150, m249: 195,
+  nova: 220, xm1014: 215, mag7: 225, sawedoff: 210, g3sg1: 215, scar20: 215 };
+const RIFLE = /^(ak47|m4a1|m4a1_silencer|famas|galilar|aug|sg556)$/;
+const ESCOPETA = /^(nova|xm1014|mag7|sawedoff)$/;
+function miraV4(arquivo, S, danos, ehArma, nomeArma) {
+  // acertos em inimigos com arma de fogo, por jogador e tick (cada tiro acerta no mesmo tick em que sai)
+  const acertos = new Map();
+  for (const e of danos) {
+    const id = String(e.attacker_steamid), s = S.get(id);
+    if (!s || e.attacker_steamid === e.user_steamid || e.attacker_team_num === e.user_team_num || !ehArma(e.weapon)) continue;
+    const hg = e.hitgroup;
+    if (hg === 1 || /head/i.test(String(hg ?? ''))) s.hc++; // acerto na cabeça
+    (acertos.get(id) || acertos.set(id, new Set()).get(id)).add(e.tick || 0);
+  }
+  const tiros = new Map();
+  for (const e of parseEvent(arquivo, 'weapon_fire')) {
+    const id = String(e.user_steamid);
+    if (!S.has(id) || !ehArma(e.weapon)) continue;
+    (tiros.get(id) || tiros.set(id, []).get(id)).push({ t: e.tick || 0, w: nomeArma(e.weapon), v0: e._v0, v1: e._v1 });
+  }
+  const acertou = (id, t) => { const A = acertos.get(id); return !!A && (A.has(t) || A.has(t + 1)); };
+  const primeiros = [];
+  for (const [id, L] of tiros) {
+    L.sort((a, b) => a.t - b.t);
+    // spray: 3 tiros ou mais de rifle em sequência (até 12 ticks entre um e outro, com a mesma arma)
+    let seq = [];
+    const fecha = () => { if (seq.length >= 3) { const s = S.get(id); s.sp += seq.length; for (const x of seq) if (acertou(id, x.t)) s.sa++; } seq = []; };
+    for (let i = 0; i < L.length; i++) {
+      const x = L[i], ant = L[i - 1];
+      if (RIFLE.test(x.w)) { if (seq.length && (x.t - seq[seq.length - 1].t > 12 || x.w !== seq[seq.length - 1].w)) fecha(); seq.push(x); }
+      else fecha();
+      // primeiro tiro de uma troca: nenhum tiro do mesmo jogador no meio segundo anterior
+      if (!ESCOPETA.test(x.w) && (!ant || x.t - ant.t > 32)) primeiros.push({ id, ...x });
+    }
+    fecha();
+  }
+  // contra-strafe: dos primeiros tiros dados por quem estava andando um quarto de segundo antes, quantos saíram já parado
+  let v = null;
+  if (primeiros.length && primeiros.every((x) => x.v0 == null)) {
+    // leitor principal: posição do boneco nos ticks em volta de cada tiro
+    const ticks = new Set();
+    for (const x of primeiros) for (const d of [0, 2, 16, 18]) if (x.t - d > 0) ticks.add(x.t - d);
+    const pos = new Map();
+    try { for (const l of parseTicks(arquivo, ['X', 'Y'], [...ticks])) if (typeof l.X === 'number') pos.set(String(l.steamid) + '|' + l.tick, l); }
+    catch { /* sem a posição, o contra-strafe fica sem dado */ }
+    const vel = (id, t) => { const a = pos.get(id + '|' + t), b = pos.get(id + '|' + (t - 2)); return a && b ? (Math.hypot(a.X - b.X, a.Y - b.Y) / 2) * 64 : null; };
+    v = (x) => [vel(x.id, x.t), vel(x.id, x.t - 16)];
+  } else v = (x) => [x.v0, x.v1];
+  for (const x of primeiros) {
+    const [v0, v1] = v(x);
+    if (v0 == null || v1 == null || v0 > 400 || v1 > 400) continue; // sem posição ou teleporte: fica de fora
+    const lim = 0.34 * (VEL_MAX[x.w] || 230);
+    if (v1 <= lim) continue; // já estava parado: não é contra-strafe
+    const s = S.get(x.id); s.csn++; if (v0 <= lim) s.csb++;
+  }
 }
 
 // 4b) quadro completo da partida: os 10 jogadores (inclusive quem não está no painel), placar e KAST.
@@ -521,6 +587,8 @@ for (const pt of porPartida.values()) {
         // coleta nova (v3): só somas de quem é do painel, para conferir se os dados chegaram
         const v = Object.values(s).reduce((t, x) => { for (const c of ['tf', 'ta', 'heb', 'mob', 'ks2', 'ffx', 'fax', 'hex', 'uct', 'ugn', 'd']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
         log(`  Coleta nova: tiros ${v.tf || 0}, acertos ${v.ta || 0}, HE boas ${v.heb || 0}, molotov boas ${v.mob || 0}, rounds de 2+ abates vivo ${v.ks2 || 0}, fogo amigo ${v.ffx || 0}, flash em amigo ${v.fax || 0}, HE em amigo ${v.hex || 0}, morreu com 3+ granadas ${v.uct || 0} (inventário lido em ${v.ugn || 0} de ${v.d || 0} mortes)`);
+        const m4 = Object.values(s).reduce((t, x) => { for (const c of ['ta', 'hc', 'sp', 'sa', 'csn', 'csb']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
+        log(`  Mira nova (painel): acertos na cabeça ${m4.hc || 0} de ${m4.ta || 0} acertos, tiros em spray ${m4.sp || 0} (acertaram ${m4.sa || 0}), primeiros tiros logo depois de andar ${m4.csn || 0} (saíram parado ${m4.csb || 0})`);
         const h = s._hist, dg = libAtual && libAtual.diag;
         log(`  Granadas na hora da morte (painel): 0 = ${h ? h[0] : '?'}, 1 = ${h ? h[1] : '?'}, 2 = ${h ? h[2] : '?'}, 3+ = ${h ? h[3] : '?'}` + (dg ? ` | leitor reserva (fonte: ${dg.fonte}): ${dg.fotos} fotos de inventário (${dg.fotosComGranada} com granada), granadas pegas ${dg.pegou}, lançadas ${dg.lancou}, mortes com 3+ pela foto ${dg.morte3Foto} e pela contagem ${dg.morte3Conta} (todos os 10 jogadores)` : ''));
       }
