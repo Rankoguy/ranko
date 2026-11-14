@@ -39,12 +39,14 @@ export async function lerComCs2(arquivo, mod) {
   };
   // última foto do inventário de cada jogador (o cs2parser avisa quando o inventário muda)
   const invs = new Map();
+  const diag = { fotos: 0, fotosComGranada: 0, mortesSemFoto: 0, mortesMesmoTick: 0 }; // só contagens, para a conferência
   const contarGranadas = (inv) => (inv && Array.isArray(inv.items) ? inv.items : []).filter((it) => GRANADA.test(String(it.className || it.name))).reduce((t, it) => t + (Number(it.quantity) || 1), 0);
   rd.gameEvents.on('inventory_snapshot', (e) => {
     try {
       const id = String((e && e.player && e.player.steamId) || '');
       if (!/^\d{17}$/.test(id)) return;
       const tick = rd.currentTick, g = contarGranadas(e.inventory), ant = invs.get(id);
+      diag.fotos++; if (g > 0) diag.fotosComGranada++;
       // "antes" guarda a foto anterior, para o caso de a foto vazia da morte chegar no mesmo tick
       invs.set(id, { tick, g, antes: ant ? (ant.tick < tick ? ant.g : ant.antes) : 0 });
     } catch { /* sem a foto */ }
@@ -64,6 +66,8 @@ export async function lerComCs2(arquivo, mod) {
         // Na hora da morte o inventário já vem vazio; por isso usamos a última foto do inventário ANTES dessa morte.
         const id = String((e && e.player && e.player.steamId) || '');
         const f = invs.get(id);
+        if (!f) diag.mortesSemFoto++;
+        else if (f.tick === tick) diag.mortesMesmoTick++;
         if (f) row.granadas = f.tick < tick || f.g > 0 ? f.g : f.antes;
       }
       if (nome === 'round_end') {
@@ -83,6 +87,7 @@ export async function lerComCs2(arquivo, mod) {
   const copia = (x) => ({ ...x });
   return {
     leitor: 'cs2parser',
+    diag,
     parseEvent: (_a, nome) => ev.filter((x) => x.event_name === nome).map(copia),
     parseEvents: (_a, nomes) => { const s = new Set(nomes); return ev.filter((x) => s.has(x.event_name)).map(copia); },
     parseTicks: (_a, _props, ticks) => { const s = new Set(ticks); return fotos.filter((x) => s.has(x.tick)).map(copia); },

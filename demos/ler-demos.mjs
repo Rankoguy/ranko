@@ -345,11 +345,14 @@ function estatisticas(arquivo, ids) {
       const L = parseTicks(arquivo, ['inventory'], [...new Set(comInv.map((e) => (e.tick || 1) - 1))]);
       inv = new Map(L.map((l) => [String(l.steamid) + '|' + l.tick, (Array.isArray(l.inventory) ? l.inventory : []).filter((n) => /grenade|flashbang|molotov|incendiary|decoy/i.test(String(n))).length]));
     }
+    const hist = [0, 0, 0, 0];
+    Object.defineProperty(S, '_hist', { value: hist, enumerable: false });
     for (const e of comInv) {
       const s = S.get(String(e.user_steamid));
       const g = e.granadas != null ? e.granadas : inv ? inv.get(String(e.user_steamid) + '|' + ((e.tick || 1) - 1)) : null;
       if (g == null) continue;
       s.ugn++;
+      hist[Math.min(g, 3)]++;
       if (g >= 3) s.uct++;
     }
   } catch { /* sem o inventário, o "comprou à toa" fica sem dado */ }
@@ -373,6 +376,7 @@ function estatisticas(arquivo, ids) {
   const peso = [0, 1, 4, 9, 16, 25];
   const saida = {};
   Object.defineProperty(saida, '_ev', { value: { mortes, danos, fins }, enumerable: false });
+  Object.defineProperty(saida, '_hist', { value: S._hist || null, enumerable: false });
   for (const [id, s] of S) {
     if (!s.k && !s.d && !s.dmg) continue; // não estava nessa partida
     for (const k of Object.values(s._r)) { const n = Math.min(k, 5); s['m' + n]++; }
@@ -517,6 +521,8 @@ for (const pt of porPartida.values()) {
         // coleta nova (v3): só somas de quem é do painel, para conferir se os dados chegaram
         const v = Object.values(s).reduce((t, x) => { for (const c of ['tf', 'ta', 'heb', 'mob', 'ks2', 'ffx', 'fax', 'hex', 'uct', 'ugn', 'd']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
         log(`  Coleta nova: tiros ${v.tf || 0}, acertos ${v.ta || 0}, HE boas ${v.heb || 0}, molotov boas ${v.mob || 0}, rounds de 2+ abates vivo ${v.ks2 || 0}, fogo amigo ${v.ffx || 0}, flash em amigo ${v.fax || 0}, HE em amigo ${v.hex || 0}, morreu com 3+ granadas ${v.uct || 0} (inventário lido em ${v.ugn || 0} de ${v.d || 0} mortes)`);
+        const h = s._hist, dg = libAtual && libAtual.diag;
+        log(`  Granadas na hora da morte (painel): 0 = ${h ? h[0] : '?'}, 1 = ${h ? h[1] : '?'}, 2 = ${h ? h[2] : '?'}, 3+ = ${h ? h[3] : '?'}` + (dg ? ` | leitor reserva: ${dg.fotos} fotos de inventário (${dg.fotosComGranada} com granada), ${dg.mortesSemFoto} mortes sem foto, ${dg.mortesMesmoTick} no mesmo tick` : ''));
       }
     } catch (e) { log(`  (quadro completo indisponível nesta partida: ${String((e && e.message) || e).slice(0, 60)})`); }
     // Ranko Analyst: resumo por round (só eventos; sem posição por tick). Se falhar, a partida segue só com as estatísticas.
