@@ -39,7 +39,19 @@ export async function lerComCs2(arquivo, mod) {
   };
   // última foto do inventário de cada jogador (o cs2parser avisa quando o inventário muda)
   const invs = new Map();
-  const diag = { fotos: 0, fotosComGranada: 0, mortesSemFoto: 0, mortesMesmoTick: 0 }; // só contagens, para a conferência
+  const diag = { fotos: 0, fotosComGranada: 0, mortesSemFoto: 0, mortesMesmoTick: 0, pegou: 0, lancou: 0, morte3Foto: 0, morte3Conta: 0, fonte: 'foto' }; // só contagens, para a conferência
+  // Plano B, quando a demo não traz as fotos do inventário: contamos nós mesmos as granadas de cada jogador.
+  // +1 a cada granada comprada ou pega do chão, -1 a cada granada lançada; zera quando morre e na troca de lado.
+  const conta = new Map();
+  const ehGranada = (w) => GRANADA.test(String(w || '')) || /hegrenade|smokegrenade|incgrenade|molotov|decoy|flashbang/i.test(String(w || ''));
+  rd.gameEvents.on('item_pickup', (e) => {
+    try {
+      const id = String((e && e.player && e.player.steamId) || '');
+      if (!/^\d{17}$/.test(id) || !ehGranada(e.item)) return;
+      const g = regras(); if (g && g.isWarmup) return;
+      conta.set(id, Math.min((conta.get(id) || 0) + 1, 4)); diag.pegou++;
+    } catch { /* ignora */ }
+  });
   const contarGranadas = (inv) => (inv && Array.isArray(inv.items) ? inv.items : []).filter((it) => GRANADA.test(String(it.className || it.name))).reduce((t, it) => t + (Number(it.quantity) || 1), 0);
   rd.gameEvents.on('inventory_snapshot', (e) => {
     try {
@@ -61,11 +73,17 @@ export async function lerComCs2(arquivo, mod) {
       if (e && 'attacker' in e) jogador(row, 'attacker', e.attackerPlayer);
       if (e && 'assister' in e) jogador(row, 'assister', e.assisterPlayer);
       if (row.is_warmup_period && nome !== 'begin_new_match') return; // aquecimento não conta
+      if (nome === 'begin_new_match') conta.clear();
+      if (nome === 'weapon_fire' && ehGranada(e && e.weapon)) {
+        const id = String((e && e.player && e.player.steamId) || '');
+        if (conta.get(id)) { conta.set(id, conta.get(id) - 1); diag.lancou++; }
+      }
       if (nome === 'player_death') {
         // granadas que a vítima tinha na mão quando morreu (para o "comprou à toa").
         // Na hora da morte o inventário já vem vazio; por isso usamos a última foto do inventário ANTES dessa morte.
         const id = String((e && e.player && e.player.steamId) || '');
         const f = invs.get(id);
+        row._conta = conta.get(id) || 0; conta.set(id, 0);
         if (!f) diag.mortesSemFoto++;
         else if (f.tick === tick) diag.mortesMesmoTick++;
         if (f) row.granadas = f.tick < tick || f.g > 0 ? f.g : f.antes;
@@ -74,6 +92,7 @@ export async function lerComCs2(arquivo, mod) {
         if (e.winner !== 2 && e.winner !== 3) return; // "a partida vai começar" e afins não são rodadas
         row.winner = e.winner === 2 ? 'T' : 'CT';
         row.reason = MOTIVO[e.reason] || String(e.reason);
+        if (g && g.roundsPlayed === 12) conta.clear(); // troca de lado no meio do jogo: inventário zera
         fotografar(tick);
       }
       if (nome === 'round_freeze_end') fotografar(tick);
@@ -81,6 +100,11 @@ export async function lerComCs2(arquivo, mod) {
     });
   }
   const r = await rd.parseDemo(arquivo, { entities: EntityMode.ALL });
+  // escolhe a fonte das granadas na hora da morte: foto do inventário quando a demo traz, senão a nossa contagem
+  const mortesEv = ev.filter((x) => x.event_name === 'player_death');
+  for (const x of mortesEv) { if ((x.granadas || 0) >= 3) diag.morte3Foto++; if ((x._conta || 0) >= 3) diag.morte3Conta++; }
+  if (!diag.fotosComGranada) { diag.fonte = 'contagem'; for (const x of mortesEv) x.granadas = x._conta || 0; }
+  for (const x of mortesEv) delete x._conta;
   if (!ev.some((x) => x.event_name === 'round_end')) throw new Error(`cs2parser não achou rodadas (${r && r.status})`);
   let cab = null;
   try { cab = DemoReader.parseHeader(arquivo); } catch { /* sem cabeçalho */ }

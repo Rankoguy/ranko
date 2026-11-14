@@ -522,7 +522,7 @@ for (const pt of porPartida.values()) {
         const v = Object.values(s).reduce((t, x) => { for (const c of ['tf', 'ta', 'heb', 'mob', 'ks2', 'ffx', 'fax', 'hex', 'uct', 'ugn', 'd']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
         log(`  Coleta nova: tiros ${v.tf || 0}, acertos ${v.ta || 0}, HE boas ${v.heb || 0}, molotov boas ${v.mob || 0}, rounds de 2+ abates vivo ${v.ks2 || 0}, fogo amigo ${v.ffx || 0}, flash em amigo ${v.fax || 0}, HE em amigo ${v.hex || 0}, morreu com 3+ granadas ${v.uct || 0} (inventário lido em ${v.ugn || 0} de ${v.d || 0} mortes)`);
         const h = s._hist, dg = libAtual && libAtual.diag;
-        log(`  Granadas na hora da morte (painel): 0 = ${h ? h[0] : '?'}, 1 = ${h ? h[1] : '?'}, 2 = ${h ? h[2] : '?'}, 3+ = ${h ? h[3] : '?'}` + (dg ? ` | leitor reserva: ${dg.fotos} fotos de inventário (${dg.fotosComGranada} com granada), ${dg.mortesSemFoto} mortes sem foto, ${dg.mortesMesmoTick} no mesmo tick` : ''));
+        log(`  Granadas na hora da morte (painel): 0 = ${h ? h[0] : '?'}, 1 = ${h ? h[1] : '?'}, 2 = ${h ? h[2] : '?'}, 3+ = ${h ? h[3] : '?'}` + (dg ? ` | leitor reserva (fonte: ${dg.fonte}): ${dg.fotos} fotos de inventário (${dg.fotosComGranada} com granada), granadas pegas ${dg.pegou}, lançadas ${dg.lancou}, mortes com 3+ pela foto ${dg.morte3Foto} e pela contagem ${dg.morte3Conta} (todos os 10 jogadores)` : ''));
       }
     } catch (e) { log(`  (quadro completo indisponível nesta partida: ${String((e && e.message) || e).slice(0, 60)})`); }
     // Ranko Analyst: resumo por round (só eventos; sem posição por tick). Se falhar, a partida segue só com as estatísticas.
