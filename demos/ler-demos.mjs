@@ -402,6 +402,9 @@ const VEL_MAX = { ak47: 215, m4a1: 225, m4a1_silencer: 225, famas: 220, galilar:
   nova: 220, xm1014: 215, mag7: 225, sawedoff: 210, g3sg1: 215, scar20: 215 };
 const RIFLE = /^(ak47|m4a1|m4a1_silencer|famas|galilar|aug|sg556)$/;
 const ESCOPETA = /^(nova|xm1014|mag7|sawedoff)$/;
+// contra-strafe só com as armas que erram muito andando: rifles, AWP/Scout/automáticas de sniper e Desert Eagle.
+// Com submetralhadora e pistola leve, atirar andando de perto é jogada válida (conferência de 14/11: 1 em 4 tiros era assim).
+const PARA_PARAR = /^(ak47|m4a1|m4a1_silencer|famas|galilar|aug|sg556|awp|ssg08|g3sg1|scar20|deagle|revolver)$/;
 function miraV4(arquivo, S, danos, ehArma, nomeArma) {
   // acertos em inimigos com arma de fogo, por jogador e tick (cada tiro acerta no mesmo tick em que sai)
   const acertos = new Map();
@@ -440,7 +443,7 @@ function miraV4(arquivo, S, danos, ehArma, nomeArma) {
       if (RIFLE.test(x.w)) { if (seq.length && (x.t - seq[seq.length - 1].t > 12 || x.w !== seq[seq.length - 1].w)) fecha(); seq.push(x); }
       else fecha();
       // primeiro tiro de uma troca: nenhum tiro do mesmo jogador no meio segundo anterior
-      if (!ESCOPETA.test(x.w) && (!ant || x.t - ant.t > 32) && engajou(id, x.t)) primeiros.push({ id, ...x });
+      if (PARA_PARAR.test(x.w) && (!ant || x.t - ant.t > 32) && engajou(id, x.t)) primeiros.push({ id, ...x });
     }
     fecha();
   }
