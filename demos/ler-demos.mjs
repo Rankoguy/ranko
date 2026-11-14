@@ -410,9 +410,11 @@ for (const pt of porPartida.values()) {
     pt.horario = horario;
     const bz = `saida/p${n}.dem.bz2`;
     // só baixa de endereços da Valve/Steam (o link vem de fora; não confiamos às cegas)
-    const hostOk = /^https?:\/\/[a-z0-9.-]+\.(valve\.net|steamcontent\.com|steamserver\.net|steamcdn-a\.akamaihd\.net)\//i.test(url);
-    if (!hostOk) throw new Error('DEMO_ENDERECO_ESTRANHO');
+    const hostOk = (u) => /^https?:\/\/[a-z0-9.-]+\.(valve\.net|steamcontent\.com|steamserver\.net|steamcdn-a\.akamaihd\.net)\//i.test(u);
+    if (!hostOk(url)) throw new Error('DEMO_ENDERECO_ESTRANHO');
     const r = await fetch(url);
+    // se o servidor redirecionar, o destino final também tem que ser da Valve
+    if (r.url && !hostOk(r.url)) throw new Error('DEMO_ENDERECO_ESTRANHO');
     if (r.status === 404 || r.status === 403) throw new Error('DEMO_INDISPONIVEL');
     if (!r.ok) throw new Error(`download ${r.status}`);
     if (Number(r.headers.get('content-length') || 0) > 600e6) throw new Error('DEMO_GRANDE_DEMAIS');
