@@ -7,7 +7,7 @@
 <title>Ranko — CS2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Overpass+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* =====================================================================
    Ranko · sistema visual único
@@ -787,27 +787,23 @@ body.modo-pro .pro-sec{display:block}
 .ind-gloss{margin:14px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px;max-width:78ch}
 .ind-gloss li{margin:4px 0}
 .ind-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;max-width:640px}
-/* selo de rating Premier (desenho próprio do Ranko): faixa reta com a cor da faixa, cantos retos e brilho que cresce a cada faixa.
+/* selo de rating Premier (desenho do Juan): uma barrinha solta na cor da faixa, um respiro e a caixa do número
+   com a lateral esquerda cheia, borda fina e cantos arredondados só à direita. Número em itálico.
    As cores são fixas (iguais nos modos claro e escuro) e o número sempre usa a cor da faixa. */
-.rt{--rc:#aab4c0;--gf:0px;--gb:0px;display:inline-flex;align-items:stretch;height:32px;border-radius:0;background:color-mix(in srgb,var(--rc) 20%,#14161b);color:var(--rc);font:800 16px var(--body);font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:nowrap;vertical-align:middle;box-shadow:0 0 var(--gb) color-mix(in srgb,var(--rc) 45%,transparent)}
-.rt::before{content:"";width:6px;flex:none;background:var(--rf,var(--rc));box-shadow:0 0 var(--gf) var(--rc);position:relative;z-index:1}
-span.rt>b{display:inline-flex;align-items:center;padding:0 14px 0 12px;font-weight:800;color:var(--rc)!important}
-.rt-3{--gf:5px;text-shadow:0 0 2px var(--rc)}
-.rt-4{--gf:8px;--gb:6px;text-shadow:0 0 3px var(--rc)}
-.rt-5{--gf:11px;--gb:10px;text-shadow:0 0 5px var(--rc)}
-.rt-6{--gf:16px;--gb:16px;--rf:linear-gradient(#fff3a0,#ffd21a 45%,#e0a800);text-shadow:0 0 7px var(--rc)}
-/* selo sem brilho: a cor da faixa basta, e o vermelho fica livre para "dado ruim" */
-.rt,.rt-3,.rt-4,.rt-5,.rt-6{--gf:0px;--gb:0px;text-shadow:none}
+.rt{--rc:#9ca3af;--rbg:#1d1f25;--rbd:#9ca3af;display:inline-flex;align-items:stretch;height:32px;color:var(--rc);font:italic 700 16px var(--body);font-variant-numeric:tabular-nums;letter-spacing:.01em;white-space:nowrap;vertical-align:middle}
+.rt::before{content:"";width:4px;flex:none;margin-right:2px;background:var(--rc)}
+span.rt>b{display:inline-flex;align-items:center;padding:1px 15px 0 11px;font-weight:700;font-style:italic;color:var(--rc)!important;background:var(--rbg);border:1.5px solid var(--rbd);border-left:5px solid var(--rc);border-radius:0 6px 6px 0}
 .note .rt{margin:0 10px;vertical-align:middle}
 .note .rt:first-child{margin-left:0}
 .sep{margin:0 9px;color:var(--dim)}
 .pl .rt{margin-left:8px;height:26px;font-size:14px}
-.pl .rt>b{padding:0 11px 0 9px}
+.pl .rt>b{padding:1px 12px 0 8px;border-left-width:4px;border-radius:0 5px 5px 0}
+.pl .rt::before{width:3px}
 .rt-l{margin-top:6px}
 .dr-tags .rt{height:34px}
 .rt-op{position:relative;display:inline-flex;cursor:pointer}
 .rt-op input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
-.rt-op .rt{height:38px;font-size:15px;box-shadow:none;outline:2px solid transparent;outline-offset:3px;transition:outline-color .15s var(--ease)}
+.rt-op .rt{height:38px;font-size:15px;box-shadow:none;outline:2px solid transparent;outline-offset:3px;border-radius:0 8px 8px 0;transition:outline-color .15s var(--ease)}
 .rt-op input:checked+.rt,.rt-op input:focus-visible+.rt{outline-color:var(--text)}
 .rt-op input:not(:checked)+.rt{opacity:.72}
 .rt-op:hover .rt{opacity:1}
@@ -854,7 +850,8 @@ a.hx-r.v:hover,a.hx-r.v:focus-visible{background:color-mix(in srgb,var(--win) 11
 .hx-mais:hover{color:var(--text)}
 /* o selo do Rank tem a mesma largura em toda linha: o número fica centrado e a barra colorida sempre na ponta esquerda */
 .hx .rt,.dx .rt{width:86px;height:26px;font-size:14px}
-.hx .rt>b,.dx .rt>b{flex:1;justify-content:center;padding:0 8px 0 6px}
+.hx .rt>b,.dx .rt>b{flex:1;justify-content:center;padding:1px 8px 0 6px;border-left-width:4px;border-radius:0 5px 5px 0}
+.hx .rt::before,.dx .rt::before{width:3px}
 @media (max-width:640px){
  .hx-th{display:none}
  .hx-r{grid-template-columns:1fr auto auto;grid-template-areas:"m sc kd" "dt rk rk";row-gap:8px;padding:12px 14px 12px 18px}
@@ -926,6 +923,22 @@ a.dx-j:hover span{text-decoration:underline}
 .cla-topo{display:grid;margin-bottom:-48px}
 .cla-topo .clabar{margin-bottom:0}
 @media(max-width:640px){.abas{padding:0 8px}.abas a{padding:0 11px;font-size:14px}}
+/* ----- cabeçalho do perfil separado + abas como fichas (14/11) ----- */
+.me-topo{display:grid}
+.me-topo .dr-hero{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:28px 32px;margin-bottom:22px;border:1px solid var(--line);border-radius:var(--r-lg);background:radial-gradient(420px 220px at 0% 0%,rgba(var(--t-rgb),.12),transparent 70%),var(--panel)}
+.cab-dir{display:grid;gap:10px;justify-items:end;margin-left:auto}
+.cab-dir .cla-lado{justify-items:end}
+.cab-acoes{display:flex;align-items:center;gap:10px}.cab-acoes .msg{margin:0}
+#me-abas{gap:6px;padding:0 0 0 18px;border:0;background:var(--bg);align-items:flex-end}
+#me-abas a{min-height:46px;padding:0 18px;margin:0 0 -1px;border:1px solid transparent;border-bottom:0;border-radius:12px 12px 0 0;color:var(--muted);position:relative}
+#me-abas a:hover:not(.on){color:var(--text)}
+#me-abas a.on{background:var(--panel);border-color:var(--line);color:var(--t-text);z-index:2}
+#me-abas a:focus-visible{outline-offset:-3px}
+@media(max-width:640px){
+ .me-topo .dr-hero{padding:20px;margin-bottom:16px}
+ .cab-dir,.cab-dir .cla-lado{justify-items:start;margin-left:0}
+ #me-abas{padding-left:6px;gap:2px}#me-abas a{padding:0 12px;font-size:14px}
+}
 /* ----- Minhas funções ----- */
 .fx{--tr:#ffc20e;--ct:#4aa3ff;--tr-tx:#ffc20e;--ct-tx:#4aa3ff;--ok:var(--win);--no:var(--red-text)}
 :root[data-modo="claro"] .fx{--tr-tx:#846406;--ct-tx:#316ca8}
@@ -1212,7 +1225,9 @@ function f(n,d){return Number(n).toFixed(d).replace('.',',')}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function av(p,x,ring){return '<div class="av '+(x||'')+' '+(ring||'')+'">'+(p.avatar?'<img src="'+esc(p.avatar)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':esc(p.apelido.slice(0,2).toUpperCase()))+'</div>'}
 function el(id){return document.getElementById(id)}
-var RT_F=[['Cinza',0,'#aab4c0'],['Azul-claro',5000,'#7ab8ea'],['Azul',10000,'#7b8cf5'],['Roxo',15000,'#b87bf5'],['Rosa',20000,'#e65aea'],['Vermelho',25000,'#f26a67'],['Amarelo',30000,'#ffd21a']];
+/* faixas do selo: [nome, início, cor, fundo, borda] — desenho do Juan no Figma */
+var RT_F=[['Cinza',0,'#9ca3af','#1d1f25','#9ca3af'],['Azul-claro',5000,'#93c5fd','#182637','#93c5fd'],['Azul',10000,'#3b82f6','#0a1530','#3b82f6'],['Roxo',15000,'#a855f7','#1e0d30','#5f2f8d'],['Rosa',20000,'#ec4899','#2f0a1e','#9f366c'],['Vermelho',25000,'#ef4444','#2f0a0a','#ef4444'],['Amarelo',30000,'#facc15','#2a2207','#facc15']];
+function rtVars(fx){return '--rc:'+fx[2]+';--rbg:'+fx[3]+';--rbd:'+fx[4]}
 function rtNum(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.')}
 function rtFaixa(r){var i=0;for(var k=0;k<RT_F.length;k++)if(r>=RT_F[k][1])i=k;return i}
 function info(t){return '<span class="ii" tabindex="0" role="img" aria-label="'+esc(t)+'" data-tip="'+esc(t)+'">i</span>'}
@@ -1248,9 +1263,9 @@ function info(t){return '<span class="ii" tabindex="0" role="img" aria-label="'+
 function selo(r,grande){
  if(r==null||isNaN(r)||r<=0)return '';
  var i=rtFaixa(r),fx=RT_F[i];
- return '<span class="rt rt-'+i+'" style="--rc:'+fx[2]+'" title="Premier '+rtNum(r)+' · faixa '+fx[0]+'"><b>'+rtNum(r)+'</b></span>';
+ return '<span class="rt rt-'+i+'" style="'+rtVars(fx)+'" title="Premier '+rtNum(r)+' · faixa '+fx[0]+'"><b>'+rtNum(r)+'</b></span>';
 }
-function seloFaixa(i){var fx=RT_F[i];return '<span class="rt rt-'+i+'" style="--rc:'+fx[2]+'" title="Faixa '+esc(fx[0])+'"><b>'+rtNum(fx[1])+'+</b></span>'}
+function seloFaixa(i){var fx=RT_F[i];return '<span class="rt rt-'+i+'" style="'+rtVars(fx)+'" title="Faixa '+esc(fx[0])+'"><b>'+rtNum(fx[1])+'+</b></span>'}
 function z(p,k){var v=p.zoeira&&p.zoeira[k];return v==null?0:v}
 function cu(v,d,pre){return '<span class="cu" data-v="'+v+'" data-d="'+d+'" data-pre="'+(pre||'')+'">'+(pre||'')+f(v,d)+'</span>'}
 
@@ -1781,8 +1796,10 @@ function montarPerfil(j,p,propria,grupo){
  var claSec=(propria&&!(ME&&ME.cla))?'<div class="cla-sec" id="clasec">'+claCardHtml()+'</div>':'';
  var temD=p.hltv!=null&&!p.erro,base='#/jogador/'+p.steam64;
  var abas=[['desempenho',propria?'Meu desempenho':'Desempenho']];if(temD)abas.push(['partidas','Partidas']);abas.push(['funcoes',propria?'Minhas funções':'Funções']);if(propria)abas.push(['plano','Plano individual']);
- view('<div class="pagina-perfil"><div class="me-card"><div class="dr-hero">'+cab+lado+'</div>'+(temD?'<div class="cartao-acoes"><button class="btn g sm" type="button" data-acao="cartao">Baixar cartão para postar</button><span class="msg" id="msg-cartao"></span></div>':'')
-  +navAbas('me-abas',base,abas)
+ var acoes=temD?'<div class="cab-acoes"><span class="msg" id="msg-cartao"></span><button class="btn g sm" type="button" data-acao="cartao">Baixar cartão para postar</button></div>':'';
+ // cabeçalho num bloco próprio; as abas são fichas presas ao conteúdo logo abaixo
+ view('<div class="pagina-perfil"><div class="me-topo"><div class="dr-hero">'+cab+(lado||acoes?'<div class="cab-dir">'+lado+acoes+'</div>':'')+'</div>'
+  +navAbas('me-abas',base,abas)+'</div><div class="me-card">'
   +'<div class="aba-p" data-aba="desempenho">'+corpo+(propria?'<div class="dr-sec wide" id="jogo-sec" style="display:none"></div>':'')+claSec+(temD?'<div class="dr-sec wide" style="padding-bottom:26px">'+glossario()+'</div>':'')+'</div>'
   +(temD?'<div class="aba-p" data-aba="partidas"><div class="dr-sec wide hist-sec" id="hist-sec"></div></div>':'')
   +'<div class="aba-p" data-aba="funcoes"><div class="dr-sec wide func-sec" id="func-sec"></div></div>'
@@ -2067,7 +2084,7 @@ function gerarCartao(p,b){
  var K=CL?{bg:'#f3f3ef',tx:'#17181b',m1:'#4d5058',m2:'#4d5058',ft:'#666972',pf:'rgba(255,255,255,.9)',pb:'rgba(0,0,0,.16)',tr:'rgba(0,0,0,.10)',av:'#e7e7e0',red:'#c62d22',ga:.2,gb:.16,rf:'rgba('+CRED+',.09)',rs:'rgba('+CRED+',.45)'}:{bg:'#0b0c0e',tx:'#f4f4ef',m1:'#9aa0ab',m2:'#aab0bb',ft:'#7d8493',pf:'rgba(255,255,255,.05)',pb:'rgba(255,255,255,.16)',tr:'rgba(255,255,255,.10)',av:'#1b1f27',red:'#ff5a4e',ga:.32,gb:.26,rf:'rgba('+CRED+',.12)',rs:'rgba('+CRED+',.5)'};
  var AC=(cs.getPropertyValue('--t')||'').trim()||'#ffc20e',ACR=(cs.getPropertyValue('--t-rgb')||'').trim()||'255,194,14';
  var c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');
- var fontes=[document.fonts.load('900 80px Overpass'),document.fonts.load('800 30px Overpass'),document.fonts.load('600 30px Overpass'),document.fonts.load('700 28px "Overpass Mono"')];
+ var fontes=[document.fonts.load('900 80px Overpass'),document.fonts.load('800 30px Overpass'),document.fonts.load('600 30px Overpass'),document.fonts.load('italic 700 32px Overpass'),document.fonts.load('700 28px "Overpass Mono"')];
  return Promise.all(fontes.map(function(p){return p.catch(function(){})})).then(function(){return carregarImg(p.avatar)}).then(function(av){
   var D="Overpass,system-ui,sans-serif",MO="'Overpass Mono',monospace";
   function rr(px,py,w,h,r){x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath()}
@@ -2093,15 +2110,12 @@ function gerarCartao(p,b){
   txt(((p.partidas_analisadas||0)+' PARTIDAS LIDAS'),nx,ay+128,'600 28px '+MO,K.m1);
   // selo Premier (desenho próprio, igual ao do site)
   if(p.rating>0){
-   var si=rtFaixa(p.rating),sc=RT_F[si][2],st=rtNum(p.rating),sh=50,sy=ay+as-sh;
-   x.font='800 32px '+D;var sw=8+16+x.measureText(st).width+18;
-   x.save();
-   x.fillStyle=mixHex(sc,'#14161b',.2);x.shadowColor=sc;x.shadowBlur=[0,0,0,6,10,14,20][si];x.fillRect(nx,sy,sw,sh);x.restore();
-   x.fillStyle=mixHex(sc,'#14161b',.2);x.fillRect(nx,sy,sw,sh);
-   x.save();x.shadowColor=sc;x.shadowBlur=[0,0,0,8,12,18,28][si];
-   if(si===6){var gg=x.createLinearGradient(0,sy,0,sy+sh);gg.addColorStop(0,'#fff3a0');gg.addColorStop(.45,'#ffd21a');gg.addColorStop(1,'#e0a800');x.fillStyle=gg}else x.fillStyle=sc;
-   x.fillRect(nx,sy,8,sh);x.restore();
-   x.save();x.shadowColor=sc;x.shadowBlur=[0,0,0,3,5,7,9][si];txt(st,nx+8+16,sy+sh/2+11,'800 32px '+D,sc);x.restore();
+   var si=rtFaixa(p.rating),fx=RT_F[si],sc=fx[2],st=rtNum(p.rating),sh=50,sy=ay+as-sh;
+   x.font='italic 700 32px '+D;var bx=nx+9,sw=8+18+x.measureText(st).width+24;
+   x.fillStyle=sc;x.fillRect(nx,sy,6,sh);
+   rr(bx,sy,sw,sh,9);x.fillStyle=fx[3];x.fill();x.lineWidth=2;x.strokeStyle=fx[4];x.save();x.clip();x.lineWidth=4;x.stroke();x.restore();
+   x.fillStyle=sc;x.fillRect(bx,sy,8,sh);
+   txt(st,bx+8+18,sy+sh/2+12,'italic 700 32px '+D,sc);
   }
   // rating
   var ry=470;
