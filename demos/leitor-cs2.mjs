@@ -2,7 +2,8 @@
 // e entrega os eventos no MESMO formato do demoparser2. Assim o resto do robô (estatísticas,
 // placar, KAST e a análise de rounds) não muda nada.
 const EVENTOS = ['player_death', 'player_hurt', 'player_blind', 'round_end', 'round_freeze_end', 'begin_new_match',
-  'bomb_planted', 'bomb_defused', 'bomb_exploded', 'flashbang_detonate', 'smokegrenade_detonate'];
+  'bomb_planted', 'bomb_defused', 'bomb_exploded', 'flashbang_detonate', 'smokegrenade_detonate', 'weapon_fire'];
+const GRANADA = /grenade|flashbang|molotov|incendiary|decoy/i;
 // motivo do fim da rodada, nos nomes que o demoparser2 usava
 const MOTIVO = { 1: 'bomb_exploded', 7: 'bomb_defused', 8: 't_killed', 9: 'ct_killed', 10: 'draw', 12: 'target_saved', 17: 't_surrender', 18: 'ct_surrender' };
 
@@ -46,6 +47,13 @@ export async function lerComCs2(arquivo, mod) {
       if (e && 'attacker' in e) jogador(row, 'attacker', e.attackerPlayer);
       if (e && 'assister' in e) jogador(row, 'assister', e.assisterPlayer);
       if (row.is_warmup_period && nome !== 'begin_new_match') return; // aquecimento não conta
+      if (nome === 'player_death') {
+        // granadas que a vítima tinha na mão quando morreu (para o "comprou à toa")
+        try {
+          const inv = e && e.player && e.player.inventory;
+          if (inv && Array.isArray(inv.items)) row.granadas = inv.items.filter((it) => GRANADA.test(String(it.className || it.name))).reduce((t, it) => t + (Number(it.quantity) || 1), 0);
+        } catch { /* sem o inventário */ }
+      }
       if (nome === 'round_end') {
         if (e.winner !== 2 && e.winner !== 3) return; // "a partida vai começar" e afins não são rodadas
         row.winner = e.winner === 2 ? 'T' : 'CT';

@@ -235,7 +235,10 @@ function estatisticas(arquivo, ids) {
   }
   const danos = etapa('dano', () => parseEvent(arquivo, 'player_hurt', ['team_num']));
   const cegos = etapa('cegueira', () => parseEvent(arquivo, 'player_blind', ['team_num']));
-  const S = new Map(ids.map((id) => [id, { r: rounds, k: 0, d: 0, a: 0, hs: 0, dmg: 0, m1: 0, m2: 0, m3: 0, m4: 0, m5: 0, ff: 0, fa: 0, fl: 0, fas: 0, he: 0, ot: 0, og: 0, um: null, w: null, awp: 0, sm: 0, eb: 0, tk: 0, ud: 0, v2: 1, _r: {}, _n: 0, _u: 0 }]));
+  const S = new Map(ids.map((id) => [id, { r: rounds, k: 0, d: 0, a: 0, hs: 0, dmg: 0, m1: 0, m2: 0, m3: 0, m4: 0, m5: 0, ff: 0, fa: 0, fl: 0, fas: 0, he: 0, ot: 0, og: 0, um: null, w: null, awp: 0, sm: 0, eb: 0, tk: 0, ud: 0, v2: 1,
+    // coleta v3 (14/11): precisão, granadas que funcionaram, rounds de 2+ abates vivo e o alastro em contagens
+    v3: 1, tf: 0, ta: 0, heb: 0, mob: 0, ks2: 0, ffx: 0, fax: 0, hex: 0, uct: 0, ugn: 0,
+    _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
   for (const e of ordenadas) {
@@ -256,6 +259,7 @@ function estatisticas(arquivo, ids) {
       if (/awp/i.test(String(e.weapon))) a.awp++; // abates com a AWP (ajuda a sugerir a função)
       const rd = e.total_rounds_played ?? 0; a._r[rd] = (a._r[rd] || 0) + 1;
     }
+    if (v) v._m[e.total_rounds_played ?? 0] = 1; // morreu nessa rodada
     const as = S.get(String(e.assister_steamid));
     if (as && e.assister_steamid !== e.user_steamid && e.assister_team_num !== e.user_team_num) { as.a++; if (e.assistedflash) as.fas++; }
   }
@@ -293,6 +297,62 @@ function estatisticas(arquivo, ids) {
   try {
     for (const e of parseEvent(arquivo, 'smokegrenade_detonate')) { const a = S.get(String(e.user_steamid)); if (a) a.sm++; }
   } catch { /* sem o dado, o item fica de fora */ }
+  // ---- coleta v3 ----
+  const NAO_ARMA = /knife|bayonet|grenade|flashbang|molotov|incgrenade|inferno|decoy|smoke|c4|taser|world/i;
+  const nomeArma = (w) => String(w || '').replace(/^weapon_/, '').toLowerCase();
+  const ehArma = (w) => { const n = nomeArma(w); return !!n && !NAO_ARMA.test(n); };
+  // mira: tiros disparados com arma de fogo e tiros que acertaram um inimigo
+  try { for (const e of parseEvent(arquivo, 'weapon_fire')) { const s = S.get(String(e.user_steamid)); if (s && ehArma(e.weapon)) s.tf++; } }
+  catch { /* sem os tiros: a mira usa só o headshot */ }
+  const heInim = new Map(), heAmigo = new Map(), fogos = new Map();
+  for (const e of danos) {
+    const id = String(e.attacker_steamid), a = S.get(id);
+    if (!a || e.attacker_steamid === e.user_steamid) continue;
+    const w = nomeArma(e.weapon), dano = e.dmg_health || 0, amigo = e.attacker_team_num === e.user_team_num;
+    if (amigo) {
+      if (ehArma(w) && dano >= 15) a.ffx++; // fogo amigo: cada tiro que tirou 15 ou mais de vida de um colega
+      if (/hegrenade/.test(w)) heAmigo.set(id + '|' + e.tick, (heAmigo.get(id + '|' + e.tick) || 0) + dano);
+    } else {
+      if (ehArma(w)) a.ta++;
+      if (/hegrenade/.test(w)) heInim.set(id + '|' + e.tick, (heInim.get(id + '|' + e.tick) || 0) + dano);
+      if (/inferno|molotov|incgrenade/.test(w)) (fogos.get(id) || fogos.set(id, []).get(id)).push({ t: e.tick || 0, d: dano });
+    }
+  }
+  // cada HE explode num tick: soma o dano daquele tick
+  for (const [k, d] of heInim) if (d >= 50) S.get(k.split('|')[0]).heb++;
+  for (const [k, d] of heAmigo) if (d >= 15) S.get(k.split('|')[0]).hex++;
+  // molotov queima por uns 7 s: danos do mesmo jogador dentro de 8 s contam como a mesma molotov
+  for (const [id, L] of fogos) {
+    L.sort((x, y) => x.t - y.t);
+    let ini = null, soma = 0;
+    const fecha = () => { if (ini != null && soma >= 30) S.get(id).mob++; };
+    for (const x of L) { if (ini == null || x.t - ini > 8 * 64) { fecha(); ini = x.t; soma = 0; } soma += x.d; }
+    fecha();
+  }
+  // cegador do time: cada flash (mesmo tick) que cegou um colega por 1,5 s ou mais conta 1
+  const flAmigo = new Set();
+  for (const e of cegos) {
+    if (!S.has(String(e.attacker_steamid)) || e.attacker_steamid === e.user_steamid) continue;
+    if (e.attacker_team_num === e.user_team_num && (e.blind_duration || 0) >= 1.5) flAmigo.add(String(e.attacker_steamid) + '|' + e.tick);
+  }
+  for (const k of flAmigo) S.get(k.split('|')[0]).fax++;
+  // comprou à toa: morreu com 3 granadas ou mais na mão
+  try {
+    const comInv = mortes.filter((e) => S.has(String(e.user_steamid)));
+    let inv = null;
+    if (comInv.length && comInv.every((e) => e.granadas == null)) {
+      // leitor principal: inventário um tick antes da morte
+      const L = parseTicks(arquivo, ['inventory'], [...new Set(comInv.map((e) => (e.tick || 1) - 1))]);
+      inv = new Map(L.map((l) => [String(l.steamid) + '|' + l.tick, (Array.isArray(l.inventory) ? l.inventory : []).filter((n) => /grenade|flashbang|molotov|incendiary|decoy/i.test(String(n))).length]));
+    }
+    for (const e of comInv) {
+      const s = S.get(String(e.user_steamid));
+      const g = e.granadas != null ? e.granadas : inv ? inv.get(String(e.user_steamid) + '|' + ((e.tick || 1) - 1)) : null;
+      if (g == null) continue;
+      s.ugn++;
+      if (g >= 3) s.uct++;
+    }
+  } catch { /* sem o inventário, o "comprou à toa" fica sem dado */ }
   // vitória: time de cada jogador no fim de cada rodada contra o vencedor da rodada
   try {
     const ticks = fins.map((f) => f.tick).filter(Boolean);
@@ -316,7 +376,8 @@ function estatisticas(arquivo, ids) {
   for (const [id, s] of S) {
     if (!s.k && !s.d && !s.dmg) continue; // não estava nessa partida
     for (const k of Object.values(s._r)) { const n = Math.min(k, 5); s['m' + n]++; }
-    delete s._r; delete s._n; delete s._u;
+    for (const [rd, k] of Object.entries(s._r)) if (k >= 2 && !s._m[rd]) s.ks2++; // 2+ abates e saiu vivo do round
+    delete s._r; delete s._m; delete s._n; delete s._u;
     s.dmg = Math.round(s.dmg); s.he = Math.round(s.he); s.ud = Math.round(s.ud); s.mapa = mapa;
     saida[id] = s;
   }
@@ -453,6 +514,9 @@ for (const pt of porPartida.values()) {
         const tot = [0, 1].map((eq) => q.jog.filter((x) => x.eq === eq).reduce((a, x) => ({ j: a.j + 1, k: a.k + x.k, d: a.d + x.d }), { j: 0, k: 0, d: 0 }));
         const d = new Date((pt.horario || 0) - 3 * 3600e3);
         log(`  Conferência: ${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')} ${String(d.getUTCHours()).padStart(2, '0')}h, ${q.mapa || 'mapa ?'}, ${q.rounds} rodadas, placar ${q.placar[0]} x ${q.placar[1]} | time 1: ${tot[0].j} jogadores, ${tot[0].k} abates, ${tot[0].d} mortes | time 2: ${tot[1].j} jogadores, ${tot[1].k} abates, ${tot[1].d} mortes | do painel: ${Object.values(s).map((x) => x.k + '/' + x.d).join(', ') || 'ninguém'}`);
+        // coleta nova (v3): só somas de quem é do painel, para conferir se os dados chegaram
+        const v = Object.values(s).reduce((t, x) => { for (const c of ['tf', 'ta', 'heb', 'mob', 'ks2', 'ffx', 'fax', 'hex', 'uct', 'ugn', 'd']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
+        log(`  Coleta nova: tiros ${v.tf || 0}, acertos ${v.ta || 0}, HE boas ${v.heb || 0}, molotov boas ${v.mob || 0}, rounds de 2+ abates vivo ${v.ks2 || 0}, fogo amigo ${v.ffx || 0}, flash em amigo ${v.fax || 0}, HE em amigo ${v.hex || 0}, morreu com 3+ granadas ${v.uct || 0} (inventário lido em ${v.ugn || 0} de ${v.d || 0} mortes)`);
       }
     } catch (e) { log(`  (quadro completo indisponível nesta partida: ${String((e && e.message) || e).slice(0, 60)})`); }
     // Ranko Analyst: resumo por round (só eventos; sem posição por tick). Se falhar, a partida segue só com as estatísticas.
