@@ -1024,6 +1024,44 @@ a.dx-j:hover span{text-decoration:underline}
 @media (max-width:720px){.fx-todos>span{flex-basis:100%}}
 
 .fx .fx-mapas,.fx .fx-lado{background:var(--panel)}
+
+/* ----- página do time com fichas (14/11): cabeçalho separado, fichas e a folha com o conteúdo ----- */
+#cla-abas{display:flex;margin:0;border:0;border-radius:0}
+.cla-topo{display:grid;margin-bottom:0}
+.cla-topo .clabar{margin-bottom:22px;padding:22px 28px;background:radial-gradient(420px 220px at 0% 0%,rgba(var(--t-rgb),.12),transparent 70%),var(--panel)}
+.fichas{gap:6px;padding:0 0 0 18px;border:0;background:var(--bg);align-items:flex-end}
+.fichas a{min-height:46px;padding:0 18px;margin:0 0 -1px;border:1px solid transparent;border-bottom:0;border-radius:12px 12px 0 0;color:var(--muted);position:relative;gap:8px}
+.fichas a:hover:not(.on){color:var(--text)}
+.fichas a.on{background:var(--panel);border-color:var(--line);color:var(--t-text);z-index:2}
+.fichas a:focus-visible{outline-offset:-3px}
+.fichas a .ic{width:15px;height:15px;fill:currentColor;stroke:none}
+.cla-folha{display:grid;gap:72px;grid-template-columns:minmax(0,1fr);padding:36px 28px 40px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg)}
+.cla-folha>.aba-off{display:none!important}
+.cla-folha .hero{margin:0}
+.cla-folha .tbl,.cla-folha .hlist,.cla-folha .zlist,.cla-folha .troll,.cla-folha .gloss,.cla-folha .vazio{background:var(--panel2)}
+/* Analyst + Coach: as duas ferramentas lado a lado, o erro do Analyst puxa o treino do Coach */
+.ac-k{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font:700 12.5px var(--body);letter-spacing:.06em;text-transform:uppercase}
+.ac-k em{font-style:normal;letter-spacing:.02em;text-transform:none;padding:1px 8px;border:1px solid var(--line2);border-radius:999px;font-weight:600}
+.ac-fx{display:grid;grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);align-items:stretch;margin:0 0 20px}
+.ac-f{display:grid;gap:4px;align-content:start;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel2)}
+.ac-f b{font:800 20px/1.2 var(--disp);letter-spacing:-.01em}
+.ac-f small{color:var(--muted);font:500 14px/1.45 var(--body)}
+.ac-f:first-child{border-color:rgba(var(--t-rgb),.45)}
+.ac-f:first-child .ac-k{color:var(--t-text)}
+.ac-co{border-style:dashed}
+.ac-seta{align-self:center;justify-self:center;width:22px;height:22px;fill:none;stroke:var(--dim);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.an-c .ac-l li{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+.ac-er{display:grid;gap:8px}
+.ac-cel{display:grid;gap:4px;padding:12px 14px;border:1px dashed var(--line2);border-radius:var(--r-btn);font:500 14px/1.4 var(--body)}
+.ac-cel b{font:700 15px var(--body)}
+.cla-folha .an-c{padding:0;border:0;background:none;border-radius:0}
+.cla-folha .an-c h3{font-size:22px}
+.cla-folha .an-c>.note:last-child{margin-top:20px}
+.cla-folha .pro-sec>.note{margin-top:28px}
+.ac-dois{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:14px 0 20px}
+.ac-dois ul{margin-top:12px}
+@media(max-width:900px){.cla-folha{padding:24px 18px 28px;gap:56px}.ac-fx{grid-template-columns:minmax(0,1fr);gap:8px}.ac-seta{transform:rotate(90deg)}.an-c .ac-l li{grid-template-columns:minmax(0,1fr);gap:12px}.ac-dois{grid-template-columns:minmax(0,1fr);gap:18px}}
+@media(max-width:640px){.cla-topo .clabar{padding:18px;margin-bottom:16px}.fichas{padding-left:6px;gap:2px}.fichas a{padding:0 12px;font-size:14px}}
 </style>
 <meta name="theme-color" content="#e6af0c">
 <script>(function(){
@@ -1616,8 +1654,7 @@ function itensMenu(){
  var voce=[],sec=[];
  if(ME&&SES)voce.push({t:'Meu perfil',b:'Perfil',n:0,h:'#/jogador/'+SES.sid,on:ROTA.t==='jogador'&&ROTA.id===SES.sid});
  var naMinha=ROTA.t==='cla'&&ME&&ME.cla&&ME.cla.slug===ROTA.id;
- if(ME&&ME.cla&&!naMinha)voce.push({t:'Meu time',b:'Time',n:5,h:'#/cla/'+ME.cla.slug,on:false});
- if(ROTA.t==='cla')abasCla().forEach(function(x){sec.push({t:x[1],b:x[1]==='Visão geral'?'Geral':x[1]==='Time Pro'?'Pro':x[1],n:x[2],s:x[0],em:x[0]==='geral'})});
+ if(ME&&ME.cla)voce.push({t:'Meu time',b:'Time',n:5,h:'#/cla/'+ME.cla.slug,on:naMinha});
  return{voce:voce,sec:sec};
 }
 function linkMenu(x,curto){
@@ -1720,8 +1757,8 @@ function rotear(manter){
 /* ----- abas do perfil e do time (troca o conteúdo em vez de rolar a página) ----- */
 var PAG=null;
 var ABA_CLA={geral:['painel','ranking','conquistas','steam'],partidas:['partidas'],mapas:['mapas'],trollagem:['zoeira'],pro:['pro']};
-function abasCla(){return proOn()?[['pro','Time Pro',7],['geral','Visão geral',1],['partidas','Partidas',6],['mapas','Mapas',2]]:[['geral','Visão geral',1],['partidas','Partidas',6],['mapas','Mapas',2],['trollagem','Trollagem',3]]}
-function navAbas(id,base,lista){return '<nav class="abas" id="'+id+'" aria-label="Seções">'+lista.map(function(a){return '<a href="'+base+'/'+a[0]+'" data-aba="'+a[0]+'">'+esc(a[1])+'</a>'}).join('')+'</nav>'}
+function abasCla(){return proOn()?[['pro','Analyst + Coach',7,1],['geral','Visão geral',1],['partidas','Partidas',6],['mapas','Mapas',2]]:[['geral','Visão geral',1],['partidas','Partidas',6],['mapas','Mapas',2],['trollagem','Trollagem',3]]}
+function navAbas(id,base,lista){return '<nav class="abas fichas" id="'+id+'" aria-label="Seções">'+lista.map(function(a){return '<a href="'+base+'/'+a[0]+'" data-aba="'+a[0]+'"'+(a[3]?' class="f-pro"':'')+'>'+(a[3]?'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+STAR+'</svg>':'')+esc(a[1])+'</a>'}).join('')+'</nav>'}
 function mostrarAba(aba){
  var nav=el(ROTA.t==='cla'?'cla-abas':'me-abas');if(!nav)return;
  var links=[].slice.call(nav.querySelectorAll('a[data-aba]')),ids=links.map(function(a){return a.getAttribute('data-aba')});
@@ -1875,7 +1912,7 @@ function telaCla(slug,meu){
    +'</div></div><p class="msg" id="msg-cla" style="margin:0"></p>';
   var eu1=SES&&(r.j.membros||[]).filter(function(m){return m.steam64===SES.sid})[0];
   var avisoLigar=(eu1&&membroDados(eu1).hltv==null)?'<div class="aviso-ligar"><div><b>Os seus números ainda não aparecem aqui.</b><p>Ligue a leitura das suas partidas: leva 2 minutos, uma vez só, e já puxamos as últimas partidas que a Steam ainda guarda (até 8).</p></div><button class="btn y sm" type="button" data-acao="abrir-conta">Ligar minhas partidas</button></div>':'';
-  view('<div class="cla-topo">'+bar+navAbas('cla-abas','#/cla/'+encodeURIComponent(c.slug),abasCla())+'</div>'+avisoLigar+CLA_TPL);
+  view(avisoLigar+'<div class="cla-pg"><div class="cla-topo">'+bar+navAbas('cla-abas','#/cla/'+encodeURIComponent(c.slug),abasCla())+'</div><div class="cla-folha">'+CLA_TPL+'</div></div>');
   var psec=el('partidas');if(psec)psec.insertAdjacentHTML('beforebegin','<section id="mapas"></section>');
   var pnl=el('painel');if(pnl)pnl.insertAdjacentHTML('beforebegin',PRO_HTML);
   aplicarModoTime();
@@ -1887,10 +1924,13 @@ function telaCla(slug,meu){
   carregarAnalise(c.slug);
  });
 }
-var PRO_HTML='<section id="pro" class="pro-sec"><div class="sh menor"><div><h2>Time Pro <span class="pro-b">PRO</span></h2><p>Análise e treino para o time, feitos a partir das partidas que o robô lê.</p></div></div>'
+var PRO_HTML='<section id="pro" class="pro-sec"><div class="sh menor"><div><h2>Analyst + Coach <span class="pro-b">PRO</span></h2><p>O Analyst lê as partidas e mostra onde o time erra. O Coach pega cada erro e transforma em treino.</p></div></div>'
+ +'<div class="ac-fx" aria-label="Como as duas ferramentas trabalham juntas"><div class="ac-f"><span class="ac-k">Ranko Analyst</span><b>O que aconteceu</b><small>Lê os rounds de cada partida em que 3 ou mais do time jogaram.</small></div>'
+ +'<svg class="ac-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+ +'<div class="ac-f ac-co"><span class="ac-k">Ranko Coach <em>em breve</em></span><b>O que treinar</b><small>Para cada erro do Analyst, um exercício e uma mudança de comportamento.</small></div></div>'
  +'<div id="an-box" class="an-box"><div class="vazio">Carregando a análise do time…</div></div>'
- +'<article class="pro-c pro-coach"><span class="pro-s">Em breve</span><h3>Ranko Coach</h3><p>Aponta onde o time mais perde e o que treinar.</p><ul><li>Os 3 maiores problemas do time</li><li>Comparação entre partidas</li><li>Erros que se repetem</li><li>Exercícios e mudanças de comportamento</li></ul></article>'
- +'<p class="note">O modo Simples continua igual. O Pro só acrescenta estas análises.</p></section>';
+ +'<p class="note">O modo Simples continua igual. O Pro só acrescenta estas ferramentas.</p></section>';
+function coachCel(e){return '<div class="ac-cel"><span class="ac-k">Coach · em breve</span><b>Treino para '+esc(e.titulo.charAt(0).toLowerCase()+e.titulo.slice(1))+'</b></div>'}
 function aplicarModoTime(){
  var pro=proOn();
  var na=el('cla-abas');if(na&&CLA_ATUAL){na.outerHTML=navAbas('cla-abas','#/cla/'+encodeURIComponent(CLA_ATUAL.cla.slug),abasCla());if(PAG&&PAG.t==='cla')setTimeout(function(){mostrarAba(ABA_ATUAL);desenharMenus()},0)}
@@ -1999,13 +2039,12 @@ document.addEventListener('click',function(e){
 });
 function desenharAnalise(){
  var box=el('an-box');if(!box)return;
- var h='<article class="pro-c an-c"><span class="pro-s">Ranko Analyst</span>';
+ var h='<article class="pro-c an-c">';
  if(!ANL){box.innerHTML='<div class="vazio">Carregando a análise do time…</div>';return}
  if(ANL.pro===null||ANL.pro===undefined){
   box.innerHTML=h+'<h3>Análise do time</h3><p>Entre com a sua conta Steam e participe do time para ver a análise.</p></article>';return}
  if(!ANL.pro){
-  box.innerHTML=h+'<h3>Análise automática das partidas</h3><p>Lê os rounds das partidas do time e mostra o que aconteceu: erros coletivos, diagnóstico de cada jogador e por que o time ganhou ou perdeu.</p>'
-   +'<ul><li>Panorama geral do time</li><li>Análise partida a partida, na aba Partidas</li><li>Erros que mais se repetem</li><li>Diagnóstico individual</li></ul>'
+  box.innerHTML='<article class="pro-c an-c"><h3>O que o time ganha com o Pro</h3><div class="ac-dois"><div><span class="ac-k">Ranko Analyst</span><ul><li>Panorama geral do time</li><li>Análise partida a partida, na aba Partidas</li><li>Erros que mais se repetem</li><li>Diagnóstico individual</li></ul></div><div><span class="ac-k">Ranko Coach · em breve</span><ul><li>Os 3 maiores problemas do time</li><li>Um treino para cada erro</li><li>Comparação entre partidas</li><li>Mudanças de comportamento</li></ul></div></div>'
    +'<p class="an-pre">'+(ANL.disponiveis?'Já há <b>'+ANL.disponiveis+(ANL.disponiveis===1?' partida':' partidas')+' do time analisadas</b>, esperando o plano Pro do time.':'Assim que o time jogar junto, as partidas são analisadas.')+' A assinatura ainda não está aberta: nada é cobrado hoje.</p></article>';return}
  var P=ANL.panorama;
  if(!P){box.innerHTML=h+'<h3>Panorama do time</h3><p>Ainda não há partidas analisadas. O robô analisa as próximas partidas em que 3 ou mais do time jogarem juntos.</p></article>';return}
@@ -2018,14 +2057,14 @@ function desenharAnalise(){
   +tile('Vantagem desperdiçada',c.vantagens_desperdicadas,c.vantagens_desperdicadas===1?'round perdido com vantagem':'rounds perdidos com vantagem')+'</div>';
  var lado='<p class="note">Rounds vencidos: de TR <b>'+P.lados.T.g+' de '+P.lados.T.n+'</b> ('+pc(P.lados.T.g,P.lados.T.n)+') · de CT <b>'+P.lados.CT.g+' de '+P.lados.CT.n+'</b> ('+pc(P.lados.CT.g,P.lados.CT.n)+'). Análise das últimas '+P.partidas+(P.partidas===1?' partida':' partidas')+' do time.</p>';
  var er=P.erros.filter(function(e){return e.peso>0.05}).slice(0,3);
- var ers=er.length?'<ol class="an-erros">'+er.map(function(e){return '<li><div class="an-e-t"><b>'+esc(e.titulo)+'</b><i style="--w:'+Math.round(e.peso*100)+'%"></i></div><span>'+esc(e.texto)+'</span></li>'}).join('')+'</ol>':'<p class="note">Nenhum erro coletivo se destacou nas últimas partidas. Bom sinal.</p>';
+ var ers=er.length?'<ol class="an-erros ac-l">'+er.map(function(e){return '<li><div class="ac-er"><div class="an-e-t"><b>'+esc(e.titulo)+'</b><i style="--w:'+Math.round(e.peso*100)+'%"></i></div><span>'+esc(e.texto)+'</span></div>'+coachCel(e)+'</li>'}).join('')+'</ol>':'<p class="note">Nenhum erro coletivo se destacou nas últimas partidas. Bom sinal.</p>';
  var jg='<div class="an-jg">'+P.jogadores.map(function(p){
   var o={steam64:p.steam64,apelido:p.nome,avatar:p.avatar};
   return '<div class="an-j"><div class="an-j-h">'+av(o,'sm')+'<div><b>'+esc(p.nome)+'</b><small>'+p.partidas+(p.partidas===1?' partida':' partidas')+'</small></div></div>'
    +'<div class="an-j-n"><span><b>'+p.aberturas_ganhas+'/'+p.aberturas_perdidas+'</b>1º duelo</span><span><b>'+p.trades_feitos+'</b>trades feitos</span><span><b>'+pc(p.mortes_sem_trade,p.mortes_tradaveis)+'</b>mortes sem trade</span></div>'
    +'</div>'}).join('')+'</div>';
  box.innerHTML=h+'<h3>Panorama do time</h3>'+tiles+lado
-  +'<h4 class="an-h">Principais erros coletivos</h4>'+ers
+  +'<h4 class="an-h">Do erro ao treino</h4>'+ers
   +'<h4 class="an-h">Números de cada jogador</h4><p class="note" style="margin:-4px 0 12px">O diagnóstico pessoal de cada um aparece só para a própria pessoa, na análise individual.</p>'+jg
   +'<p class="note">A análise de cada partida está na seção Partidas, no botão “Ver análise”.</p></article>';
 }
