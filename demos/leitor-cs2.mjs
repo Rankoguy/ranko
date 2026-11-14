@@ -37,6 +37,18 @@ export async function lerComCs2(arquivo, mod) {
       fotos.push({ tick, steamid: id, name: p.name, team_num: p.teamNumber, current_equip_value: equipamento(p) });
     }
   };
+  // última foto do inventário de cada jogador (o cs2parser avisa quando o inventário muda)
+  const invs = new Map();
+  const contarGranadas = (inv) => (inv && Array.isArray(inv.items) ? inv.items : []).filter((it) => GRANADA.test(String(it.className || it.name))).reduce((t, it) => t + (Number(it.quantity) || 1), 0);
+  rd.gameEvents.on('inventory_snapshot', (e) => {
+    try {
+      const id = String((e && e.player && e.player.steamId) || '');
+      if (!/^\d{17}$/.test(id)) return;
+      const tick = rd.currentTick, g = contarGranadas(e.inventory), ant = invs.get(id);
+      // "antes" guarda a foto anterior, para o caso de a foto vazia da morte chegar no mesmo tick
+      invs.set(id, { tick, g, antes: ant ? (ant.tick < tick ? ant.g : ant.antes) : 0 });
+    } catch { /* sem a foto */ }
+  });
   for (const nome of EVENTOS) {
     rd.gameEvents.on(nome, (e) => {
       const g = regras();
@@ -48,11 +60,11 @@ export async function lerComCs2(arquivo, mod) {
       if (e && 'assister' in e) jogador(row, 'assister', e.assisterPlayer);
       if (row.is_warmup_period && nome !== 'begin_new_match') return; // aquecimento não conta
       if (nome === 'player_death') {
-        // granadas que a vítima tinha na mão quando morreu (para o "comprou à toa")
-        try {
-          const inv = e && e.player && e.player.inventory;
-          if (inv && Array.isArray(inv.items)) row.granadas = inv.items.filter((it) => GRANADA.test(String(it.className || it.name))).reduce((t, it) => t + (Number(it.quantity) || 1), 0);
-        } catch { /* sem o inventário */ }
+        // granadas que a vítima tinha na mão quando morreu (para o "comprou à toa").
+        // Na hora da morte o inventário já vem vazio; por isso usamos a última foto do inventário ANTES dessa morte.
+        const id = String((e && e.player && e.player.steamId) || '');
+        const f = invs.get(id);
+        if (f) row.granadas = f.tick < tick || f.g > 0 ? f.g : f.antes;
       }
       if (nome === 'round_end') {
         if (e.winner !== 2 && e.winner !== 3) return; // "a partida vai começar" e afins não são rodadas
