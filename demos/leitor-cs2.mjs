@@ -103,7 +103,10 @@ export async function lerComCs2(arquivo, mod) {
   // escolhe a fonte das granadas na hora da morte: foto do inventário quando a demo traz, senão a nossa contagem
   const mortesEv = ev.filter((x) => x.event_name === 'player_death');
   for (const x of mortesEv) { if ((x.granadas || 0) >= 3) diag.morte3Foto++; if ((x._conta || 0) >= 3) diag.morte3Conta++; }
-  if (!diag.fotosComGranada) { diag.fonte = 'contagem'; for (const x of mortesEv) x.granadas = x._conta || 0; }
+  // As fotos do inventário do cs2parser vêm só no começo da partida (cerca de 10 por demo) e repetem números velhos;
+  // na conferência de 14/11 a nossa contagem deu uma distribuição igual à do leitor principal. Por isso vale sempre a contagem.
+  diag.fonte = 'contagem';
+  for (const x of mortesEv) x.granadas = x._conta || 0;
   for (const x of mortesEv) delete x._conta;
   if (!ev.some((x) => x.event_name === 'round_end')) throw new Error(`cs2parser não achou rodadas (${r && r.status})`);
   let cab = null;
