@@ -5,6 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ranko — CS2</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2096%2096%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2222%22%20fill%3D%22%23141414%22/%3E%3Cg%20transform%3D%22translate%2816%2012.5%29%22%20fill%3D%22%23FACC15%22%3E%3Cpath%20d%3D%22M6.33%200L0%206.65v33l14.95-16V15.03h31.55v12.08L36%2037.65h15l11.51-8.82V5.91L54.88%200z%22/%3E%3Cpath%20d%3D%22M18.17%2031.65h15.53L0%2068.65v-19.5z%22/%3E%3Cpath%20d%3D%22M36%2042.65h15l13%2027.5H48z%22/%3E%3C/g%3E%3C/svg%3E">
 <style>
 /* fontes servidas pelo próprio site (pasta fonts/): nenhum pedido vai para o Google. Overpass, licença SIL OFL 1.1 */
 @font-face{font-family:Overpass;font-style:normal;font-weight:400;font-display:swap;src:url(fonts/overpass-400.woff2) format("woff2")}
@@ -1237,9 +1238,19 @@ function tintaSobre(c){
  if(fonte.indexOf('livre:')===0&&/^#[0-9a-f]{6}$/i.test(fonte.slice(6)))return fonte.slice(6).toLowerCase();
  return ctr(c,'#16130a')>=ctr(c,'#ffffff')?'#16130a':'#ffffff';
 }
+/* ícone da aba do navegador: o R na cor de destaque escolhida, sobre o quadrado escuro */
+function favicon(c){
+ try{
+  if(!/^#[0-9a-fA-F]{3,8}$/.test(c))return;
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" rx="22" fill="#141414"/><g transform="translate(16 12.5)" fill="'+c+'"><path d="M6.33 0L0 6.65v33l14.95-16V15.03h31.55v12.08L36 37.65h15l11.51-8.82V5.91L54.88 0z"/><path d="M18.17 31.65h15.53L0 68.65v-19.5z"/><path d="M36 42.65h15l13 27.5H48z"/></g></svg>';
+  var l=document.querySelector('link[rel=icon]');if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l)}
+  l.type='image/svg+xml';l.href='data:image/svg+xml,'+encodeURIComponent(svg);
+ }catch(e){}
+}
 function aplicar(t){
  var s=document.documentElement.style,c=t.c,pos=t.pos||'#4aa3ff',neg=t.neg||'#ff5a4e',cl=claroOn(),base=cl?'#f3f3ef':'#0c0d0f',painel=cl?'#ffffff':'#141518';
  s.setProperty('--t',c);s.setProperty('--gold',c);s.setProperty('--t-rgb',rgb(c).join(','));
+ favicon(c);
  s.setProperty('--t-hi',mix(c,'#ffffff',.16));s.setProperty('--t-lo',mix(c,'#000000',.1));
  s.setProperty('--t-bd1',mix(c,'#000000',.58));s.setProperty('--t-bd2',mix(c,'#000000',.42));s.setProperty('--t-bg',mix(c,base,cl?.9:.86));
  s.setProperty('--ct',pos);s.setProperty('--ct-rgb',rgb(pos).join(','));s.setProperty('--red',neg);s.setProperty('--red-rgb',rgb(neg).join(','));
@@ -1304,14 +1315,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <body class="rota-home">
 <div class="app">
   <aside class="side">
-    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/></svg></div><div>Ranko<small>Painel de CS2</small></div></div>
+    <div class="brand"><div class="logo"><svg viewBox="0 0 64 71" width="19" height="21" fill="currentColor" aria-hidden="true"><path d="M6.33 0L0 6.65v33l14.95-16V15.03h31.55v12.08L36 37.65h15l11.51-8.82V5.91L54.88 0z"/><path d="M18.17 31.65h15.53L0 68.65v-19.5z"/><path d="M36 42.65h15l13 27.5H48z"/></svg></div><div>Ranko<small>Painel de CS2</small></div></div>
     <div class="me" id="me-w"></div>
     <nav id="nav"></nav>
     <div class="promo" id="promo"></div>
   </aside>
   <main id="inicio">
     <header class="top">
-      <a class="mlogo" href="#/" aria-label="Ranko"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/></svg></a>
+      <a class="mlogo" href="#/" aria-label="Ranko"><svg viewBox="0 0 64 71" width="19" height="21" fill="currentColor" aria-hidden="true"><path d="M6.33 0L0 6.65v33l14.95-16V15.03h31.55v12.08L36 37.65h15l11.51-8.82V5.91L54.88 0z"/><path d="M18.17 31.65h15.53L0 68.65v-19.5z"/><path d="M36 42.65h15l13 27.5H48z"/></svg></a>
       <span class="ctx" id="ctx"></span>
       <label class="search" id="buscar" style="display:none"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="q" type="search" placeholder="Buscar jogador" aria-label="Buscar jogador"></label>
       <div class="tema" id="tema"></div>
@@ -2498,9 +2509,11 @@ function gerarCartao(p,b){
   var g=x.createRadialGradient(0,0,0,0,0,900);g.addColorStop(0,'rgba('+ACR+','+K.ga+')');g.addColorStop(1,'rgba('+ACR+',0)');x.fillStyle=g;x.fillRect(0,0,W,H);
   g=x.createRadialGradient(W,H,0,W,H,900);g.addColorStop(0,'rgba('+CBLUE+','+K.gb+')');g.addColorStop(1,'rgba('+CBLUE+',0)');x.fillStyle=g;x.fillRect(0,0,W,H);
   // marca
-  rr(M,M,56,56,15);x.fillStyle=AC;x.fill();
-  x.strokeStyle='#141006';x.lineWidth=2.6;x.lineCap='round';x.beginPath();x.arc(M+28,M+28,10,0,6.283);x.stroke();
-  [[28,12,28,19],[28,37,28,44],[12,28,19,28],[37,28,44,28]].forEach(function(l){x.beginPath();x.moveTo(M+l[0],M+l[1]);x.lineTo(M+l[2],M+l[3]);x.stroke()});
+  // o R do logo na cor de destaque, sobre o quadrado escuro (a mesma lógica do ícone da aba)
+  rr(M,M,56,56,15);x.fillStyle='#141414';x.fill();
+  x.save();x.translate(M+14,M+12.4);x.scale(.44,.44);x.fillStyle=AC;
+  ['M6.33 0L0 6.65v33l14.95-16V15.03h31.55v12.08L36 37.65h15l11.51-8.82V5.91L54.88 0z','M18.17 31.65h15.53L0 68.65v-19.5z','M36 42.65h15l13 27.5H48z'].forEach(function(d){x.fill(new Path2D(d))});
+  x.restore();
   txt('RANKO',M+74,M+40,'900 38px '+D,K.tx);
   txt('CS2',W-M,M+38,'500 26px '+MO,K.m1,'right');
   // avatar + nome
