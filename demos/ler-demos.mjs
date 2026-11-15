@@ -242,7 +242,7 @@ function estatisticas(arquivo, ids) {
     // csn/csb = primeiros tiros dados logo depois de andar e quantos deles saíram com o boneco já parado (contra-strafe)
     // coleta v5 (14/11, noite): definições do Leetify. hta/hc = acertos (sem escopeta) e na cabeça; ea/eh = tiros em
     // combate e os que acertaram; csn/csb = tiros de rifle/sniper em combate e os que saíram parado. vc = versão da coleta.
-    v4: 1, v5: 1, vc: 5, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
+    v4: 1, v5: 1, vc: 7, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
     _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
@@ -316,7 +316,8 @@ function estatisticas(arquivo, ids) {
     const w = nomeArma(e.weapon), dano = e.dmg_health || 0, amigo = e.attacker_team_num === e.user_team_num;
     if (amigo) {
       if (ehArma(w) && dano >= 15) a.ffx++; // fogo amigo: cada tiro que tirou 15 ou mais de vida de um colega
-      if (/hegrenade/.test(w)) heAmigo.set(id + '|' + e.tick, (heAmigo.get(id + '|' + e.tick) || 0) + dano);
+      // HE no time (15/11): cada colega que tomou 10 ou mais de dano da mesma HE conta 1 (dois colegas atingidos = 2)
+      if (/hegrenade/.test(w)) { const kh = id + '|' + e.tick + '|' + e.user_steamid; heAmigo.set(kh, (heAmigo.get(kh) || 0) + dano); }
     } else {
       if (ehArma(w)) a.ta++;
       if (/hegrenade/.test(w)) heInim.set(id + '|' + e.tick, (heInim.get(id + '|' + e.tick) || 0) + dano);
@@ -325,7 +326,7 @@ function estatisticas(arquivo, ids) {
   }
   // cada HE explode num tick: soma o dano daquele tick
   for (const [k, d] of heInim) if (d >= 50) S.get(k.split('|')[0]).heb++;
-  for (const [k, d] of heAmigo) if (d >= 15) S.get(k.split('|')[0]).hex++;
+  for (const [k, d] of heAmigo) if (d >= 10) S.get(k.split('|')[0]).hex++;
   // molotov queima por uns 7 s: danos do mesmo jogador dentro de 8 s contam como a mesma molotov
   for (const [id, L] of fogos) {
     L.sort((x, y) => x.t - y.t);
@@ -406,7 +407,7 @@ const RIFLE = /^(ak47|m4a1|m4a1_silencer|famas|galilar|aug|sg556)$/;
 const ESCOPETA = /^(nova|xm1014|mag7|sawedoff)$/;
 // contra-strafe só com as armas que erram muito andando: rifles, AWP/Scout/automáticas de sniper e Desert Eagle.
 // Com submetralhadora e pistola leve, atirar andando de perto é jogada válida (conferência de 14/11: 1 em 4 tiros era assim).
-const CONTRA = /^(ak47|m4a1|m4a1_silencer|famas|galilar|aug|sg556|awp|ssg08|g3sg1|scar20)$/;
+const CONTRA = RIFLE; // como no Leetify: só tiros de rifle (14/11: tirados AWP e snipers)
 function miraV4(arquivo, S, danos, ehArma, nomeArma) {
   // coleta v5 (14/11, noite): as definições do Leetify, o mais perto que dá sem ler quem estava vendo quem.
   // acertos em inimigos com arma de fogo, por jogador e tick (cada tiro acerta no mesmo tick em que sai)
@@ -415,7 +416,8 @@ function miraV4(arquivo, S, danos, ehArma, nomeArma) {
     const id = String(e.attacker_steamid), s = S.get(id);
     if (!s || e.attacker_steamid === e.user_steamid || e.attacker_team_num === e.user_team_num || !ehArma(e.weapon)) continue;
     (acertos.get(id) || acertos.set(id, new Set()).get(id)).add(e.tick || 0);
-    if (ESCOPETA.test(nomeArma(e.weapon))) continue; // cada bago de escopeta é um acerto: fica fora da conta da cabeça
+    const arma = nomeArma(e.weapon);
+    if (ESCOPETA.test(arma) || arma === 'awp') continue; // escopeta (cada bago é um acerto) e AWP ficam fora da conta da cabeça, como no Leetify
     // precisão na cabeça: acertos na cabeça / acertos (no CS2 o pescoço conta como cabeça: hitgroup 1 ou 8)
     s.hta++;
     const hg = e.hitgroup;
@@ -611,7 +613,7 @@ for (const pt of porPartida.values()) {
         const v = Object.values(s).reduce((t, x) => { for (const c of ['tf', 'ta', 'heb', 'mob', 'ks2', 'ffx', 'fax', 'hex', 'uct', 'ugn', 'd']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
         log(`  Coleta nova: tiros ${v.tf || 0}, acertos ${v.ta || 0}, HE boas ${v.heb || 0}, molotov boas ${v.mob || 0}, rounds de 2+ abates vivo ${v.ks2 || 0}, fogo amigo ${v.ffx || 0}, flash em amigo ${v.fax || 0}, HE em amigo ${v.hex || 0}, morreu com 3+ granadas ${v.uct || 0} (inventário lido em ${v.ugn || 0} de ${v.d || 0} mortes)`);
         const m4 = Object.values(s).reduce((t, x) => { for (const c of ['hta', 'hc', 'ea', 'eh', 'sp', 'sa', 'csn', 'csb']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
-        log(`  Mira nova (painel): na cabeça ${m4.hc || 0} de ${m4.hta || 0} acertos, tiros em combate ${m4.ea || 0} (acertaram ${m4.eh || 0}), tiros em spray ${m4.sp || 0} (acertaram ${m4.sa || 0}), tiros de rifle/sniper em combate ${m4.csn || 0} (saíram parado ${m4.csb || 0})` + (s._cs ? ` | velocidade no tiro: parado ${s._cs[0]}, quase parando ${s._cs[1]}, freando ${s._cs[2]}, correndo ${s._cs[3]}` : ''));
+        log(`  Mira nova (painel): na cabeça ${m4.hc || 0} de ${m4.hta || 0} acertos, tiros em combate ${m4.ea || 0} (acertaram ${m4.eh || 0}), tiros em spray ${m4.sp || 0} (acertaram ${m4.sa || 0}), tiros de rifle em combate ${m4.csn || 0} (saíram parado ${m4.csb || 0})` + (s._cs ? ` | velocidade no tiro: parado ${s._cs[0]}, quase parando ${s._cs[1]}, freando ${s._cs[2]}, correndo ${s._cs[3]}` : ''));
         const h = s._hist, dg = libAtual && libAtual.diag;
         log(`  Granadas na hora da morte (painel): 0 = ${h ? h[0] : '?'}, 1 = ${h ? h[1] : '?'}, 2 = ${h ? h[2] : '?'}, 3+ = ${h ? h[3] : '?'}` + (dg ? ` | leitor reserva (fonte: ${dg.fonte}): ${dg.fotos} fotos de inventário (${dg.fotosComGranada} com granada), granadas pegas ${dg.pegou}, lançadas ${dg.lancou}, mortes com 3+ pela foto ${dg.morte3Foto} e pela contagem ${dg.morte3Conta} (todos os 10 jogadores)` : ''));
       }
