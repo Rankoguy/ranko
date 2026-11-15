@@ -213,7 +213,8 @@ nav a.on em{background:rgba(0,0,0,.18)}
 .per{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--line2);border-radius:var(--r-btn);background:transparent}
 .per button{height:32px;padding:0 14px;border:0;border-radius:7px;background:none;color:var(--muted);font:600 14px var(--body);transition:background .15s,color .15s}
 .per button:hover:not([disabled]){color:var(--text)}
-.per button.on{background:var(--text);color:var(--bg)}
+.per button.on,.per button.on:hover{background:var(--text);color:var(--bg)}
+.spot .per-vazio{grid-column:1/-1}
 .per button[disabled]{opacity:.4;cursor:not-allowed}
 .aviso-ligar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 20px;margin-bottom:-40px;border-color:rgba(var(--t-rgb),.4)}
 .aviso-ligar b{display:block;font-size:16px}
@@ -1473,20 +1474,14 @@ function drawZ(){
   +'<div class="zr note"><span></span>'+c.u+'</div>';
 }
 function spotlight(){
- var W=B.filter(function(p){return p.semana&&p.semana.partidas>=3&&p.semana.hltv!=null}).map(function(p){return vis(p,'semana')});
- var sem=W.length>=2;
- var F=P.filter(function(p){return p.partidas_analisadas>=3});
- var Q=sem?W:(F.length>=2?F:P);
- var fb='Poucas partidas nesta semana - mostrando '+(modo==='mes'?'o mês':modo==='semana'?'a semana':'as últimas partidas');
+ /* o destaque segue o período escolhido (semana, mês ou geral) */
+ var Q=P.slice(),sem=false;
+ var fb=modo==='geral'?'Nas últimas partidas lidas':modo==='mes'?'Destaque do mês até agora':'Destaque da semana até agora';
  var mv=Q.reduce(function(m,p){return p.hltv>m.hltv?p:m},Q[0]);
  var pa=pontosAlastro(Q),pts=pa.pts,lid=pa.lid;
  var tr=Q.reduce(function(m,p){return pts[p.steam64]>pts[m.steam64]?p:m},Q[0]);
  var lt=lid[tr.steam64]||[];
- /* o hero mostra a semana quando há dados; o rótulo e o título seguem o que é mostrado */
- var rot=sem?'da semana':(modo==='mes'?'do mês':modo==='semana'?'da semana':'geral');
- var h1e=document.querySelector('#painel h1 em'),hp=document.querySelector('#painel p[data-per]');
- if(sem&&h1e){h1e.textContent='da semana';if(hp){hp.setAttribute('data-per','nesta semana');hp.textContent=proOn()?'Quem está carregando o time nesta semana.':'Quem está carregando o time e quem mais alastrou nesta semana.'}
-  var sd=DADOS&&DADOS.periodo&&DADOS.periodo.semana_id?DADOS.periodo.semana_id.split('-'):null;var kk=el('kick');if(kk)kk.textContent='Semana de '+faixaCiclo(cicloSemana())+' - fecha '+diaBR(cicloSemana().fim)+' à 0h'}
+ var rot='';
  el('spot').innerHTML=
   '<div class="sp mv" data-p="'+mv.steam64+'"><div class="sp-k">'+svg('Líder do ranking')+'Carregando o time</div><div class="sp-b">'+av(mv,'xl','ring-ct')+'<div><b title="'+esc(mv.apelido)+'">'+esc(mv.apelido)+'</b><span>HLTV <span class="num">'+cu(mv.hltv,2)+'</span> - '+mv.partidas_analisadas+' partidas</span></div></div><small>'+(sem?'Destaque positivo '+rot:fb)+'</small></div>'
   +(pts[tr.steam64]?'<div class="sp tr" data-p="'+tr.steam64+'"><div class="sp-k">'+svg('Fogo amigo')+'Quem mais alastrou</div><div class="sp-b">'+av(tr,'xl','ring-red')+'<div><b title="'+esc(tr.apelido)+'">'+esc(tr.apelido)+'</b><span>'+(lt.length?'Lidera em '+esc(lt.join(', ')):pts[tr.steam64]+' pontos de alastro')+'</span></div></div><small>'+(sem?'Destaque negativo '+rot:fb)+'</small></div>'
@@ -1696,6 +1691,22 @@ function anim(n){
  requestAnimationFrame(step);
 }
 
+function periodoVazio(t){
+ var c=t==='mes'?cicloMes():cicloSemana(),nome=t==='mes'?'mês':'semana',na=t==='mes'?'neste mês':'nesta semana';
+ var msg='Ninguém do time jogou '+na+' ainda. '+(t==='mes'?'O mês':'A semana')+' começou '+semBR(c.inicio)+' '+diaBR(c.inicio)+' à 0h e fecha '+semBR(c.fim)+' '+diaBR(c.fim)+' à 0h. Os números aparecem assim que a primeira partida for lida.';
+ P=[];NB=0;if(el('nb'))el('nb').textContent=0;
+ var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=t==='mes'?'do mês':'da semana';var hp=h1e.parentNode.nextElementSibling;if(hp){hp.setAttribute('data-per',na);hp.textContent='Quem está carregando o time e quem mais alastrou '+na+'.'}}
+ var kk=el('kick');if(kk)kk.textContent=textoCiclo(t);
+ el('spot').innerHTML='<div class="sp per-vazio"><div class="sp-k">'+(t==='mes'?'Mês':'Semana')+' de '+faixaCiclo(c)+'</div><div class="sp-b"><div><b>Ninguém jogou ainda</b><span>'+esc(msg)+'</span></div></div></div>';
+ el('rk-p').textContent=textoCiclo(t)+'.';
+ el('rows').innerHTML='<tr><td colspan="9" class="note">'+esc(msg)+'</td></tr>';
+ ['cards','cards2','zl','lider'].forEach(function(k){if(el(k))el(k).innerHTML=''});
+ if(el('cards'))el('cards').innerHTML='<div class="vazio">'+esc(msg)+'</div>';
+ if(el('troll')){el('troll').removeAttribute('data-p');el('troll').innerHTML='<div class="k">Quem mais alastrou</div><b class="big">Ninguém ainda</b><p>'+esc(msg)+'</p>'}
+ if(el('dest-p'))el('dest-p').textContent='Quem está mandando bem em cada categoria '+na+'.';
+ if(el('zo-p'))el('zo-p').textContent='Quem está alastrando mais o time '+na+'.';
+ if(el('semperfil'))el('semperfil').textContent='';
+}
 function init(d){
  DADOS=d;
  var all=d.jogadores||[],per=d.periodo||{};
@@ -1706,15 +1717,17 @@ function init(d){
  S=all.filter(function(p){return p.so_steam});
  var M=B.filter(function(p){return p.mes&&p.mes.partidas>=1&&p.mes.hltv!=null});
  var Wk=B.filter(function(p){return p.semana&&p.semana.partidas>=1&&p.semana.hltv!=null});
- DISP={semana:Wk.length>=2,mes:M.length>=2,geral:true};
- modo=(PER&&DISP[PER])?PER:(DISP.mes?'mes':'geral');
+ DISP={semana:Wk.length>=1,mes:M.length>=1,geral:true};
+ /* semana e mês sempre podem ser escolhidos; sem ninguém com partida no período, a página mostra as datas e avisa */
+ modo=PER||(M.length>=2?'mes':'geral');
+ if(modo!=='geral'&&!(modo==='mes'?M:Wk).length){periodoVazio(modo);return}
  P=(modo==='mes'?M.map(function(p){return vis(p,'mes')}):modo==='semana'?Wk.map(function(p){return vis(p,'semana')}):B.slice()).sort(function(a,b){return b.hltv-a.hltv});
  if(!P.length){NB=0;el('rows').innerHTML='<tr><td colspan="9" class="note">Nenhum jogador com dados ainda. Os números chegam em poucos minutos.</td></tr>';return}
  var mi=per.mes_id?(+per.mes_id.split('-')[1]-1):new Date(d.atualizado_em).getMonth();
  var ano=per.mes_id?per.mes_id.split('-')[0]:new Date(d.atualizado_em).getFullYear();
  var jan=modo==='mes'?'neste mês':modo==='semana'?'nesta semana':'nas últimas partidas';
  var sd=per.semana_id?per.semana_id.split('-'):null;
- var PL=modo==='mes'?['do mês','neste mês','mês']:modo==='semana'?['da semana','nesta semana','semana']:['geral','nas últimas partidas','período'];var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=PL[0]==='geral'?'geral':PL[0];h1e.parentNode.nextElementSibling.setAttribute('data-per',PL[1]);h1e.parentNode.nextElementSibling.textContent=proOn()?'Quem está carregando o time '+PL[1]+'.':'Quem está carregando o time e quem mais alastrou '+PL[1]+'.'}var kk=el('kick');if(kk)kk.textContent=modo==='mes'?'Mês de '+faixaCiclo(cicloMes())+' - fecha '+diaBR(cicloMes().fim)+' à 0h':modo==='semana'?'Semana de '+faixaCiclo(cicloSemana())+' - fecha '+diaBR(cicloSemana().fim)+' à 0h':'Últimas 100 partidas';el('rk-t').innerHTML=modo==='mes'?'Ranking do mês':modo==='semana'?'Ranking da semana':'Ranking geral';
+ var PL=modo==='mes'?['do mês','neste mês','mês']:modo==='semana'?['da semana','nesta semana','semana']:['geral','nas últimas partidas','período'];var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=PL[0]==='geral'?'geral':PL[0];h1e.parentNode.nextElementSibling.setAttribute('data-per',PL[1]);h1e.parentNode.nextElementSibling.textContent=proOn()?'Quem está carregando o time '+PL[1]+'.':'Quem está carregando o time e quem mais alastrou '+PL[1]+'.'}var kk=el('kick');if(kk)kk.textContent=modo==='geral'?'Últimas 100 partidas lidas':textoCiclo(modo);el('rk-t').innerHTML=modo==='mes'?'Ranking do mês':modo==='semana'?'Ranking da semana':'Ranking geral';
  el('rk-p').textContent=(modo==='mes'?'Mês de '+faixaCiclo(cicloMes()):modo==='semana'?'Semana de '+faixaCiclo(cicloSemana()):'Últimas 100 partidas')+' - ordenado pelo Rating HLTV, calculado com abates, mortes e rodadas com multikills.';
  el('rk-n').textContent='Clique num jogador para abrir o perfil.';
  el('dest-p').textContent='Quem está mandando bem em cada categoria '+jan+'.';
@@ -1895,6 +1908,8 @@ function cicloSemana(ms){var t=new Date((ms||Date.now())-OFF_BR);var i=Date.UTC(
 function cicloMes(ms){var t=new Date((ms||Date.now())-OFF_BR);var M=t.getUTCMonth()-(t.getUTCDate()<14?1:0);return {inicio:Date.UTC(t.getUTCFullYear(),M,14)+OFF_BR,fim:Date.UTC(t.getUTCFullYear(),M+1,14)+OFF_BR}}
 function diaBR(ms,ano){var t=new Date(ms-OFF_BR);function p2(n){return (n<10?'0':'')+n}return p2(t.getUTCDate())+'/'+p2(t.getUTCMonth()+1)+(ano?'/'+t.getUTCFullYear():'')}
 function faixaCiclo(c){return diaBR(c.inicio)+' a '+diaBR(c.fim-1)}
+function semBR(ms){return ['dom','seg','ter','qua','qui','sex','sáb'][new Date(ms-OFF_BR).getUTCDay()]}
+function textoCiclo(t){var c=t==='mes'?cicloMes():cicloSemana();return (t==='mes'?'Mês':'Semana')+' de '+faixaCiclo(c)+' - fecha '+semBR(c.fim)+' '+diaBR(c.fim)+' à 0h'}
 function periodoDe(ms){
  var w=cicloSemana(Date.now()),m=cicloMes(Date.now());
  var a=new Date(w.inicio-OFF_BR),b=new Date(m.inicio-OFF_BR);
@@ -2374,7 +2389,7 @@ function renderPer(){
  var b=el('per');if(!b)return;
  b.innerHTML=[['semana','Semana'],['mes','Mês'],['geral','Geral']].map(function(x){
   var on=modo===x[0],ok=DISP[x[0]];
-  return '<button type="button" class="'+(on?'on':'')+'" data-acao="periodo" data-v="'+x[0]+'" aria-pressed="'+on+'"'+(ok?'':' disabled title="Poucos jogadores com partidas neste período"')+'>'+x[1]+'</button>'}).join('');
+  return '<button type="button" class="'+(on?'on':'')+'" data-acao="periodo" data-v="'+x[0]+'" aria-pressed="'+on+'"'+' title="'+(x[0]==='geral'?'Últimas 100 partidas lidas':esc(textoCiclo(x[0])))+(ok?'':' - ninguém jogou ainda')+'">'+x[1]+'</button>'}).join('');
 }
 function glossario(){
  return '<details class="gloss"><summary>Como ler os números</summary><dl>'
