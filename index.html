@@ -105,13 +105,18 @@ nav a.on em{background:rgba(0,0,0,.18)}
 .usr button{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 12px;border:1px solid var(--line2);border-radius:var(--r-btn);background:none;color:var(--text);font:600 14px var(--body);transition:background .15s,border-color .15s}
 .usr button:hover{background:rgba(var(--w),.05);border-color:rgba(var(--w),.28)}
 .usr .opt .ic{width:16px;height:16px;stroke-width:2}
-.usr #sair{position:relative;margin-left:20px}
-.usr #sair::before{content:'';position:absolute;left:-15px;top:8px;bottom:8px;width:1px;background:var(--line2)}
-.usr #sair.armed{border-color:var(--red);color:var(--red-text)}
-@media(max-width:1180px){.usr>span{display:none}}
+.usr .conta-b{gap:9px;padding:0 10px 0 4px;border-radius:999px}
+.usr .conta-b .av{width:30px;height:30px;font-size:11px}
+.usr .conta-b>.ic{width:15px;height:15px;color:var(--muted)}
+.usr .conta-b .opt-t{max-width:160px;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:1180px){.usr .conta-b .opt-t{display:none}}
 
 /* ---------- seletor de cor ---------- */
-.tema{position:relative;flex:none;display:flex;align-items:center;gap:8px}
+.tema{position:relative;flex:none;display:flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line2);border-radius:999px}
+.tema .modo-b{height:34px;width:60px;border:0;background:rgba(var(--w),.05)}
+.tema .modo-b .mt{top:3px;left:3px;width:28px;height:28px}
+.tema .modo-b[aria-checked=true] .mt{transform:translateX(26px)}
+.tema .tema-b{height:34px;border:0;border-radius:999px;padding:0 12px 0 10px}
 .modo-b{position:relative;flex:none;width:64px;height:40px;padding:0;border:1px solid var(--line2);border-radius:999px;background:var(--panel2);color:var(--muted);transition:border-color .15s}
 .modo-b:hover{border-color:rgba(var(--w),.35)}
 .modo-b svg{position:absolute;top:50%;width:16px;height:16px;margin-top:-8px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
@@ -553,10 +558,10 @@ body.lock-gate{overflow:hidden}
   .search{flex:1 1 auto;min-width:0;height:44px}
   .clabar .gr{gap:8px}
   .per{flex:1 1 auto;width:auto}
-  .tema-b,.usr button{min-width:44px;height:44px;justify-content:center}
+  .usr button{min-width:44px;height:44px;justify-content:center}
+  .tema .tema-b{min-width:38px;justify-content:center;padding:0 10px}
   .tema-b span,.usr>span{display:none}
   .tema-p{position:fixed;left:12px;right:12px;top:64px;min-width:0}
-  .usr #sair{margin-left:14px}.usr #sair::before{left:-9px}
   .top .btn.y{min-height:44px;padding:0 14px;font-size:14px}
   .wrap{padding:20px 16px 48px;gap:56px}
   .clabar,.aviso-ligar{margin-bottom:-32px}
@@ -1081,6 +1086,22 @@ a.dx-j:hover span{text-decoration:underline}
 .priv-sec{margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
 .priv-sec h4{margin:0 0 10px}.priv-sec h4~h4{margin-top:22px}
 .priv-sec .perigo{margin-top:22px}
+.pz-i{margin-top:10px;border:1px solid rgba(var(--red-rgb),.28);border-radius:var(--r-md);background:rgba(var(--red-rgb),.03)}
+.pz-i summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;cursor:pointer;list-style:none}
+.pz-i summary::-webkit-details-marker{display:none}
+.pz-i summary span{display:grid;gap:3px}
+.pz-i summary b{color:var(--red-text);font:700 14.5px var(--body)}
+.pz-i summary small{color:var(--muted);font:500 13px var(--body)}
+.pz-i summary .ic{width:16px;height:16px;flex:none;color:var(--muted);transition:transform .2s var(--ease)}
+.pz-i[open] summary .ic{transform:rotate(180deg)}
+.pz-i summary:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:var(--r-md)}
+.pz-c{padding:0 16px 16px}
+.pz-c .campo{max-width:320px}
+/* Opções: cada item numa linha, texto à esquerda e botão à direita */
+.opc-body .fonte-on{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px}
+.opc-body .fonte-on small{display:block;margin-top:3px}
+.priv-sec h4~h4{margin-top:26px}
+@media(max-width:520px){.opc-body .fonte-on{grid-template-columns:1fr}}
 .priv-n a,.gate-box small a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .aviso-ex{border-style:dashed}
 .z-vazio{margin:6px;text-align:left}.z-vazio b{color:var(--text)}
@@ -1950,7 +1971,8 @@ function desenharMenus(){
 function desenharChrome(){
  var nome=ME&&ME.nome?ME.nome:'Conectado';
  if(SES){
-  el('usr').innerHTML=(ME?av({avatar:ME.avatar,apelido:nome}):'<div class="av">ID</div>')+'<span>'+esc(nome)+'</span><button id="conta" class="opt" type="button" data-acao="abrir-conta" aria-haspopup="dialog">'+ic('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>')+'<span class="opt-t">Opções</span></button><button id="sair" type="button">Sair</button>';
+  /* um botão só para a conta: foto, nome e seta; abre Opções (onde também fica o Sair) */
+  el('usr').innerHTML='<button id="conta" class="opt conta-b" type="button" data-acao="abrir-conta" aria-haspopup="dialog" title="Opções da conta">'+(ME?av({avatar:ME.avatar,apelido:nome}):'<div class="av">ID</div>')+'<span class="opt-t">'+esc(nome)+'</span>'+ic('<path d="M6 9l6 6 6-6"/>')+'</button>';
   el('entrar').style.display='none';
   el('me-w').innerHTML=(ME?av({avatar:ME.avatar,apelido:nome},'l','ring-t'):'<div class="av l ring-t">VC</div>')+'<div><small>Logado como</small><b>'+esc(nome)+'</b></div>';
  }else{
@@ -2150,12 +2172,14 @@ function carregarFonte(){
   var j=r.j;
   if(j.ativa){
    box.innerHTML='<h4>Minhas partidas</h4><div class="fonte-on"><div><b>Leitura ligada</b><small>'+(j.partidas?j.partidas+' partida(s) lida(s)':'Nenhuma partida lida ainda')+' - última checagem '+haQuanto(j.lido_em)+'</small></div>'
-    +'<span class="fonte-bt"><button class="btn g sm" type="button" data-acao="fonte-atualizar">Atualizar agora</button> <button class="btn red sm" type="button" data-acao="fonte-desligar">Desligar e apagar</button></span></div>'
+    +'<span class="fonte-bt"><button class="btn g sm" type="button" data-acao="fonte-atualizar">Atualizar agora</button></span></div>'
     +amizadeAviso(j,'10px 0 0')
     +(j.erro?'<p class="msg err" style="display:block">'+esc(j.erro)+'</p>':'')
-    +'<p class="note">Novas partidas de Premier e competitivo entram sozinhas, em poucos minutos depois de acabarem. Desligar apaga todas as estatísticas guardadas de você.</p><p class="msg" id="msg-fonte"></p>';
+    +'<p class="note">Novas partidas de Premier e competitivo entram sozinhas, em poucos minutos depois de acabarem. Para parar, use a Zona de perigo, no fim desta tela.</p><p class="msg" id="msg-fonte"></p>';
+   var pz=el('pz-fonte');if(pz)pz.innerHTML=zonaDesligar();
    return;
   }
+  var pz2=el('pz-fonte');if(pz2)pz2.innerHTML='';
   box.innerHTML='<h4>Ligar minhas partidas</h4><p class="note" style="margin:0 0 12px">O painel lê as suas partidas direto do CS2 e calcula tudo sozinho. Você faz isso uma única vez:</p>'
    +'<ol class="passos"><li>Abra <a href="'+LINK_CODIGOS+'" target="_blank" rel="noopener">esta página da Steam</a> e entre na sua conta.</li><li>Copie o <b>código de autenticação</b> (ele tem o formato <b>XXXX-XXXXX-XXXX</b>) e cole no primeiro campo.</li><li>Na mesma página, copie o <b>código da partida mais recente</b> (ele começa com <b>CSGO-</b>) e cole no segundo campo.</li><li>Clique em <b>Ligar</b>.</li></ol>'
    +'<div class="campo"><label for="f-auth">1. Código de autenticação</label><input id="f-auth" type="text" placeholder="XXXX-XXXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>'
@@ -2398,7 +2422,7 @@ function glossario(){
   +'<dt>Como funcionam as notas de 0 a 100</dt><dd>Cada número seu é comparado com o de um jogador médio. Na média, a nota é 50. Acima da média ela sobe, abaixo ela desce, e quanto mais longe da média, mais ela anda. Ficar bem acima da média em tudo dá por volta de 85; só nível profissional chega perto de 100. Com poucas partidas a nota fica mais perto de 50, para um jogo bom ou ruim não decidir sozinho.</dd>'
   +'<dt>Impacto (no gráfico do perfil)</dt><dd>O Rating HLTV na mesma escala das notas: 1,00 (a média) vira 50, 1,20 vira por volta de 84 e 1,40 vira por volta de 98.</dd>'
   +'<dt>ADR e Headshots</dt><dd>ADR é o dano médio que você causa nos inimigos por rodada. Headshots é a porcentagem dos seus abates que foram na cabeça.</dd>'
-  +'<dt>Mira</dt><dd>Junta quatro números com o mesmo peso: precisão na cabeça (dos tiros que acertaram um inimigo, quantos pegaram na cabeça), precisão em combate (dos tiros dados no meio de uma troca, quantos acertaram), precisão no spray (tiros de rifle em sequência de 3 ou mais) e contra-strafe (dos tiros de rifle e sniper em combate, quantos saíram com o boneco parado). Partidas lidas antes dessa coleta entram só com os abates na cabeça, e só quando não há nenhuma partida nova.</dd>'
+  +'<dt>Mira</dt><dd>Junta quatro números com o mesmo peso: precisão na cabeça (dos tiros que acertaram um inimigo, quantos pegaram na cabeça), precisão em combate (dos tiros dados no meio de uma troca, quantos acertaram), precisão no spray (tiros de rifle em sequência de 3 ou mais) e contra-strafe (dos tiros de rifle em combate, quantos saíram com o boneco parado). Partidas lidas antes dessa coleta entram só com os abates na cabeça, e só quando não há nenhuma partida nova.</dd>'
   +'<dt>Utilidade</dt><dd>Junta, com o mesmo peso: flashes que viraram assistência, HEs com 50 ou mais de dano e molotovs com 30 ou mais de dano (tudo por round), e inimigos cegados por flash lançada.</dd>'
   +'<dt>Posicionamento</dt><dd>70% pela sobrevivência (quantos rounds você sai vivo) e 30% pelos rounds em que você faz 2 abates ou mais e sai vivo, comparados com o jogador médio.</dd>'
   +'<dt>Estrelas (Estrelinha)</dt><dd>Quantas vezes o jogador foi o MVP da rodada.</dd>'
@@ -2660,16 +2684,26 @@ function renderConta(){
  el('opcoes').innerHTML='<div class="dr-hero"><button class="dr-x" aria-label="Fechar">'+ic('<path d="M6 6l12 12M18 6L6 18"/>')+'</button><div class="dr-id"><div><h3>Opções</h3><div class="dr-tags"><span class="tagx">Minha conta</span></div></div></div></div>'
   +'<div class="opc-body"><div class="fonte-sec" id="fonte-sec"></div>'+contaPrivacidade()+'</div>';
 }
+function zonaDesligar(){
+ return '<details class="pz-i"><summary><span><b>Desligar a leitura das partidas</b><small>Para de ler as suas partidas e apaga as estatísticas guardadas.</small></span>'+ic('<path d="M6 9l6 6 6-6"/>')+'</summary><div class="pz-c">'
+  +'<p class="note" style="margin:0 0 10px">O robô para de ler as suas partidas e todas as suas estatísticas são apagadas: notas, histórico, conquistas e alastro. A sua conta continua. Para voltar, é só ligar de novo (a Steam só devolve as últimas 8 partidas).</p>'
+  +'<div class="campo"><label for="desligar-conf">Digite DESLIGAR para confirmar</label><input id="desligar-conf" type="text" autocomplete="off" spellcheck="false"></div>'
+  +'<button class="btn red sm" type="button" data-acao="fonte-desligar">Desligar e apagar</button><p class="msg" id="msg-desligar"></p></div></details>';
+}
 function contaPrivacidade(){
  var pub=!!(ME&&ME.publico);
  return '<div class="priv-sec" id="priv-sec"><h4>Quem vê o meu perfil</h4>'
   +'<div class="fonte-on"><div><b>'+(pub?'Perfil público':'Perfil fechado')+'</b><small>'+(pub?'Qualquer pessoa com o link vê o seu perfil e as suas partidas.':'Só você e quem é do seu time veem o seu perfil e as suas partidas.')+'</small></div>'
   +'<span class="fonte-bt"><button class="btn g sm" type="button" data-acao="priv-trocar" data-v="'+(pub?'0':'1')+'">'+(pub?'Fechar meu perfil':'Abrir ao público')+'</button></span></div>'
   +'<p class="msg" id="msg-priv"></p>'
-  +'<h4>Meus dados</h4><p class="note" style="margin:0 0 10px">Um arquivo com tudo o que o Ranko guarda sobre você.</p><button class="btn g sm" type="button" data-acao="baixar-dados">Baixar meus dados</button>'
-  +'<div class="perigo"><h4>Apagar minha conta</h4><p class="note" style="margin:0 0 10px">Apaga o seu perfil, as suas partidas, o rating, as suas funções e o plano. Nas telas de partida dos amigos você passa a aparecer só como “Jogador”. Não tem volta.</p>'
+  +'<h4>Meus dados</h4><div class="fonte-on"><div><b>Cópia dos seus dados</b><small>Um arquivo com tudo o que o Ranko guarda sobre você.</small></div><span class="fonte-bt"><button class="btn g sm" type="button" data-acao="baixar-dados">Baixar meus dados</button></span></div>'
+  +'<h4>Sessão</h4><div class="fonte-on"><div><b>Conectado como '+esc(ME&&ME.nome?ME.nome:'você')+'</b><small>Sair desconecta este navegador. Os seus dados continuam guardados.</small></div><span class="fonte-bt"><button class="btn g sm" id="sair" type="button">Sair</button></span></div>'
+  +'<div class="perigo pz"><h4>Zona de perigo</h4><p class="note" style="margin:0 0 12px">Ações que apagam dados e não têm volta. Abra a que você quer e confirme digitando a palavra pedida.</p>'
+  +'<div id="pz-fonte"></div>'
+  +'<details class="pz-i"><summary><span><b>Apagar minha conta</b><small>Apaga o perfil, as partidas, o rating, as funções e o plano.</small></span>'+ic('<path d="M6 9l6 6 6-6"/>')+'</summary><div class="pz-c">'
+  +'<p class="note" style="margin:0 0 10px">Apaga o seu perfil, as suas partidas, o rating, as suas funções e o plano. Nas telas de partida dos amigos você passa a aparecer só como “Jogador”. Não tem volta.</p>'
   +'<div class="campo"><label for="apagar-conf">Digite APAGAR para confirmar</label><input id="apagar-conf" type="text" autocomplete="off" spellcheck="false"></div>'
-  +'<button class="btn red sm" type="button" data-acao="apagar-conta">Apagar minha conta</button><p class="msg" id="msg-apagar"></p></div>'
+  +'<button class="btn red sm" type="button" data-acao="apagar-conta">Apagar minha conta</button><p class="msg" id="msg-apagar"></p></div></details></div>'
   +'<p class="note"><a href="#/privacidade">Política de privacidade e cookies</a></p></div>';
 }
 function abrirOpcoes(aba){
@@ -2752,7 +2786,7 @@ function irParaConvite(txt){
  location.hash='#/convite/'+m[1];
 }
 document.addEventListener('click',function(e){
- if(e.target.id==='sair'){if(!armar(e.target,'Confirmar?'))return;sairConta();return}
+ if(e.target.closest&&e.target.closest('#sair')){var bs=e.target.closest('#sair');if(!armar(bs,'Sair mesmo?'))return;sairConta();return}
  var lg=e.target.closest('a.js-login,#entrar,#gate-go');
  if(lg){try{localStorage.setItem('painel_volta',ROTA.t==='home'?'#/':(location.hash||'#/'))}catch(x){}return}
  var s=e.target.closest('[data-sec]');
@@ -2837,9 +2871,9 @@ document.addEventListener('click',function(e){
   });return;
  }
  if(ac==='fonte-desligar'){
-  if(!armar(b,'Apagar tudo e desligar?'))return;
-  b.disabled=true;
-  chamar('POST','/eu/fonte/remover',{},true).then(function(r){b.disabled=false;if(!r.ok){dizer('msg-fonte',r.j.erro||'Não consegui desligar agora.',false);return}location.hash='#/jogador/'+SES.sid;carregarFonte()});return;
+  if(String((el('desligar-conf')||{}).value||'').trim().toUpperCase()!=='DESLIGAR'){dizer('msg-desligar','Digite DESLIGAR no campo para confirmar.',false);return}
+  b.disabled=true;dizer('msg-desligar','Desligando…',true);
+  chamar('POST','/eu/fonte/remover',{},true).then(function(r){b.disabled=false;if(!r.ok){dizer('msg-desligar',r.j.erro||'Não consegui desligar agora.',false);return}location.hash='#/jogador/'+SES.sid;carregarFonte()});return;
  }
 
  if(ac==='cartao'){
@@ -2987,10 +3021,10 @@ function numerosMira(m){
  if(!m||(m.hac==null&&m.acc==null&&m.spr==null&&m.cst==null))return '';
  function c(v,med,l,t){return '<div class="jg-c"><b>'+(v==null?'–':f(v*100,0)+'%')+'</b><span>'+l+' - média '+med+'</span>'+info(t)+'</div>'}
  return '<h4>Como a sua Mira é calculada</h4><div class="jg jg4">'
-  +c(m.hac,'19,5%','dos seus acertos são na cabeça','Precisão na cabeça: dos tiros que acertaram um inimigo, quantos pegaram na cabeça ou no pescoço. Escopeta fica de fora.')
+  +c(m.hac,'19,5%','dos seus acertos são na cabeça','Precisão na cabeça: dos tiros que acertaram um inimigo, quantos pegaram na cabeça ou no pescoço. AWP e escopeta ficam de fora.')
   +c(m.acc,'33%','dos tiros em combate acertam','Precisão em combate: só conta tiro dado no meio de uma troca (até 1 s de um acerto seu). Tiro em smoke, spam e prefire ficam de fora.')
   +c(m.spr,'34%','dos tiros de spray acertam','Precisão no spray: tiros de rifle em sequência de 3 ou mais, contando só os sprays que acertaram alguém.')
-  +c(m.cst,'76%','dos tiros saem com o boneco parado','Contra-strafe: dos tiros de rifle e sniper em combate, quantos saíram com o boneco lento o bastante para ser preciso.')
+  +c(m.cst,'76%','dos tiros saem com o boneco parado','Contra-strafe: dos tiros de rifle em combate, quantos saíram com o boneco lento o bastante para ser preciso (34% da velocidade máxima da arma ou menos).')
   +'</div>';
 }
 function numerosRobo(jg){
