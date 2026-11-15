@@ -1130,7 +1130,8 @@ a.dx-j:hover span{text-decoration:underline}
 .jg-c b{font:800 22px/1.1 var(--body);font-variant-numeric:tabular-nums}
 .jg-c span:not(.ii){color:var(--muted);font-size:13.5px}
 .jg-c .ii{position:absolute;top:12px;right:12px;margin:0}
-@media(max-width:900px){.jg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.jg.jg4{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:22px}
+@media(max-width:900px){.jg,.jg.jg4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.kp{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* ----- fechamento da semana e do mês (14/11) ----- */
@@ -2397,7 +2398,7 @@ function glossario(){
   +'<dt>Como funcionam as notas de 0 a 100</dt><dd>Cada número seu é comparado com o de um jogador médio. Na média, a nota é 50. Acima da média ela sobe, abaixo ela desce, e quanto mais longe da média, mais ela anda. Ficar bem acima da média em tudo dá por volta de 85; só nível profissional chega perto de 100. Com poucas partidas a nota fica mais perto de 50, para um jogo bom ou ruim não decidir sozinho.</dd>'
   +'<dt>Impacto (no gráfico do perfil)</dt><dd>O Rating HLTV na mesma escala das notas: 1,00 (a média) vira 50, 1,20 vira por volta de 84 e 1,40 vira por volta de 98.</dd>'
   +'<dt>ADR e Headshots</dt><dd>ADR é o dano médio que você causa nos inimigos por rodada. Headshots é a porcentagem dos seus abates que foram na cabeça.</dd>'
-  +'<dt>Mira</dt><dd>Junta quatro números com o mesmo peso: abates na cabeça (dos seus abates, quantos foram na cabeça), acertos na cabeça (dos tiros que acertaram um inimigo, quantos pegaram na cabeça), precisão no spray (dos tiros de rifle em sequência de 3 ou mais, quantos acertaram) e contra-strafe (quando você estava andando e deu o primeiro tiro, quantas vezes já tinha parado o boneco). Partidas lidas antes de 14/11 entram só com os abates na cabeça.</dd>'
+  +'<dt>Mira</dt><dd>Junta quatro números com o mesmo peso: precisão na cabeça (dos tiros que acertaram um inimigo, quantos pegaram na cabeça), precisão em combate (dos tiros dados no meio de uma troca, quantos acertaram), precisão no spray (tiros de rifle em sequência de 3 ou mais) e contra-strafe (dos tiros de rifle e sniper em combate, quantos saíram com o boneco parado). Partidas lidas antes dessa coleta entram só com os abates na cabeça, e só quando não há nenhuma partida nova.</dd>'
   +'<dt>Utilidade</dt><dd>Junta, com o mesmo peso: flashes que viraram assistência, HEs com 50 ou mais de dano e molotovs com 30 ou mais de dano (tudo por round), e inimigos cegados por flash lançada.</dd>'
   +'<dt>Posicionamento</dt><dd>70% pela sobrevivência (quantos rounds você sai vivo) e 30% pelos rounds em que você faz 2 abates ou mais e sai vivo, comparados com o jogador médio.</dd>'
   +'<dt>Estrelas (Estrelinha)</dt><dd>Quantas vezes o jogador foi o MVP da rodada.</dd>'
@@ -2981,6 +2982,17 @@ function observacaoRobo(p,fn){
  if(sug===tr)return '<p class="note" style="margin:0 0 12px"><b>Os seus números confirmam:</b> o seu jogo bate com '+SUG_ROT[sug]+'.</p>';
  return '<p class="note" style="margin:0 0 12px"><b>Você marcou '+TR_F[tr][0]+', mas nas suas últimas partidas o seu jogo lembra '+SUG_ROT[sug]+'.</b> É só uma observação do robô (experimental): a função continua sendo a que você marcou.</p>';
 }
+/* os quatro números que formam a nota de Mira, ao lado da média dos jogadores (a mesma referência do Leetify) */
+function numerosMira(m){
+ if(!m||(m.hac==null&&m.acc==null&&m.spr==null&&m.cst==null))return '';
+ function c(v,med,l,t){return '<div class="jg-c"><b>'+(v==null?'–':f(v*100,0)+'%')+'</b><span>'+l+' - média '+med+'</span>'+info(t)+'</div>'}
+ return '<h4>Como a sua Mira é calculada</h4><div class="jg jg4">'
+  +c(m.hac,'19,5%','dos seus acertos são na cabeça','Precisão na cabeça: dos tiros que acertaram um inimigo, quantos pegaram na cabeça ou no pescoço. Escopeta fica de fora.')
+  +c(m.acc,'33%','dos tiros em combate acertam','Precisão em combate: só conta tiro dado no meio de uma troca (até 1 s de um acerto seu). Tiro em smoke, spam e prefire ficam de fora.')
+  +c(m.spr,'34%','dos tiros de spray acertam','Precisão no spray: tiros de rifle em sequência de 3 ou mais, contando só os sprays que acertaram alguém.')
+  +c(m.cst,'76%','dos tiros saem com o boneco parado','Contra-strafe: dos tiros de rifle e sniper em combate, quantos saíram com o boneco lento o bastante para ser preciso.')
+  +'</div>';
+}
 function numerosRobo(jg){
  if(!jg||!jg.partidas)return '';
  function c(v,l,t){return '<div class="jg-c"><b>'+v+'</b><span>'+l+'</span>'+info(t)+'</div>'}
@@ -3073,7 +3085,7 @@ function montarJogo(p,fn,propria){
  var jg=p&&p.jogo;
  if(!jg||!jg.partidas){box.style.display='none';return}
  box.style.display='';
- box.innerHTML='<h4>O que já é possível ver no seu jogo</h4>'+numerosRobo(jg);
+ box.innerHTML=numerosMira(p&&p.mira_det)+'<h4>O que já é possível ver no seu jogo</h4>'+numerosRobo(jg);
 }
 function salvarFuncao(b){
  if(!FF)return;
