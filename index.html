@@ -764,6 +764,84 @@ body.modo-pro .spot{grid-template-columns:minmax(0,1fr)}
 .an-tp{display:grid;grid-template-columns:116px minmax(0,1fr);align-items:center;gap:10px}
 .an-tl{color:var(--muted);font:700 12.5px var(--body);letter-spacing:.02em}
 .an-rds{display:flex;flex-wrap:wrap;gap:6px}
+.lr{margin-top:14px}
+.lr-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px}
+.lr-lab{display:grid;grid-template-rows:30px 30px 16px;gap:4px;font-size:11.5px;color:var(--muted);align-items:center}
+.lr-lab span:last-child{grid-row:2}
+.lr-ts{display:grid;gap:10px}
+.lr-t{padding:10px 10px 6px;border-radius:10px;background:rgba(var(--w),.03)}
+.lr-h{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 10px;font-size:12.5px;color:var(--muted)}.lr-h b{color:var(--text);font:800 15px var(--disp)}
+.lr-g{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:3px}
+.lr-c{display:grid;grid-template-rows:30px 30px 16px;gap:4px;min-width:0;position:relative;padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;border-radius:6px}
+.lr-c>span{display:flex;background:rgba(var(--w),.035)}
+.lr-c>span:first-child{border-bottom:1px solid var(--line2);border-radius:5px 5px 0 0}.lr-c>span:nth-child(2){border-radius:0 0 5px 5px}
+.lr-b{flex:1;display:flex;align-items:center;justify-content:center;border-radius:inherit;color:#111;font:900 11px var(--body)}
+.lr-ct,.lr-b.lr-ct{background:#4aa3ff}.lr-tr,.lr-b.lr-tr{background:#f0a43a}
+.lr-c small{text-align:center;font-size:10.5px;color:var(--dim)}
+.lr-ab{color:var(--red-text,var(--red))!important;font-weight:700}
+.lr-vz{cursor:default}.lr-vz>span{background:transparent;outline:1px dashed var(--line);outline-offset:-1px}
+.lr-fim::after{content:'⚑';position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--text)}
+button.lr-c:hover>span,button.lr-c:focus-visible>span{filter:brightness(1.15)}
+button.lr-c:focus-visible{outline:2px solid var(--t);outline-offset:2px}
+button.lr-c[aria-pressed] small{color:var(--text);font-weight:800}button.lr-c[aria-pressed]>span{box-shadow:inset 0 0 0 2px rgba(var(--w),.55)}
+.lr-leg{margin-top:12px}.lr-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}.lr-leg b{color:var(--text)}
+@media(max-width:640px){.lr-lab{grid-template-rows:24px 24px 14px;font-size:10.5px}.lr-c{grid-template-rows:24px 24px 14px}.lr-c small{font-size:9.5px}}
+.apx{gap:16px;padding:20px}
+.apx h4{margin:0;font:800 17px/1.2 var(--disp)}
+.apx-c{padding:20px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel2);min-width:0}
+.apx-h{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.apx-sub{margin:6px 0 4px;color:var(--muted);font-size:13.5px}
+.apx-k{display:block;color:var(--muted);font:600 13px var(--body)}
+/* placar de transmissão */
+.dx>.apx-sb{margin-bottom:14px}
+.apx-sb{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:24px;padding:22px 26px;border:1px solid var(--line);border-radius:var(--r-lg);background:linear-gradient(90deg,rgba(74,163,255,.10),rgba(var(--w),.02) 45%,rgba(240,164,58,.09))}
+.apx-tm{display:block;margin:2px 0 8px;font:800 19px/1.2 var(--disp)}
+.apx-lados{display:flex;gap:6px;flex-wrap:wrap}
+.apx-lado{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:7px;font:800 12px var(--body);letter-spacing:.03em}
+.apx-ct{background:rgba(74,163,255,.16);color:#4aa3ff}.apx-tr{background:rgba(240,164,58,.16);color:#f0a43a}
+[data-modo=claro] .apx-ct{color:#1f6fc0}[data-modo=claro] .apx-tr{color:#a8640b}
+.apx-pl{display:flex;align-items:center;gap:14px;font:900 56px/1 var(--disp);letter-spacing:-.02em}
+.apx-pl i{font-style:normal;color:var(--dim);font-size:40px}
+.apx-d .apx-nos{color:var(--red-text)}.apx-v .apx-nos{color:var(--ct-text,var(--ct))}
+.apx-dir{text-align:right}.apx-res{display:block;margin:2px 0 6px;font:800 19px var(--disp)}
+.apx-d .apx-res{color:var(--red-text)}.apx-v .apx-res{color:var(--ct-text,var(--ct))}
+/* como o placar andou */
+.apx-dois{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+.apx-leg{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--muted);font-size:12px}
+.apx-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.apx-ct-bg{background:rgba(74,163,255,.45)}.apx-tr-bg{background:rgba(240,164,58,.45)}.apx-o{border:1.5px solid var(--muted)}
+.apx-fd-t{color:var(--red)}.apx-cl-t{color:var(--t)}
+.apx-wm{display:block;width:100%;height:auto;margin-top:8px;overflow:visible}
+.apx-f-ct{fill:rgba(74,163,255,.08)}.apx-f-tr{fill:rgba(240,164,58,.10)}
+.apx-ft{font:800 12px var(--body)}.apx-ct-t{fill:#4aa3ff}.apx-tr-t{fill:#f0a43a}
+.apx-zero{stroke:rgba(var(--w),.22)}
+.apx-l{fill:none;stroke:var(--text);stroke-width:2.5;stroke-linejoin:round}
+.apx-p{stroke-width:2}
+.rdp{cursor:pointer;outline:0}.rdp:hover .apx-p,.rdp:focus-visible .apx-p,.rdp[aria-pressed] .apx-p{stroke-width:3.5;r:7}
+.apx-fd{fill:var(--red)}.apx-cl{fill:var(--t);font-size:12px}
+.apx-n{fill:var(--dim);font:500 10.5px var(--body)}
+/* por que perdeu */
+.apx-rel{margin:10px 0 14px;display:grid;gap:6px}.apx-rel p{margin:0;font-size:14.5px;line-height:1.45}
+.apx-pz{display:flex;align-items:center;gap:16px}
+.apx-pz-l{display:grid;gap:6px;font-size:13px}.apx-pz-l i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+.apx-cmp{display:grid;grid-template-columns:minmax(90px,auto) 1fr 42px;gap:8px 10px;align-items:center;margin-top:16px;font-size:12.5px;color:var(--muted)}
+.apx-cmp b{color:var(--text);text-align:right}
+.apx-er{display:grid;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.apx-er b{display:block;font:700 13.5px var(--body)}.apx-er small{color:var(--muted);font-size:12.5px}
+/* cada jogador: mortes para a esquerda, abates para a direita */
+.apx-jw{margin-top:12px;overflow-x:auto}
+.apx-j{display:grid;grid-template-columns:150px minmax(110px,1fr) minmax(110px,1fr) 250px;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);min-width:640px}
+.apx-jh{border-top:0;padding:0 0 4px;color:var(--dim);font:600 11.5px var(--body);letter-spacing:.03em}
+.apx-nm{display:flex;align-items:center;gap:10px;font-weight:700;min-width:0}
+.apx-b{display:flex;align-items:center;gap:8px}.apx-b i{display:block;height:14px;border-radius:4px}
+.apx-dr{justify-content:flex-end;text-align:right}
+.apx-st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.apx-jh .apx-st span{font-size:11px}
+.apx-dg{margin:0 0 10px 160px;color:var(--muted);font-size:13px}
+@media(max-width:760px){.apx-j{grid-template-columns:1fr 1fr;grid-template-areas:"nm st" "dr ab";min-width:0;row-gap:8px}.apx-j>.apx-nm{grid-area:nm}.apx-j>.apx-st{grid-area:st}.apx-j>.apx-dr{grid-area:dr}.apx-j>.apx-b:not(.apx-dr){grid-area:ab}
+ .apx-jh{grid-template-areas:"nm st";grid-template-rows:auto}.apx-jh>.apx-dr,.apx-jh>span:nth-child(3){display:none}.apx-st{gap:2px;font-size:13px}.apx-jh .apx-st span{font-size:10px}}
+@media(max-width:1100px){.apx-dois{grid-template-columns:1fr}}
+@media(max-width:640px){.apx-sb{grid-template-columns:1fr auto;gap:14px;padding:18px}.apx-dir{grid-column:1/-1;text-align:left;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.apx-pl{font-size:40px}.apx-pl i{font-size:28px}.apx-dg{margin-left:0}}
 .an-rd-det{margin:12px 0 0;padding:10px 12px;border:1px dashed var(--line2);border-radius:var(--r-btn);color:var(--muted);font-size:14px}
 .an-rd-det.on{border-style:solid;color:var(--text);background:rgba(var(--w),.03)}
 @media(max-width:640px){.an-tp{grid-template-columns:minmax(0,1fr)}}
@@ -859,7 +937,7 @@ span.rt>b{display:inline-flex;align-items:center;padding:1px 15px 0 11px;font-we
 .hx-sum{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 14px;color:var(--muted);font:500 14px var(--body)}
 .hx-sum b{color:var(--text);font-weight:800}
 .hx-l{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
-.hx-r{display:grid;grid-template-columns:150px 64px 74px 96px 56px 56px 56px 56px 60px minmax(110px,1fr);align-items:center;gap:8px;padding:11px 18px;border-bottom:1px solid var(--line);position:relative;color:var(--text);text-decoration:none}
+.hx-r{display:grid;grid-template-columns:132px 50px 66px 92px 48px 50px 44px 40px 44px 112px;justify-content:space-between;gap:12px;align-items:center;gap:8px;padding:11px 18px;border-bottom:1px solid var(--line);position:relative;color:var(--text);text-decoration:none}
 .hx-r:last-child{border-bottom:0}
 a.hx-r{cursor:pointer;transition:background .15s}
 a.hx-r:focus-visible{outline:2px solid var(--t);outline-offset:-2px}
@@ -1088,6 +1166,55 @@ a.dx-j:hover span{text-decoration:underline}
 /* Analyst + Coach: as duas ferramentas lado a lado, o erro do Analyst puxa o treino do Coach */
 .ac-k{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font:700 12.5px var(--body);letter-spacing:.06em;text-transform:uppercase}
 .ac-k em{font-style:normal;letter-spacing:.02em;text-transform:none;padding:1px 8px;border:1px solid var(--line2);border-radius:999px;font-weight:600}
+.ap-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.ap-seg{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--line2);border-radius:12px;flex:none}
+.ap-seg span{display:grid;padding:6px 14px;border-radius:9px;font:700 13px/1.2 var(--body)}
+.ap-seg span small{font:500 11.5px var(--body);opacity:.8}
+.ap-seg .on{background:rgba(var(--t-rgb),.14);color:var(--t-text)}
+.ap-seg .off{color:var(--dim)}
+.ap{display:grid;gap:16px}
+.ap-sub{margin:0;color:var(--muted);font-size:14px}
+.ap-c{padding:20px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel2);min-width:0}
+.ap-k{display:block;color:var(--muted);font:600 13px var(--body)}
+.ap-v{display:block;margin:6px 0 8px;font:800 32px/1 var(--disp);letter-spacing:-.02em}
+.ap-neg{color:var(--red-text)}
+.ap-c small{color:var(--dim);font-size:12.5px}
+.ap-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.ap-kpi{display:flex;align-items:center;gap:14px}
+.ap-kpi small{display:block;margin-top:4px}
+.ap-vde{display:flex;height:8px;width:150px;max-width:100%;border-radius:5px;overflow:hidden;gap:2px}
+.ap-dn{flex:none}.ap-dn-t{font:800 16px var(--disp);fill:var(--text)}
+.ap-bar{border-radius:9px;background:rgba(var(--w),.08);overflow:hidden}.ap-bar i{display:block;height:100%;border-radius:9px}
+.ap-dois{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:16px}
+.ap-ln{display:block;width:100%;height:auto;margin-top:12px;overflow:visible}
+.ap-ln-50{stroke:rgba(var(--w),.16);stroke-dasharray:4 4}
+.ap-ln-t{fill:var(--dim);font:500 12px var(--body)}
+.ap-ln-a{fill:var(--t);opacity:.1}.ap-ln-l{fill:none;stroke:var(--t);stroke-width:2.5;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.ap-lados{display:grid;gap:20px;margin:18px 0 16px}
+.ap-lado-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.ap-lado-h>b{font:800 15px var(--disp)}.ap-lado-h span b{font:800 20px var(--disp)}
+.ap-nota{margin:8px 0 0;color:var(--muted);font-size:13.5px}
+.ap-nota b{color:var(--text)}
+.ap-h{margin:0 0 4px;font:800 18px/1.2 var(--disp)}
+.ap-er{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(120px,240px) auto;gap:18px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.ap-er:nth-of-type(1){border-top:0}
+.ap-er b{display:block;font:800 15px var(--body)}.ap-er small{display:block;margin-top:3px;color:var(--muted);font-size:13.5px}
+.ap-num{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--red-rgb),.14);color:var(--red-text);font:800 12px var(--body)}
+.ap-coach{display:inline-flex;align-items:center;height:28px;padding:0 10px;border:1px dashed var(--line2);border-radius:8px;color:var(--muted);font:700 11.5px var(--body);white-space:nowrap}
+.ap-tw{overflow-x:auto}
+.ap-tb{width:100%;border-collapse:collapse;min-width:720px}
+.ap-tb th{padding:0 10px 10px;text-align:left;color:var(--dim);font:700 11.5px var(--body);letter-spacing:.04em;text-transform:uppercase}
+.ap-tb th small{text-transform:none;letter-spacing:0;font-weight:500}
+.ap-tb td{padding:11px 10px;border-top:1px solid var(--line);vertical-align:middle}
+.ap-nm{display:flex;align-items:center;gap:10px;font-weight:700}
+.ap-mu{color:var(--muted)}
+.ap-dv{display:grid;grid-template-columns:26px 1fr 1fr 26px;gap:8px;align-items:center;min-width:240px}
+.ap-dv>b:first-child{text-align:right}
+.ap-dv span{display:flex;height:8px}.ap-dv-l{justify-content:flex-end}
+.ap-dv span i{display:block;height:100%;border-radius:5px}.ap-dv-l i{background:var(--ct)}.ap-dv-r i{background:var(--red)}
+.ap-nb{display:grid;grid-template-columns:minmax(80px,130px) auto;gap:10px;align-items:center}
+@media(max-width:1100px){.ap-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ap-dois{grid-template-columns:1fr}}
+@media(max-width:640px){.ap-kpis{grid-template-columns:1fr}.ap-er{grid-template-columns:28px minmax(0,1fr)}.ap-er .ap-bar,.ap-er .ap-coach{grid-column:2}}
 .ac-fx{display:grid;grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);align-items:stretch;margin:0 0 20px}
 .ac-f{display:grid;gap:4px;align-content:start;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel2)}
 .ac-f b{font:800 20px/1.2 var(--disp);letter-spacing:-.01em}
@@ -2297,10 +2424,8 @@ function desenharFechamento(j){
  box.innerHTML='<div class="sh"><div><h2>Fechamento</h2><p>A semana vai de sábado 0h até sexta 23h59, e o mês vai do dia 14 até o dia 13. Quando fecham, quem teve o maior Rating HLTV (com pelo menos '+cs.semana.minimo+' partidas na semana ou '+cs.mes.minimo+' no mês) carregou o time'+(pro?'':', e quem somou mais pontos de alastro é o alastrador')+'. O resultado fica guardado.</p></div></div>'
   +'<div class="fc-grid">'+bloco('semana')+bloco('mes')+'</div>';
 }
-var PRO_HTML='<section id="pro" class="pro-sec"><div class="sh menor"><div><h2>Analyst + Coach <span class="pro-b">PRO</span></h2><p>O Analyst lê as partidas e mostra onde o time erra. O Coach pega cada erro e transforma em treino.</p></div></div>'
- +'<div class="ac-fx" aria-label="Como as duas ferramentas trabalham juntas"><div class="ac-f"><span class="ac-k">Ranko Analyst</span><b>O que aconteceu</b><small>Lê os rounds de cada partida em que 3 ou mais do time jogaram.</small></div>'
- +'<svg class="ac-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
- +'<div class="ac-f ac-co"><span class="ac-k">Ranko Coach <em>em breve</em></span><b>O que treinar</b><small>Para cada erro do Analyst, um exercício e uma mudança de comportamento.</small></div></div>'
+var PRO_HTML='<section id="pro" class="pro-sec"><div class="sh menor ap-top"><div><h2>Análise do time <span class="pro-b">PRO</span></h2><p id="ap-sub">O Analyst lê as partidas e mostra onde o time perde rounds. O Coach transforma cada problema em treino.</p></div>'
+ +'<div class="ap-seg" role="group" aria-label="Ferramentas do Pro"><span class="on" title="Lê os rounds de cada partida em que 3 ou mais do time jogaram">Analyst <small>o que aconteceu</small></span><span class="off" title="Para cada problema do Analyst, um exercício e uma mudança de comportamento">Coach <small>o que treinar - em breve</small></span></div></div>'
  +'<div id="an-box" class="an-box"><div class="vazio">Carregando a análise do time…</div></div>'
  +'<p class="note">O modo Simples continua igual. O Pro só acrescenta estas ferramentas.</p></section>';
 function coachCel(e){return '<div class="ac-cel"><span class="ac-k">Coach - em breve</span><b>Treino para '+esc(e.titulo.charAt(0).toLowerCase()+e.titulo.slice(1))+'</b></div>'}
@@ -2384,30 +2509,105 @@ function faixaRounds(v){
   return '<div class="an-tp"><span class="an-tl">'+(i===0?'1º tempo':i===1?'2º tempo':'Prorrogação')+' - '+(g.l==='T'?'TR':'CT')+'</span><div class="an-rds">'+g.rs.map(function(r){return chipRound(r,v.jogadores)}).join('')+'</div></div>'}).join('')+'</div>';
 }
 // o: {time:true} = análise vista pelo time (sem diagnóstico pessoal); {semPlacar:true} = o placar já está na tela
+// layout de 16/11: placar de transmissão + "como o placar andou" + por que perdeu/ganhou + jogadores (abates x mortes)
+var COR_LADO={CT:'#4aa3ff',T:'#f0a43a'};
+function chipLado(l){return '<span class="apx-lado apx-'+(l==='T'?'tr':'ct')+'">'+(l==='T'?'TR - ataque':'CT - defesa')+'</span>'}
+function detRound(r,j){
+ var nm=function(s){var x=null;(j||[]).forEach(function(p){if(p.steam64===s)x=p});return x?x.nome:'?'};
+ var t=['Round '+r.n+' ('+(r.l.nos==='T'?'TR':'CT')+')',r.v==='nos'?'vitória':r.v==='eles'?'derrota':'sem resultado'];
+ if(r.pi)t.push('pistola');else t.push('compra '+r.c.nos+' contra '+r.c.eles);
+ if(r.ab)t.push(r.ab.por==='nos'?'primeiro duelo ganho':'primeiro duelo perdido');
+ if(r.dp==='nos')t.push('vantagem numérica desperdiçada');
+ r.cl.forEach(function(c){t.push('clutch 1x'+c.vs+' de '+nm(c.s)+(c.ganhou?' (venceu)':' (perdeu)'))});
+ if(r.semTrade.length)t.push('sem trade: '+r.semTrade.map(nm).join(', '));
+ return t.join(' - ');
+}
+// linha do tempo no estilo do placar do CS2, separada por tempo: em cima os rounds do seu time, embaixo os do adversário
+function linhaRounds(v){
+ var R=v.rounds,N=R.length;if(!N)return '';
+ var outro=function(l){return l==='T'?'CT':'T'};
+ var seg=[],cur=null;
+ R.forEach(function(r,i){if(!cur||cur.l!==r.l.nos){cur={l:r.l.nos,rs:[],ini:i};seg.push(cur)}cur.rs.push(r)});
+ var html=seg.map(function(sg,k){
+  var cap=k<2?12:3,tit=k<2?(k+1)+'º tempo':'Prorrogação '+(Math.floor((k-2)/2)+1);
+  var n=sg.rs.filter(function(r){return r.v==='nos'}).length,e=sg.rs.filter(function(r){return r.v==='eles'}).length;
+  var cel=sg.rs.map(function(r,j){
+   var w=r.v==='nos'?r.l.nos:outro(r.l.nos),m=r.cl.some(function(c){return c.ganhou})?'★':r.pi?'P':'';
+   var t='<span class="lr-b lr-'+(w==='T'?'tr':'ct')+'">'+m+'</span>',ult=sg.ini+j===N-1;
+   return '<button type="button" class="lr-c rdp'+(ult?' lr-fim':'')+'" data-t="'+esc(detRound(r,v.jogadores))+'" aria-label="'+esc(detRound(r,v.jogadores))+'"><span>'+(r.v==='nos'?t:'')+'</span><span>'+(r.v==='eles'?t:'')+'</span><small'+(r.ab&&r.ab.por==='eles'?' class="lr-ab"':'')+'>'+r.n+'</small></button>'}).join('');
+  for(var x=sg.rs.length;x<cap&&sg===seg[seg.length-1];x++)cel+='<span class="lr-c lr-vz" aria-hidden="true"><span></span><span></span><small>'+(sg.ini+x+1)+'</small></span>';
+  return '<div class="lr-t"><div class="lr-h"><span>'+tit+' - '+(sg.l==='T'?'TR':'CT')+'</span><b>'+n+' : '+e+'</b></div><div class="lr-row"><div class="lr-lab" aria-hidden="true"><span>Seu time</span><span>Adversário</span></div><div class="lr-g" style="--n:'+Math.max(cap,sg.rs.length)+'">'+cel+'</div></div></div>'}).join('');
+ return '<div class="lr"><div class="lr-ts">'+html+'</div></div>';
+}
+function graficoMomento(v){ /* diferença no placar round a round; fundo azul no tempo de CT e laranja no de TR */
+ var R=v.rounds,N=R.length;if(!N)return '';
+ var d=0,pts=[0];R.forEach(function(r){d+=r.v==='nos'?1:r.v==='eles'?-1:0;pts.push(d)});
+ var mx=Math.max(3,Math.max.apply(null,pts.map(Math.abs)));
+ var mob=window.innerWidth<640,W=mob?380:720,H=mob?200:230,P=mob?14:26,X=function(n){return P+n/N*(W-2*P)},Y=function(x){return H/2-x*(H/2-26)/mx};
+ var faixas='',ini=0;
+ R.forEach(function(r,i){if(i===N-1||R[i+1].l.nos!==r.l.nos){var l=r.l.nos;faixas+='<rect x="'+X(ini)+'" y="0" width="'+(X(i+1)-X(ini))+'" height="'+H+'" class="apx-f-'+(l==='T'?'tr':'ct')+'"/><text x="'+(X(ini)+8)+'" y="17" class="apx-ft apx-'+(l==='T'?'tr':'ct')+'-t">'+(l==='T'?'TR':'CT')+'</text>';ini=i+1}});
+ var lin=pts.map(function(y,i){return (i?'L':'M')+X(i).toFixed(1)+' '+Y(y).toFixed(1)}).join(' ');
+ var pt=R.map(function(r,i){var c=COR_LADO[r.l.nos]||'#888',x=X(i+1),y=Y(pts[i+1]);
+  return '<g class="rdp" tabindex="0" role="button" data-t="'+esc(detRound(r,v.jogadores))+'" aria-label="'+esc(detRound(r,v.jogadores))+'"><circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="12" fill="transparent"/><circle class="apx-p" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5.5" style="fill:'+(r.v==='nos'?c:'var(--panel)')+';stroke:'+c+'"/></g>'
+   +(r.ab&&r.ab.por==='eles'?'<circle cx="'+x.toFixed(1)+'" cy="'+(H+8)+'" r="3" class="apx-fd"/>':'')
+   +(r.cl.some(function(c){return c.ganhou})?'<text x="'+x.toFixed(1)+'" y="'+(y-10).toFixed(1)+'" text-anchor="middle" class="apx-cl">★</text>':'')
+   +((i+1)%(N>(mob?12:24)?(mob&&N>24?3:2):1)===0||i===0?'<text x="'+x.toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle" class="apx-n">'+(i+1)+'</text>':'')}).join('');
+ return '<svg class="apx-wm" viewBox="0 0 '+W+' '+(H+16)+'" role="img" aria-label="Como o placar andou, round a round">'+faixas
+  +'<line x1="'+P+'" x2="'+(W-P)+'" y1="'+Y(0)+'" y2="'+Y(0)+'" class="apx-zero"/>'
+  +'<path d="'+lin+'" class="apx-l"/>'+pt+'</svg>';
+}
+function pizzaRounds(fat){var t=fat.reduce(function(a,b){return a+b[0]},0);if(!t)return '';var a=0,R2=44,c=48;
+ return '<svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true">'+fat.filter(function(f){return f[0]}).map(function(f){var a0=a,a1=a+f[0]/t*2*Math.PI;a=a1;
+  if(f[0]===t)return '<circle cx="48" cy="48" r="44" style="fill:'+f[1]+'"/>';
+  return '<path d="M'+c+' '+c+' L'+(c+R2*Math.sin(a0)).toFixed(2)+' '+(c-R2*Math.cos(a0)).toFixed(2)+' A'+R2+' '+R2+' 0 '+(a1-a0>Math.PI?1:0)+' 1 '+(c+R2*Math.sin(a1)).toFixed(2)+' '+(c-R2*Math.cos(a1)).toFixed(2)+'Z" style="fill:'+f[1]+'"/>'}).join('')+'</svg>'}
+// cabeçalho da partida (placar de transmissão): usado na tela da partida e dentro da análise
+// c: {k:'Seu time', nome, nos, eles, res:'v'|'d'|'e'|'', lados:['CT','T'], rounds, mapa, data, id}
+function ladosDe(v){var l=[];(v.rounds||[]).forEach(function(r){if(r.l&&l.indexOf(r.l.nos)<0)l.push(r.l.nos)});return l}
+function ladosNoCab(v){var c=el('dx-cab'),l=c&&c.querySelector('.apx-lados');if(l)l.innerHTML=ladosDe(v).map(chipLado).join('')}
+function cabPartida(c){
+ var res=c.res||'';
+ return '<div class="apx-sb apx-'+(res||'e')+'"'+(c.id?' id="'+c.id+'"':'')+'><div>'+(c.k?'<span class="apx-k">'+esc(c.k)+'</span>':'')+'<b class="apx-tm">'+esc(c.nome)+'</b><div class="apx-lados">'+(c.lados||[]).map(chipLado).join('')+'</div></div>'
+  +'<div class="apx-pl"><span class="apx-nos">'+c.nos+'</span><i>:</i><span>'+c.eles+'</span></div>'
+  +'<div class="apx-dir"><span class="apx-k">Resultado</span><b class="apx-res">'+(res==='v'?'Vitória':res==='d'?'Derrota':res==='e'?'Empate':'Partida')+'</b><span class="apx-k">'+c.rounds+' rounds'+(c.mapa?' - '+esc(nomeMapa(c.mapa)):'')+(c.data?' - '+c.data:'')+'</span></div></div>';
+}
 function htmlAnalisePartida(v,o){
  o=o||{};
- var linhas=v.relatorio.filter(function(l){return !(o.semPlacar&&/^(Vitória|Derrota|Empate) por \d/.test(l))});
- var rel=linhas.length?'<ul class="an-rel">'+linhas.map(function(l){return '<li>'+esc(l)+'</li>'}).join('')+'</ul>':'';
- var leg='<p class="an-leg"><span class="lg"><i class="rd v mini"></i>Vitória</span><span class="lg"><i class="rd d mini"></i>Derrota</span><span class="lg"><i class="rd abn mini"></i>Primeiro duelo perdido</span><span class="lg"><i class="rd dpd mini"></i>Vantagem desperdiçada</span><span class="lg"><i class="rd clw mini"></i>Clutch vencido</span></p>';
- var rd=leg+faixaRounds(v)+'<p class="an-rd-det" aria-live="polite">Toque em um round para ver o que aconteceu nele.</p>';
+ var R=v.rounds,res=v.venceu===true?'v':v.venceu===false?'d':'e';
+ var lados=[];R.forEach(function(r){if(lados[lados.length-1]!==r.l.nos)lados.push(r.l.nos)});lados=lados.filter(function(l,i){return lados.indexOf(l)===i});
+ var nomeTime=o.nome||(ME&&ME.cla&&ME.cla.nome)||'';
+ var placar=o.semPlacar?'':cabPartida({k:nomeTime?'Seu time':'',nome:nomeTime||'Seu time',nos:v.placar.nos,eles:v.placar.eles,res:res,lados:ladosDe(v),rounds:R.length,mapa:v.mapa});
+ var leg='<div class="apx-leg lr-leg"><span><i class="lr-ct"></i>vencido como CT</span><span><i class="lr-tr"></i>vencido como TR</span><span><b>P</b> pistol</span><span><b class="apx-cl-t">★</b> clutch</span><span><b class="lr-ab">nº vermelho</b> 1º duelo perdido</span><span><b>⚑</b> fim da partida</span></div>';
+ var mom='<div class="apx-c apx-mom"><h4>Como o placar andou</h4>'+linhaRounds(v)+leg
+  +'<p class="an-rd-det" aria-live="polite">Toque em um round para ver o que aconteceu nele.</p></div>';
+ var perd=R.filter(function(r){return r.v==='eles'}),ganh=R.filter(function(r){return r.v==='nos'}).length;
+ var pa=perd.filter(function(r){return r.ab&&r.ab.por==='eles'}).length,pf=perd.filter(function(r){return r.ab&&r.ab.por==='nos'}).length,po=perd.length-pa-pf;
+ var fat=[[pa,'var(--red)','perdidos abrindo atrás'],[pf,'rgba(var(--red-rgb),.38)','perdidos abrindo na frente'],[po,'rgba(var(--w),.18)','perdidos sem duelo registrado'],[ganh,'var(--ct)','vencidos']];
+ var cn=v.coletivo&&v.coletivo.nos,ce=v.coletivo&&v.coletivo.eles;
+ var tr=function(c){return c&&c.mortes_tradaveis?c.mortes_trocadas/c.mortes_tradaveis:null};
+ var tn=tr(cn),te=tr(ce);
+ var linhas=v.relatorio.filter(function(l){return !/^(Vitória|Derrota|Empate) por \d/.test(l)});
  var er=v.erros.filter(function(e){return e.peso>0.05}).slice(0,3);
- var ers=er.length?'<ol class="an-erros">'+er.map(function(e){return '<li><b>'+esc(e.titulo)+'</b><span>'+esc(e.texto)+'</span></li>'}).join('')+'</ol>':'<p class="note">Nenhum erro coletivo se destacou nesta partida.</p>';
- var tb='<div class="hist-w"><table class="hist an-tb"><thead><tr><th>Jogador</th><th>Abates / mortes</th><th>1º duelo (ganhou / perdeu)</th><th>Trades feitos</th><th>Mortes sem trade</th><th>Clutches</th></tr></thead><tbody>'
-  +v.jogadores.slice().sort(function(a,b){return b.abates-a.abates}).map(function(p){
-   var o2={steam64:p.steam64,apelido:p.nome,avatar:p.avatar};
-   return '<tr><td><span class="pj">'+av(o2,'sm')+esc(p.nome)+'</span></td><td>'+p.abates+' / '+p.mortes+'</td><td>'+p.aberturas_ganhas+' / '+p.aberturas_perdidas+'</td><td>'+p.trades_feitos+'</td><td>'+p.mortes_sem_trade+' de '+p.mortes_tradaveis+'</td><td>'+p.clutches_ganhos+' de '+p.clutches+'</td></tr>'
-   +(!o.time&&p.diagnostico&&p.diagnostico.length?'<tr class="an-dg"><td colspan="6">'+p.diagnostico.map(esc).join(' ')+'</td></tr>':'')}).join('')
-  +'</tbody></table></div>';
- return '<div class="an-det">'+(rel?'<div class="an-col an-lead"><h4>Por que '+(v.venceu===false?'perdeu':'ganhou')+'</h4>'+rel+'</div>':'')
-  +'<div class="an-col"><h4>Rounds</h4>'+rd+'</div>'
-  +'<div class="an-col"><h4>Erros coletivos da partida</h4>'+ers+'</div>'
-  +'<div class="an-col"><h4>Cada jogador</h4>'+tb+'</div></div>';
+ var porque='<div class="apx-c"><h4>Por que '+(v.venceu===false?'perdeu':v.venceu===true?'ganhou':'empatou')+'</h4>'
+  +(linhas.length?'<div class="apx-rel">'+linhas.map(function(l){return '<p>'+esc(l)+'</p>'}).join('')+'</div>':'')
+  +'<div class="apx-pz">'+pizzaRounds(fat)+'<div class="apx-pz-l">'+fat.filter(function(f){return f[0]}).map(function(f){return '<span><i style="background:'+f[1]+'"></i>'+f[0]+' '+f[2]+'</span>'}).join('')+'</div></div>'
+  +(tn!=null&&te!=null?'<div class="apx-cmp"><span>Trocas do time</span>'+apBarra(tn,'var(--ct)',8)+'<b>'+Math.round(tn*100)+'%</b><span>Adversário</span>'+apBarra(te,'var(--red)',8)+'<b>'+Math.round(te*100)+'%</b></div>':'')
+  +(er.length?'<div class="apx-er">'+er.map(function(e){return '<div title="'+esc(e.texto)+'"><b>'+esc(e.titulo)+'</b><small>'+esc(e.texto)+'</small></div>'}).join('')+'</div>':'')+'</div>';
+ var J=v.jogadores.slice().sort(function(a,b){return b.abates-a.abates});
+ var mx=Math.max(1,Math.max.apply(null,J.map(function(p){return Math.max(p.abates,p.mortes)})));
+ var jg='<div class="apx-c"><div class="apx-h"><h4>Cada jogador</h4><div class="apx-leg"><span><i style="background:var(--red)"></i>mortes</span><span><i style="background:var(--ct)"></i>abates</span></div></div>'
+  +'<div class="apx-jw"><div class="apx-j apx-jh"><span></span><span class="apx-dr">mortes</span><span>abates</span><span class="apx-st"><span>1º duelo</span><span>trades</span><span>sem trade</span><span>clutches</span></span></div>'
+  +J.map(function(p){var o2={steam64:p.steam64,apelido:p.nome,avatar:p.avatar};
+   return '<div class="apx-j"><span class="apx-nm">'+av(o2,'sm')+esc(p.nome)+'</span><span class="apx-b apx-dr"><b>'+p.mortes+'</b><i style="width:'+(p.mortes/mx*100).toFixed(1)+'%;background:var(--red)"></i></span><span class="apx-b"><i style="width:'+(p.abates/mx*100).toFixed(1)+'%;background:var(--ct)"></i><b>'+p.abates+'</b></span>'
+    +'<span class="apx-st"><b>'+p.aberturas_ganhas+'/'+p.aberturas_perdidas+'</b><b>'+p.trades_feitos+'</b><b>'+p.mortes_sem_trade+'/'+p.mortes_tradaveis+'</b><b>'+p.clutches_ganhos+'/'+p.clutches+'</b></span></div>'
+    +(!o.time&&p.diagnostico&&p.diagnostico.length?'<p class="apx-dg">'+p.diagnostico.map(esc).join(' ')+'</p>':'')}).join('')+'</div></div>';
+ return '<div class="an-det apx">'+placar+'<div class="apx-dois">'+mom+porque+'</div>'+jg+'</div>';
 }
+document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('rdp')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
 // tocar (ou Enter) num round mostra o que aconteceu nele, logo abaixo da faixa
 document.addEventListener('click',function(e){
- var b=e.target.closest&&e.target.closest('.an-det button.rd');if(!b)return;
+ var b=e.target.closest&&e.target.closest('.an-det button.rd, .an-det .rdp');if(!b)return;
  var det=b.closest('.an-det'),box=det&&det.querySelector('.an-rd-det');if(!box)return;
- [].forEach.call(det.querySelectorAll('button.rd[aria-pressed]'),function(x){x.removeAttribute('aria-pressed')});
+ [].forEach.call(det.querySelectorAll('button.rd[aria-pressed],.rdp[aria-pressed]'),function(x){x.removeAttribute('aria-pressed')});
  b.setAttribute('aria-pressed','true');box.textContent=b.getAttribute('data-t');box.classList.add('on');
 });
 function desenharAnalise(){
@@ -2422,24 +2622,54 @@ function desenharAnalise(){
  var P=ANL.panorama;
  if(!P){box.innerHTML=h+'<h3>Panorama do time</h3><p>Ainda não há partidas analisadas. O robô analisa as próximas partidas em que 3 ou mais do time jogarem juntos.</p></article>';return}
  var c=P.coletivo,nAb=c.aberturas_positivas+c.aberturas_negativas;
- var tile=function(k,v,s){return '<div class="an-t"><span>'+k+'</span><b>'+v+'</b><small>'+s+'</small></div>'};
- var tiles='<div class="an-tiles">'
-  +tile('Partidas analisadas',P.partidas,P.vitorias+' '+(P.vitorias===1?'vitória':'vitórias')+' - '+P.derrotas+' '+(P.derrotas===1?'derrota':'derrotas'))
-  +tile('Primeiro duelo ganho',pc(c.aberturas_positivas,nAb),c.aberturas_positivas+' de '+nAb+' rounds')
-  +tile('Mortes trocadas',pc(c.mortes_trocadas,c.mortes_tradaveis),c.mortes_trocadas+' de '+c.mortes_tradaveis+' mortes')
-  +tile('Vantagem desperdiçada',c.vantagens_desperdicadas,c.vantagens_desperdicadas===1?'round perdido com vantagem':'rounds perdidos com vantagem')+'</div>';
- var lado='<p class="note">Rounds vencidos: de TR <b>'+P.lados.T.g+' de '+P.lados.T.n+'</b> ('+pc(P.lados.T.g,P.lados.T.n)+') - de CT <b>'+P.lados.CT.g+' de '+P.lados.CT.n+'</b> ('+pc(P.lados.CT.g,P.lados.CT.n)+'). Análise das últimas '+P.partidas+(P.partidas===1?' partida':' partidas')+' do time.</p>';
+ box.innerHTML=painelAnalyst(P,ANL.partidas||[]);
+}
+/* ---------- Analyst no modelo "painel de comando" (16/11) ---------- */
+function apDonut(p,cor,txt){var t=76,e=9,r=(t-e)/2,cf=2*Math.PI*r,o=cf*(1-Math.max(0,Math.min(1,p||0)));
+ return '<svg class="ap-dn" width="'+t+'" height="'+t+'" viewBox="0 0 '+t+' '+t+'" aria-hidden="true"><circle cx="38" cy="38" r="'+r+'" fill="none" stroke="rgba(var(--w),.08)" stroke-width="'+e+'"/><circle cx="38" cy="38" r="'+r+'" fill="none" style="stroke:'+cor+'" stroke-width="'+e+'" stroke-linecap="round" stroke-dasharray="'+cf.toFixed(2)+'" stroke-dashoffset="'+o.toFixed(2)+'" transform="rotate(-90 38 38)"/><text x="38" y="40" text-anchor="middle" dominant-baseline="middle" class="ap-dn-t">'+txt+'</text></svg>'}
+function apBarra(p,cor,alt){return '<div class="ap-bar" style="height:'+(alt||8)+'px"><i style="width:'+(Math.max(0,Math.min(1,p||0))*100).toFixed(1)+'%;background:'+cor+'"></i></div>'}
+function apLinha(v){ /* % de rounds vencidos em cada partida, da mais antiga para a mais nova */
+ if(v.length<2)return '<p class="note">Com 2 partidas analisadas ou mais, o gráfico aparece aqui.</p>';
+ var W=560,H=190,mn=0,mx=100,st=W/(v.length-1),Y=function(y){return H-(y-mn)/(mx-mn)*H};
+ var pts=v.map(function(y,i){return [i*st,Y(y)]}),d=pts.map(function(q,i){return (i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)}).join(' ');
+ return '<svg class="ap-ln" viewBox="-4 -8 '+(W+8)+' '+(H+34)+'" role="img" aria-label="Rounds vencidos em cada uma das últimas '+v.length+' partidas">'
+  +'<line x1="0" x2="'+W+'" y1="'+Y(50)+'" y2="'+Y(50)+'" class="ap-ln-50"/><text x="'+W+'" y="'+(Y(50)-6)+'" text-anchor="end" class="ap-ln-t">50%</text>'
+  +'<path d="'+d+' L'+W+' '+H+' L0 '+H+'Z" class="ap-ln-a"/><path d="'+d+'" class="ap-ln-l"/>'
+  +pts.map(function(q,i){return '<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="4" style="fill:'+(v[i]>=50?'var(--ct)':'var(--red)')+'"><title>'+Math.round(v[i])+'% dos rounds</title></circle>'}).join('')
+  +'<text x="0" y="'+(H+26)+'" class="ap-ln-t">'+v.length+' partidas atrás</text><text x="'+W+'" y="'+(H+26)+'" text-anchor="end" class="ap-ln-t">última</text></svg>'}
+function painelAnalyst(P,ps){
+ var c=P.coletivo,nAb=c.aberturas_positivas+c.aberturas_negativas,emp=Math.max(0,P.partidas-P.vitorias-P.derrotas);
+ var pAb=nAb?c.aberturas_positivas/nAb:0,pTr=c.mortes_tradaveis?c.mortes_trocadas/c.mortes_tradaveis:0;
+ var kp='<div class="ap-kpis">'
+  +'<div class="ap-c ap-kpi"><div><span class="ap-k">Partidas analisadas</span><b class="ap-v">'+P.partidas+'</b>'
+   +'<div class="ap-vde" aria-hidden="true"><i style="flex:'+P.vitorias+';background:var(--ct)"></i><i style="flex:'+emp+';background:var(--dim)"></i><i style="flex:'+P.derrotas+';background:var(--red)"></i></div>'
+   +'<small>'+P.vitorias+' V'+(emp?' - '+emp+' E':'')+' - '+P.derrotas+' D</small></div></div>'
+  +'<div class="ap-c ap-kpi">'+apDonut(pAb,'var(--ct)',pc(c.aberturas_positivas,nAb))+'<div><span class="ap-k">Primeiro duelo ganho</span><small>'+c.aberturas_positivas+' de '+nAb+' rounds</small></div></div>'
+  +'<div class="ap-c ap-kpi">'+apDonut(pTr,'var(--red)',pc(c.mortes_trocadas,c.mortes_tradaveis))+'<div><span class="ap-k">Mortes trocadas</span><small>'+c.mortes_trocadas+' de '+c.mortes_tradaveis+' mortes</small></div></div>'
+  +'<div class="ap-c ap-kpi"><div><span class="ap-k">Vantagem desperdiçada</span><b class="ap-v'+(c.vantagens_desperdicadas?' ap-neg':'')+'">'+c.vantagens_desperdicadas+'</b><small>'+(c.vantagens_desperdicadas===1?'round perdido':'rounds perdidos')+' com mais gente viva</small></div></div></div>';
+ var serie=ps.slice().sort(function(a,b){return (a.t||0)-(b.t||0)}).filter(function(v){return v.n}).map(function(v){return 100*((v.lados.T.g||0)+(v.lados.CT.g||0))/v.n});
+ var T=P.lados.T,C=P.lados.CT,pT=T.n?T.g/T.n:0,pC=C.n?C.g/C.n:0;
+ var conclusao=!T.n||!C.n?'':Math.abs(pT-pC)<.03?'Os dois lados estão equilibrados.':pC>pT?'O time vence mais rounds de CT. O TR é o lado a treinar.':'O time vence mais rounds de TR. O CT é o lado a treinar.';
+ var lado=[['TR',T,pT,'var(--t)'],['CT',C,pC,'var(--ct)']].map(function(l){return '<div class="ap-lado"><div class="ap-lado-h"><b>'+l[0]+'</b><span><b>'+pc(l[1].g,l[1].n)+'</b> <small>'+l[1].g+' de '+l[1].n+'</small></span></div>'+apBarra(l[2],l[3],12)+'</div>'}).join('');
+ var vpos=c.aberturas_positivas?pc(c.venceu_apos_abertura_positiva,c.aberturas_positivas):'–',vneg=c.aberturas_negativas?pc(c.venceu_apos_abertura_negativa,c.aberturas_negativas):'–';
+ var meio='<div class="ap-dois"><div class="ap-c"><span class="ap-k">Rounds vencidos em cada partida</span>'+apLinha(serie)+'</div>'
+  +'<div class="ap-c"><span class="ap-k">Rounds vencidos por lado</span><div class="ap-lados">'+lado+'</div>'+(conclusao?'<p class="ap-nota">'+conclusao+'</p>':'')
+  +(typeof c.venceu_apos_abertura_positiva==='number'&&nAb?'<p class="ap-nota">Depois de ganhar o primeiro duelo, o time vence <b>'+vpos+'</b> dos rounds. Depois de perder, <b>'+vneg+'</b>.</p>':'')+'</div></div>';
  var er=P.erros.filter(function(e){return e.peso>0.05}).slice(0,3);
- var ers=er.length?'<ol class="an-erros ac-l">'+er.map(function(e){return '<li><div class="ac-er"><div class="an-e-t"><b>'+esc(e.titulo)+'</b><i style="--w:'+Math.round(e.peso*100)+'%"></i></div><span>'+esc(e.texto)+'</span></div>'+coachCel(e)+'</li>'}).join('')+'</ol>':'<p class="note">Nenhum erro coletivo se destacou nas últimas partidas. Bom sinal.</p>';
- var jg='<div class="an-jg">'+P.jogadores.map(function(p){
-  var o={steam64:p.steam64,apelido:p.nome,avatar:p.avatar};
-  return '<div class="an-j"><div class="an-j-h">'+av(o,'sm')+'<div><b>'+esc(p.nome)+'</b><small>'+p.partidas+(p.partidas===1?' partida':' partidas')+'</small></div></div>'
-   +'<div class="an-j-n"><span><b>'+p.aberturas_ganhas+'/'+p.aberturas_perdidas+'</b>1º duelo</span><span><b>'+p.trades_feitos+'</b>trades feitos</span><span><b>'+pc(p.mortes_sem_trade,p.mortes_tradaveis)+'</b>mortes sem trade</span></div>'
-   +'</div>'}).join('')+'</div>';
- box.innerHTML=h+'<h3>Panorama do time</h3>'+tiles+lado
-  +'<h4 class="an-h">Do erro ao treino</h4>'+ers
-  +'<h4 class="an-h">Números de cada jogador</h4><p class="note" style="margin:-4px 0 12px">O diagnóstico pessoal de cada um aparece só para a própria pessoa, na análise individual.</p>'+jg
-  +'<p class="note">A análise de cada partida está na seção Partidas, no botão “Ver análise”.</p></article>';
+ var ers='<div class="ap-c ap-sec"><h3 class="ap-h">Onde o time perde rounds</h3><p class="ap-nota" style="margin:0 0 6px">'+(er.length?'Os problemas que mais custaram rounds, do maior para o menor.':'Nenhum problema coletivo se destacou nas últimas partidas. Bom sinal.')+'</p>'
+  +er.map(function(e,i){return '<div class="ap-er"><span class="ap-num">'+(i+1)+'</span><div><b>'+esc(e.titulo)+'</b><small>'+esc(e.texto)+'</small></div>'+apBarra(e.peso,'var(--red)',10)+'<span class="ap-coach">Coach - treino em breve</span></div>'}).join('')+'</div>';
+ var mx=Math.max(1,Math.max.apply(null,P.jogadores.map(function(p){return Math.max(p.aberturas_ganhas,p.aberturas_perdidas)})));
+ var mt=Math.max(1,Math.max.apply(null,P.jogadores.map(function(p){return p.trades_feitos})));
+ var jg='<div class="ap-c ap-sec"><h3 class="ap-h">Jogadores</h3><p class="ap-nota" style="margin:0 0 12px">O diagnóstico pessoal de cada um aparece só para a própria pessoa, na análise individual.</p>'
+  +'<div class="ap-tw"><table class="ap-tb"><thead><tr><th>Jogador</th><th>Partidas</th><th>Primeiro duelo <small>ganhos - perdidos</small></th><th>Trades feitos</th><th>Mortes sem trade</th></tr></thead><tbody>'
+  +P.jogadores.map(function(p){var o={steam64:p.steam64,apelido:p.nome,avatar:p.avatar},ms=p.mortes_tradaveis?p.mortes_sem_trade/p.mortes_tradaveis:0;
+   return '<tr><td><span class="ap-nm">'+av(o,'sm')+esc(p.nome)+'</span></td><td class="ap-mu">'+p.partidas+'</td>'
+    +'<td><div class="ap-dv"><b>'+p.aberturas_ganhas+'</b><span class="ap-dv-l"><i style="width:'+(p.aberturas_ganhas/mx*100).toFixed(1)+'%"></i></span><span class="ap-dv-r"><i style="width:'+(p.aberturas_perdidas/mx*100).toFixed(1)+'%"></i></span><b class="ap-mu">'+p.aberturas_perdidas+'</b></div></td>'
+    +'<td><div class="ap-nb">'+apBarra(p.trades_feitos/mt,'var(--ct)')+'<b>'+p.trades_feitos+'</b></div></td>'
+    +'<td><div class="ap-nb">'+apBarra(ms,'var(--red)')+'<b>'+pc(p.mortes_sem_trade,p.mortes_tradaveis)+'</b></div></td></tr>'}).join('')
+  +'</tbody></table></div></div>';
+ return '<div class="ap">'+'<p class="ap-sub">Últimas '+P.partidas+(P.partidas===1?' partida':' partidas')+' - rounds em que 3 ou mais do time jogaram</p>'+kp+meio+ers+jg
+  +'<p class="note">A análise de cada partida está na aba Partidas, no botão “Ver análise”.</p></div>';
 }
 function montarCla(j){
  var ms=(j.membros||[]).map(membroDados);
@@ -2635,7 +2865,7 @@ function analiseDoTimeNaPartida(box,cla,pa,meu){
    return;
   }
   var v=null;(r.j.partidas||[]).forEach(function(x){if(!v&&Math.abs(x.t-pa.t)<120000)v=x});
-  box.innerHTML=h+(v?htmlAnalisePartida(v,{time:true,semPlacar:true}):'<p class="note">Essa partida não tem análise do time. A análise existe para partidas em que 3 ou mais do time jogaram, lidas depois que o Analyst foi ligado.</p>');
+  if(v)ladosNoCab(v);box.innerHTML=h+(v?htmlAnalisePartida(v,{time:true,semPlacar:true}):'<p class="note">Essa partida não tem análise do time. A análise existe para partidas em que 3 ou mais do time jogaram, lidas depois que o Analyst foi ligado.</p>');
  });
 }
 function telaPartida(id,foco,meu,cla){
@@ -2670,8 +2900,8 @@ function desenharPartida(j,volta,meu,cla){
  var minha=J.filter(function(p){return p.eq===mine}),deles=J.filter(function(p){return p.eq===outro});
  var euSou=!!(SES&&foco&&foco.steam64===SES.sid);
  var rot1=eqF==null?'Time 1':cla&&!euSou?'Time':euSou?'Seu time':'Time de '+foco.nome,rot2=eqF==null?'Time 2':'Adversários';
- var top='<div class="dx-top '+res+'">'+(eqF==null?'':'<span class="dx-res">'+(gm>go?'VITÓRIA':gm<go?'DERROTA':'EMPATE')+'</span>')+'<span class="dx-pl">'+gm+' : '+go+'</span>'
-  +'<span class="dx-info"><b>'+esc(nomeMapa(pa.mapa))+'</b> - '+dataHoraBR(pa.t)+' - '+pa.rounds+' rounds</span></div>';
+ var nomeCla=cla&&ME&&ME.cla&&ME.cla.slug===cla?ME.cla.nome:'';
+ var top=cabPartida({id:'dx-cab',k:eqF==null?'':(nomeCla?rot1:''),nome:eqF==null?'Time 1':(nomeCla||rot1),nos:gm,eles:go,res:eqF==null?'':(res||'e'),rounds:pa.rounds,mapa:pa.mapa,data:dataHoraBR(pa.t)});
  var nm=foco?foco.nome:'';
  var vt=cla?'<a class="dx-volta" href="#/cla/'+encodeURIComponent(cla)+'">'+ic('<path d="M15 6l-6 6 6 6"/>')+'Voltar ao time</a>':'<a class="dx-volta" href="#/jogador/'+esc(volta||'')+'">'+(volta?ic('<path d="M15 6l-6 6 6 6"/>')+'Voltar ao perfil'+(nm?' de '+esc(nm):''):'')+'</a>';
  view('<div class="pagina-perfil dx">'+vt+top
@@ -2692,7 +2922,7 @@ function desenharPartida(j,volta,meu,cla){
    return;
   }
   if(r.j.indisponivel||!r.j.analise){box.innerHTML='<h3>Análise da partida</h3><p class="note">A análise dessa partida não está disponível. Ela é guardada por 60 dias e só existe para partidas lidas depois que a função foi ligada.</p>';return}
-  box.innerHTML='<h3>Análise da partida</h3>'+htmlAnalisePartida(r.j.analise,{semPlacar:true});
+  ladosNoCab(r.j.analise);box.innerHTML='<h3>Análise da partida</h3>'+htmlAnalisePartida(r.j.analise,{semPlacar:true});
  });
 }
 
