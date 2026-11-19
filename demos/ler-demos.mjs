@@ -246,7 +246,29 @@ function estatisticas(arquivo, ids) {
     const tf = fins.map((f) => f.tick || 0).sort((a, b) => a - b);
     for (const m of mortes) { let r = 0; while (r < tf.length && tf[r] < (m.tick || 0)) r++; m.total_rounds_played = r; }
   }
-  const danos = etapa('dano', () => parseEvent(arquivo, 'player_hurt', ['team_num']));
+  let danos = etapa('dano', () => parseEvent(arquivo, 'player_hurt', ['team_num']));
+  // conferência com o Leetify (19/11): (1) a rodada de cada morte vem do início da rodada (fim do congelamento), assim a morte
+  // depois do fim da rodada fica na rodada em que aconteceu (antes ia para a seguinte e bagunçava 2K/3K, KAST e a última rodada);
+  // (2) o aquecimento fica de fora; (3) o dano é limitado à vida que o jogador tinha (um tiro de AWP conta 100, não 400).
+  let rodadaDe = (t) => { let r = 0; for (const f of fins) if ((f.tick || 0) < t) r++; return r; };
+  try {
+    const fz = parseEvent(arquivo, 'round_freeze_end').map((f) => f.tick || 0).filter(Boolean).sort((a, b) => a - b);
+    const tf = fins.map((f) => f.tick || 0).sort((a, b) => a - b);
+    const ini = tf.map((t) => { let x = null; for (const z of fz) if (z < t) x = z; return x; });
+    if (ini.length && ini.every((x) => x != null)) {
+      rodadaDe = (t) => { if (t < ini[0]) return -1; let r = 0; while (r + 1 < ini.length && ini[r + 1] <= t) r++; return r; };
+      mortes = mortes.filter((m) => (m.tick || 0) >= ini[0]);
+      for (const m of mortes) m.total_rounds_played = rodadaDe(m.tick || 0);
+      danos = danos.filter((d) => (d.tick || 0) >= ini[0]);
+    }
+  } catch { /* sem o início das rodadas: fica a contagem do jogo */ }
+  { const vida = new Map();
+    for (const e of [...danos].sort((a, b) => (a.tick || 0) - (b.tick || 0))) {
+      const ch = String(e.user_steamid) + '|' + rodadaDe(e.tick || 0), h = vida.has(ch) ? vida.get(ch) : 100, dm = Number(e.dmg_health) || 0;
+      const hv = e.health != null && Number.isFinite(Number(e.health)) ? Math.max(0, Number(e.health)) : null;
+      e._ef = Math.max(0, Math.min(dm, h, hv != null ? h - hv : dm));
+      vida.set(ch, hv != null ? Math.min(hv, h) : h - e._ef);
+    } }
   const cegos = etapa('cegueira', () => parseEvent(arquivo, 'player_blind', ['team_num']));
   const S = new Map(ids.map((id) => [id, { r: rounds, k: 0, d: 0, a: 0, hs: 0, dmg: 0, m1: 0, m2: 0, m3: 0, m4: 0, m5: 0, ff: 0, fa: 0, fl: 0, fas: 0, he: 0, ot: 0, og: 0, um: null, w: null, awp: 0, sm: 0, eb: 0, tk: 0, ud: 0, v2: 1,
     // coleta v3 (14/11): precisão, granadas que funcionaram, rounds de 2+ abates vivo e o alastro em contagens
@@ -255,7 +277,7 @@ function estatisticas(arquivo, ids) {
     // csn/csb = primeiros tiros dados logo depois de andar e quantos deles saíram com o boneco já parado (contra-strafe)
     // coleta v5 (14/11, noite): definições do Leetify. hta/hc = acertos (sem escopeta) e na cabeça; ea/eh = tiros em
     // combate e os que acertaram; csn/csb = tiros de rifle/sniper em combate e os que saíram parado. vc = versão da coleta.
-    v4: 1, v5: 1, vc: 11, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
+    v4: 1, v5: 1, vc: 12, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
     _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
@@ -303,8 +325,8 @@ function estatisticas(arquivo, ids) {
     if (!a || e.attacker_steamid === e.user_steamid) continue;
     if (e.attacker_team_num === e.user_team_num) { a.ff++; if (String(e.weapon).includes('hegrenade')) a.he += e.dmg_health || 0; }
     else {
-      a.dmg += e.dmg_health || 0;
-      if (/hegrenade|inferno|molotov|incgrenade/.test(String(e.weapon))) a.ud += e.dmg_health || 0; // dano de granada nos inimigos
+      a.dmg += e._ef ?? (e.dmg_health || 0);
+      if (/hegrenade|inferno|molotov|incgrenade/.test(String(e.weapon))) a.ud += e._ef ?? (e.dmg_health || 0); // dano de granada nos inimigos
     }
   }
   for (const e of cegos) {
@@ -569,7 +591,7 @@ function completa(arquivo, ev) {
   for (const e of danos) {
     const a = J.get(String(e.attacker_steamid));
     if (!a || String(e.attacker_steamid) === String(e.user_steamid) || e.attacker_team_num === e.user_team_num) continue;
-    a.dmg += e.dmg_health || 0;
+    a.dmg += e._ef ?? (e.dmg_health || 0);
   }
   const jog = [];
   for (const j of J.values()) {
