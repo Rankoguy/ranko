@@ -202,6 +202,19 @@ function acharUrlDemo(obj, vistos = new Set()) {
   }
   return null;
 }
+// rating de cada jogador que a Valve informa junto com a partida (reserva do servidor): conta Steam -> ranking
+function rankingsDaPartida(m) {
+  const out = new Map();
+  try {
+    for (const r of (Array.isArray(m && m.roundstatsall) ? m.roundstatsall : [])) {
+      for (const x of ((r && r.reservation && r.reservation.rankings) || [])) {
+        const acc = Number(x && x.account_id);
+        if (acc && !out.has(acc)) out.set(acc, x);
+      }
+    }
+  } catch { /* sem rankings */ }
+  return out;
+}
 function urlDaDemo(codigo, id) {
   return comTempo(new Promise((res) => {
     const aoReceber = (matches) => {
@@ -212,7 +225,7 @@ function urlDaDemo(codigo, id) {
         const ult = Array.isArray(m.roundstatsall) ? m.roundstatsall[m.roundstatsall.length - 1] : null;
         log('  (partida: campos', ch(m), '| última rodada:', ch(ult), '| reserva:', ch(ult && ult.reservation), ')');
       }
-      if (url) { csgo.removeListener('matchList', aoReceber); res({ url, horario: Number(m.matchtime) ? Number(m.matchtime) * 1000 : Date.now() }); }
+      if (url) { csgo.removeListener('matchList', aoReceber); res({ url, horario: Number(m.matchtime) ? Number(m.matchtime) * 1000 : Date.now(), rkGC: rankingsDaPartida(m) }); }
     };
     csgo.on('matchList', aoReceber);
     csgo.requestGame(codigo);
@@ -388,7 +401,11 @@ function estatisticas(arquivo, ids) {
   // Assim cada partida tem quanto o jogador ganhou ou perdeu, sem depender da leitura do perfil uma vez por dia.
   try {
     const t0 = fins.map((f) => f.tick || 0).filter(Boolean).sort((a, b) => a - b)[0];
+    const rkd = { linhas: 0, comCampo: 0, positivo: 0, tipos: {} }; // diagnóstico só com contagens
+    Object.defineProperty(S, '_rk', { value: rkd, enumerable: false, configurable: true });
     if (t0) for (const l of parseTicks(arquivo, ['rank', 'rank_if_win', 'rank_if_loss', 'rank_if_tie', 'comp_rank_type'], [t0])) {
+      rkd.linhas++; if (l.rank != null) rkd.comCampo++; if (Number(l.rank) > 0) rkd.positivo++;
+      const tp = l.comp_rank_type == null ? '?' : String(l.comp_rank_type); rkd.tipos[tp] = (rkd.tipos[tp] || 0) + 1;
       const s = S.get(String(l.steamid || ''));
       const n = (v) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Math.round(Number(v)) : null);
       if (!s || l.comp_rank_type != null && Number(l.comp_rank_type) !== 11) continue; // 11 = Premier
@@ -402,6 +419,7 @@ function estatisticas(arquivo, ids) {
   Object.defineProperty(saida, '_ev', { value: { mortes, danos, fins }, enumerable: false });
   Object.defineProperty(saida, '_hist', { value: S._hist || null, enumerable: false });
   Object.defineProperty(saida, '_cs', { value: S._cs || null, enumerable: false });
+  Object.defineProperty(saida, '_rk', { value: S._rk || null, enumerable: false });
   for (const [id, s] of S) {
     if (!s.k && !s.d && !s.dmg) continue; // não estava nessa partida
     for (const k of Object.values(s._r)) { const n = Math.min(k, 5); s['m' + n]++; }
@@ -578,7 +596,7 @@ for (const pt of porPartida.values()) {
   n++;
   if ((Date.now() - inicio) / 60000 > LIMITE_MIN) { log('Tempo acabando: o resto fica para a próxima execução.'); break; }
   try {
-    const { url, horario } = await urlDaDemo(pt.codigo, pt.id);
+    const { url, horario, rkGC } = await urlDaDemo(pt.codigo, pt.id);
     pt.horario = horario;
     const bz = `saida/p${n}.dem.bz2`;
     // só baixa de endereços da Valve/Steam (o link vem de fora; não confiamos às cegas)
@@ -617,6 +635,23 @@ for (const pt of porPartida.values()) {
       throw e;
       }
     }
+    // rating da partida: se a demo não trouxe, usa o que a Valve informou junto com a partida (rank_id antes; previsto para vitória/derrota/empate)
+    const rkInfo = { gc: rkGC ? rkGC.size : 0, gcPremier: 0, gcPrevisto: 0, gcMudanca: 0 };
+    for (const [id, x] of Object.entries(s)) {
+      const g = rkGC && rkGC.get(Number(BigInt(id) - 76561197960265728n));
+      if (!g || Number(g.rank_type_id) !== 11) continue;
+      rkInfo.gcPremier++;
+      const n2 = (v) => (Number(v) > 0 ? Math.round(Number(v)) : null);
+      if (n2(g.rank_if_win) || n2(g.rank_if_lose)) rkInfo.gcPrevisto++;
+      if (g.rank_change != null && Number(g.rank_change) !== 0) rkInfo.gcMudanca++;
+      if (!x.rk0 && n2(g.rank_id) >= 1000) {
+        x.rk0 = n2(g.rank_id); x.rkw = n2(g.rank_if_win); x.rkl = n2(g.rank_if_lose); x.rke = n2(g.rank_if_tie);
+        if (!x.rkw && !x.rkl && Number.isFinite(Number(g.rank_change)) && Number(g.rank_change) !== 0) { // só a mudança: vale para o resultado que aconteceu
+          const dep = x.rk0 + Math.round(Number(g.rank_change));
+          if (x.w === 1) x.rkw = dep; else if (x.w === 0) x.rkl = dep; else x.rke = dep;
+        }
+      }
+    }
     // quadro dos 10 jogadores (placar, KAST, quem não está no painel). Se falhar, a partida segue só com os números do painel.
     try {
       const q = completa(arq, s._ev);
@@ -634,6 +669,9 @@ for (const pt of porPartida.values()) {
         log(`  Mortes (painel): ${v8.d} no total, ${v8.vrd} varado, ${v8.vsm} pela smoke`);
         const rkv = Object.values(s).filter((x) => x && typeof x === 'object');
         log(`  Rating na demo (painel): ${rkv.filter((x) => x.rk0).length} de ${rkv.length} jogadores com rating, ${rkv.filter((x) => x.rk0 && (x.rkw || x.rkl)).length} com o ganho/perda previsto`);
+        log(`  Rating pela Valve (só contagens): ${rkInfo.gc} jogadores na partida, ${rkInfo.gcPremier} do painel com Premier, ${rkInfo.gcPrevisto} com o previsto, ${rkInfo.gcMudanca} com a mudança`);
+        { const r = s._rk, dg2 = libAtual && libAtual.diag;
+          log(`  Rating na demo (todos): ${r ? `${r.linhas} linhas, ${r.comCampo} com o campo, ${r.positivo} acima de 0, tipos de ranking ${Object.entries(r.tipos).map(([k, v]) => k + '=' + v).join(' ') || '-'}` : 'sem leitura'}` + (dg2 && dg2.rkChaves ? ` | campos do controlador: ${dg2.rkChaves}` : '')); }
         const h = s._hist, dg = libAtual && libAtual.diag;
         log(`  Granadas na hora da morte (painel): 0 = ${h ? h[0] : '?'}, 1 = ${h ? h[1] : '?'}, 2 = ${h ? h[2] : '?'}, 3+ = ${h ? h[3] : '?'}` + (dg ? ` | leitor reserva (fonte: ${dg.fonte}): ${dg.fotos} fotos de inventário (${dg.fotosComGranada} com granada), granadas pegas ${dg.pegou}, lançadas ${dg.lancou}, mortes com 3+ pela foto ${dg.morte3Foto} e pela contagem ${dg.morte3Conta} (todos os 10 jogadores)` : ''));
       }
@@ -647,7 +685,10 @@ for (const pt of porPartida.values()) {
     rmSync(arq, { force: true });
     pt.stats = s;
     for (const [id, st] of Object.entries(s)) partidas.push({ steam64: id, partida: pt.id, t: pt.horario, s: st });
-    log(`✔ partida ${n}/${porPartida.size} lida (${Object.keys(s).length} pessoas do painel)`);
+    { // só contagens (sem nomes nem valores): mostra se o rating por partida veio da demo
+      const rkv = Object.values(s).filter((x) => x && typeof x === 'object');
+      log(`✔ partida ${n}/${porPartida.size} lida (${rkv.length} pessoas do painel, ${rkv.filter((x) => x.rk0 && (x.rkw || x.rkl)).length} com rating da partida)`);
+    }
   } catch (e) {
     ruins.set(pt.id, e.message === 'DEMO_INDISPONIVEL' ? 'indisponivel' : 'falha');
     // o motivo vai para o log sem endereços nem números longos (códigos e ids), que o log é público

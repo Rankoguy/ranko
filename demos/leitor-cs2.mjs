@@ -33,9 +33,16 @@ export async function lerComCs2(arquivo, mod) {
   // rating Premier do controlador (antes da partida e o previsto para vitória/derrota/empate), nos nomes do demoparser2
   const rating = (p) => {
     try {
-      const e = p.entity;
-      if (!e) return {};
-      const g = (k) => { const v = e['CCSPlayerController.' + k] ?? e[k]; return typeof v === 'number' ? v : null; };
+      let e = null;
+      try { e = rd.getEntity(p.entityId, 'CCSPlayerController'); } catch { /* segue */ }
+      e = e || (p.entity && p.entity.properties) || null;
+      if (!e) { diag.rkChaves = diag.rkChaves || 'sem entidade'; return {}; }
+      if (!diag.rkChaves) { // só nomes de campos, nunca valores
+        const todas = e instanceof Map ? [...e.keys()].map(String) : Object.keys(e);
+        const ks = todas.filter((k) => /ompetitive|Rank/i.test(k));
+        diag.rkChaves = ks.length ? ks.map((k) => k.replace(/^CCSPlayerController\./, '')).join(',').slice(0, 300) : 'nenhum campo de rank (' + todas.length + ' campos)';
+      }
+      const g = (k) => { let v = e['CCSPlayerController.' + k] ?? e[k]; if (v == null && typeof e.get === 'function') v = e.get('CCSPlayerController.' + k) ?? e.get(k); return typeof v === 'number' ? v : typeof v === 'bigint' ? Number(v) : null; };
       return { rank: g('m_iCompetitiveRanking'), rank_if_win: g('m_iCompetitiveRankingPredicted_Win'), rank_if_loss: g('m_iCompetitiveRankingPredicted_Loss'),
         rank_if_tie: g('m_iCompetitiveRankingPredicted_Tie'), comp_rank_type: g('m_iCompetitiveRankType') };
     } catch { return {}; }
