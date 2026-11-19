@@ -657,7 +657,11 @@ body.lock-gate{overflow:hidden}
 .me-card .cartao-acoes{padding:20px 32px}
 .me-card .dr-sec{padding:32px;border-top:1px solid var(--line)}
 .me-card .dr-sec h4{display:flex;align-items:center;gap:10px;margin:0 0 18px;font:800 20px/1.2 var(--disp);letter-spacing:-.01em}
-.me-card .dr-sec h4::before{content:"";width:4px;height:20px;border-radius:2px;background:var(--t);flex:none}
+/* títulos do perfil (18/11, versão B): etiqueta na cor de destaque que some no fundo do card */
+.me-card .dr-sec h4{width:max-content;max-width:100%;padding:9px 90px 9px 16px;border-radius:9px;background:linear-gradient(90deg,var(--t) 0%,var(--t) 45%,var(--panel) 100%);color:var(--on-t)}
+.me-card .dr-sec h4 .ii{border-color:currentColor;color:inherit;opacity:.8}
+.me-card .dr-sec h4{white-space:nowrap}
+@media(max-width:640px){.me-card .dr-sec h4{padding:8px 40px 8px 14px;font-size:17px}}
 .me-card .dr-sec h4 .gloss-t{font:inherit}
 .me-card .me-body{padding:0;gap:0}
 .me-card .me-body>.dr-sec:nth-child(2){border-left:1px solid var(--line)}
@@ -673,6 +677,7 @@ body.lock-gate{overflow:hidden}
 .pf .w h5{color:var(--red-text)}
 .pf .f h5{color:var(--ct-text)}
 .func-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.func-h .btn{white-space:nowrap}
 .func-h h4{margin:0!important}
 .ok-b{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 8px;border-radius:999px;background:rgba(var(--ct-rgb),.12);color:var(--ct-text);font:700 13.5px var(--body)}
 .ok-b::before{content:"";width:12px;height:7px;margin:0 2px 3px 4px;border-left:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:rotate(-45deg)}
@@ -896,7 +901,17 @@ body.modo-pro .pro-sec{display:block}
 .ind-bloco p{margin:0;color:var(--muted);font-size:14.5px;max-width:70ch}
 .ind-aviso{margin:12px 0 0;padding:10px 14px;border:1px solid var(--red);border-radius:var(--r-md);background:rgba(var(--red-rgb),.08);color:var(--text);font-size:14.5px;max-width:78ch}
 .ind-aviso[hidden]{display:none}
-.ind-graf{display:block;width:100%;max-width:640px;height:auto;color:var(--ct-text)}
+.ev-cab{display:flex;flex-wrap:wrap;gap:12px 32px;margin:0 0 18px}.ev-cab>div{display:grid;gap:6px;justify-items:start}
+.ev-k{font:600 12.5px var(--body);color:var(--muted)}.ev-d{font:800 20px var(--disp)}
+.ev-d.p,.ev-cs small.p{color:var(--win)}.ev-d.n,.ev-cs small.n{color:var(--red-text,var(--red))}
+.ev-cw{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px;align-items:end;padding-top:24px}
+.ev-cb{display:grid;grid-template-rows:auto 34px;justify-items:center;gap:6px;min-width:0}
+.ev-col{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+.ev-col i{display:block;width:70%;max-width:64px;border-radius:8px 8px 3px 3px}
+.ev-cs{display:grid;justify-items:center;gap:2px}.ev-cs .rt{transform:scale(.8)}.ev-cs small{font:800 11.5px var(--body);color:var(--muted);white-space:nowrap}
+.ev-cb>span{display:grid;justify-items:center;font-size:11.5px;color:var(--dim);line-height:1.35;text-align:center}.ev-cb>span em{font-style:normal;color:var(--muted)}
+.ev-meta{position:absolute;left:0;right:0;border-top:1.5px dashed rgba(var(--w),.35);pointer-events:none}.ev-meta span{position:absolute;right:0;top:-19px;font:700 11.5px var(--body);color:var(--muted)}
+@media(max-width:640px){.ev-cw{gap:6px}.ev-cs .rt{transform:scale(.7)}.ev-cab{gap:12px 22px}}
 .ind-gloss{margin:14px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px;max-width:78ch}
 .ind-gloss li{margin:4px 0}
 .ind-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;max-width:640px}
@@ -1072,7 +1087,7 @@ a.dx-j:hover span{text-decoration:underline}
 /* ----- Minhas funções ----- */
 .fx{--tr:#ffc20e;--ct:#4aa3ff;--tr-tx:#ffc20e;--ct-tx:#4aa3ff;--ok:var(--win);--no:var(--red-text)}
 :root[data-modo="claro"] .fx{--tr-tx:#846406;--ct-tx:#316ca8}
-.fx-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.fx-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}.fx-top h4{margin:0!important}.fx-ed{white-space:nowrap}
 .me-card .fx-top h4{margin:0!important}
 .fx-intro{margin:8px 0 0;color:var(--muted);font:500 14.5px var(--body)}
 .fx-ed{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:1px solid var(--line2);border-radius:var(--r-btn);background:var(--panel);color:var(--text);font:700 14px var(--body);cursor:pointer}
@@ -2314,7 +2329,7 @@ function montarPerfil(j,p,propria,grupo){
  // cabeçalho num bloco próprio; as abas são fichas presas ao conteúdo logo abaixo
  view('<div class="pagina-perfil"><div class="me-topo"><div class="dr-hero">'+cab+(lado||acoes?'<div class="cab-dir">'+lado+acoes+'</div>':'')+'</div>'
   +navAbas('me-abas',base,abas)+'</div><div class="me-card">'
-  +'<div class="aba-p" data-aba="desempenho">'+corpo+(propria?'<div class="dr-sec wide" id="jogo-sec" style="display:none"></div>':'')+claSec+(temD?'<div class="dr-sec wide" style="padding-bottom:26px">'+glossario()+'</div>':'')+'</div>'
+  +'<div class="aba-p" data-aba="desempenho">'+corpo+(temD?'<div class="dr-sec wide" id="evo-sec" style="display:none"></div>':'')+(propria?'<div class="dr-sec wide" id="jogo-sec" style="display:none"></div>':'')+claSec+(temD?'<div class="dr-sec wide" style="padding-bottom:26px">'+glossario()+'</div>':'')+'</div>'
   +(temD?'<div class="aba-p" data-aba="partidas"><div class="dr-sec wide hist-sec" id="hist-sec"></div></div>':'')
   +'<div class="aba-p" data-aba="funcoes"><div class="dr-sec wide func-sec" id="func-sec"></div></div>'
   +(propria?'<div class="aba-p" data-aba="plano"><div class="dr-sec wide func-sec" id="ind-sec"></div></div>':'')+'</div></div>');
@@ -2830,7 +2845,8 @@ var HX={L:[],f:'todas',n:15,id:''};
 function carregarHist(id){
  chamar('GET','/jogador/'+id+'/partidas').then(function(r){
   var box=el('hist-sec');if(!box||!r.ok)return;
-  var L=(r.j&&r.j.partidas)||[];
+  var L=(r.j&&r.j.partidas)||[],H=(r.j&&r.j.hist)||[],ev=el('evo-sec');
+  if(ev&&H.length>=2){ev.innerHTML='<h4>Evolução do rating'+info('Rating Premier lido uma vez por dia. Cada coluna é uma semana: o selo mostra onde você terminou a semana e quanto subiu ou caiu.')+'</h4>'+evoRating(H,null,L);ev.style.display=''}
   if(!L.length){box.style.display='none';return}
   HX={L:L,f:'todas',n:15,id:id};desenharHist();
  });
@@ -3554,20 +3570,30 @@ function indAcao(ac,b){
  if(ac==='ind-salvar'){indSalvar(b);return}
  if(ac==='ind-editar'||ac==='ind-cancelar'){IND.edit=(ac==='ind-editar');indDesenhar();return}
 }
-function indGrafico(h,alvo){
+// evolução do rating (versão C, escolhida em 19/11): uma coluna por semana, na cor da faixa, com o selo do fim da semana
+// h: [{d:'AAAA-MM-DD', r}] (uma leitura por dia); alvo: meta (opcional); L: partidas (para contar quantas por semana)
+function evoRating(h,alvo,L){
  if(!h||h.length<2)return '';
- var W=600,H=120,pad=14,min=Infinity,max=-Infinity;
- h.forEach(function(x){min=Math.min(min,x.r);max=Math.max(max,x.r)});
- if(alvo){min=Math.min(min,alvo);max=Math.max(max,alvo)}
- if(max===min){max+=500;min-=500}
- function X(i){return pad+(W-2*pad)*i/(h.length-1)}
- function Y(v){return H-pad-(H-2*pad)*(v-min)/(max-min)}
- var pts=h.map(function(x,i){return X(i).toFixed(1)+','+Y(x.r).toFixed(1)}).join(' ');
- function dm(d){return d.slice(8,10)+'/'+d.slice(5,7)}
- return '<svg class="ind-graf" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Rating Premier de '+dm(h[0].d)+' a '+dm(h[h.length-1].d)+'"><title>Rating Premier ao longo do tempo</title>'
-  +(alvo?'<line x1="'+pad+'" x2="'+(W-pad)+'" y1="'+Y(alvo).toFixed(1)+'" y2="'+Y(alvo).toFixed(1)+'" stroke="currentColor" stroke-dasharray="5 5" opacity=".55"/>':'')
-  +'<polyline points="'+pts+'" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>'
-  +'<p class="note" style="margin:4px 0 0">De '+dm(h[0].d)+' a '+dm(h[h.length-1].d)+(alvo?'. A linha tracejada é a sua meta.':'.')+'</p>';
+ var dm=function(d){return d.slice(8,10)+'/'+d.slice(5,7)},dia=function(d){return Date.parse(d+'T12:00:00Z')};
+ var fim=dia(h[h.length-1].d),nS=window.innerWidth<640?4:8,S=[];
+ for(var k=nS-1;k>=0;k--){var ate=fim-k*7*864e5,de=ate-7*864e5,ult=null,ant=null,pri=null;
+  h.forEach(function(x){var t=dia(x.d);if(t<=ate)ult=x;if(t<=de)ant=x;if(!pri&&t>de)pri=x});
+  if(!ult)continue;
+  var np=(L||[]).filter(function(p){var t=p.t-3*3600*1000;return t>de-12*3600*1000&&t<=ate+12*3600*1000}).length;
+  S.push({d:new Date(ate).toISOString().slice(0,10),r:ult.r,ant:ant?ant.r:(pri||ult).r,np:np})}
+ if(!S.length)return '';
+ var rs=S.map(function(x){return x.r}),mx=Math.max.apply(null,rs.concat(alvo?[alvo]:[])),mn=Math.min.apply(null,rs)-2500,AH=200;
+ if(mx-mn<3000)mn=mx-3000;
+ var at=h[h.length-1].r,best=Math.max.apply(null,h.map(function(x){return x.r})),dl=at-h[0].r;
+ var cab='<div class="ev-cab"><div><span class="ev-k">Agora</span>'+selo(at)+'</div><div><span class="ev-k">Melhor</span>'+selo(best)+'</div>'
+  +'<div><span class="ev-k">Desde '+dm(h[0].d)+'</span><b class="ev-d '+(dl>=0?'p':'n')+'">'+(dl>=0?'+':'−')+rtNum(Math.abs(dl))+'</b></div>'
+  +(alvo?'<div><span class="ev-k">Meta</span>'+selo(alvo)+'</div>':'')+'</div>';
+ var col=S.map(function(x){var fx=RT_F[rtFaixa(x.r)],hg=Math.max(6,(x.r-mn)/(mx-mn)*AH),dd=x.r-x.ant;
+  return '<div class="ev-cb" title="Semana até '+dm(x.d)+': '+rtNum(x.r)+(x.np?' - '+x.np+(x.np===1?' partida lida':' partidas lidas'):'')+'"><div class="ev-col" style="height:'+AH+'px"><div class="ev-cs">'+selo(x.r)
+   +'<small class="'+(dd>0?'p':dd<0?'n':'')+'">'+(dd>0?'+':dd<0?'−':'')+(dd?rtNum(Math.abs(dd)):'sem mudança')+'</small></div><i style="height:'+hg.toFixed(0)+'px;background:linear-gradient(180deg,'+fx[2]+','+fx[2]+'1f)"></i></div>'
+   +'<span>sem. '+dm(x.d)+(x.np?'<em>'+x.np+(x.np===1?' partida':' partidas')+'</em>':'')+'</span></div>'}).join('');
+ return cab+'<div class="ev-cw" role="img" aria-label="Rating Premier semana a semana, de '+rtNum(S[0].r)+' para '+rtNum(S[S.length-1].r)+'">'
+  +(alvo?'<div class="ev-meta" style="bottom:'+(34+(alvo-mn)/(mx-mn)*AH).toFixed(0)+'px"><span>meta '+rtNum(alvo)+'</span></div>':'')+col+'</div>';
 }
 function indResumo(d){
  var p=d.perfil,ro=d.rotina,rt=d.rating||{};
@@ -3581,7 +3607,7 @@ function indResumo(d){
  h+='<div class="ind-bloco"><div class="min">'+ro.jogo+'<small>min</small></div><h5>Jogar</h5><p>O resto do tempo é para jogar de verdade, com um objetivo pequeno por partida: aplicar o que você treinou.</p></div>';
  if((ro.glossario||[]).length)h+='<ul class="ind-gloss">'+ro.glossario.map(function(g){return '<li>'+esc(g)+'</li>'}).join('')+'</ul>';
  if(rt.atual!=null){
-  if(rt.hist&&rt.hist.length>=2)h+='<h4 style="margin-top:18px">Evolução do rating</h4>'+indGrafico(rt.hist,ro.pretensao==='rank'?p.alvo:null);
+  if(rt.hist&&rt.hist.length>=2)h+='<h4 style="margin-top:26px">Evolução do rating</h4>'+evoRating(rt.hist,ro.pretensao==='rank'?p.alvo:null,HX.L);
  }
  h+='<div class="func-bt"><button class="btn g sm" type="button" data-acao="ind-editar">Editar respostas</button></div>'
   ;
