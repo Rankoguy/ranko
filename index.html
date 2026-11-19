@@ -408,6 +408,7 @@ body.lock{overflow:hidden}
 .kb{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--panel2)}
 .kb b{display:block;font:800 clamp(36px,4.4vw,52px)/1 var(--disp);letter-spacing:-.03em}
 .kb:first-child b{color:var(--t-text)}
+.kb-cal{display:block;font:500 11px var(--body);color:var(--dim);margin-top:2px}
 .kb span{display:block;margin-top:6px;color:var(--muted);font-size:13.5px}
 .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:0 20px}
 .kp>div{padding:14px 0;border-top:1px solid var(--line)}
@@ -1021,7 +1022,7 @@ a.hx-r:hover .hx-an,a.hx-r:focus-visible .hx-an{border-color:var(--t);background
 .dx-t td{font:700 15px var(--body)}
 .dx-t tr.eu td{background:color-mix(in srgb,var(--t) 8%,var(--panel))}
 .dx-t .z{color:var(--dim);font-weight:500}
-.dx-t td.dx-rt{font-weight:800}.dx-t td.p{color:var(--win)}.dx-t td.n{color:var(--lose)}
+.dx-t td.dx-rt{font-weight:800}.dx-v1{margin-left:3px;font:700 9px var(--body);color:var(--dim);vertical-align:2px}.dx-t td.p{color:var(--win)}.dx-t td.n{color:var(--lose)}
 .dx-j{display:flex;align-items:center;gap:12px;font:700 15px var(--body);color:var(--text);text-decoration:none;min-width:0}
 a.dx-j:hover span{text-decoration:underline}
 .dx-j .av{flex:none}
@@ -1517,7 +1518,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         <div id="lider"></div>
         <p id="hist"></p>
         <div class="tbl"><table>
-          <thead><tr><th>#</th><th>Jogador</th><th title="Nota calculada pelo painel com abates, mortes e multikills. 1,00 é a média.">Rating HLTV</th><th title="Nota de 0 a 100 para pontaria. 50 é o jogador médio; perto de 100, só profissional.">Mira</th><th title="Nota de 0 a 100 para uso de granadas e flashes. 50 é o jogador médio.">Utilidade</th><th title="Nota de 0 a 100 para posição no mapa. 50 é o jogador médio.">Posicionamento</th><th title="Porcentagem de partidas ganhas.">Vitórias</th><th title="Vezes em que foi o MVP da rodada.">Estrelas</th><th title="Partidas analisadas neste período.">Partidas</th></tr></thead>
+          <thead><tr><th>#</th><th>Jogador</th><th title="1,00 é a média. A partir de 21/11, Rating 2.0 (abates, mortes, assistências, dano e KAST).">Rating</th><th title="Nota de 0 a 100 para pontaria. 50 é o jogador médio; perto de 100, só profissional.">Mira</th><th title="Nota de 0 a 100 para uso de granadas e flashes. 50 é o jogador médio.">Utilidade</th><th title="Nota de 0 a 100 para posição no mapa. 50 é o jogador médio.">Posicionamento</th><th title="Porcentagem de partidas ganhas.">Vitórias</th><th title="Vezes em que foi o MVP da rodada.">Estrelas</th><th title="Partidas analisadas neste período.">Partidas</th></tr></thead>
           <tbody id="rows"><tr><td colspan="9" class="note">Carregando dados…</td></tr></tbody>
         </table></div>
         <p class="note" id="rk-n">Clique num jogador para abrir o perfil.</p>
@@ -1637,7 +1638,7 @@ var CAT=[
  {t:'Não fica vivo',ti:'O que mais morre do time',u:'mortes por rodada',d:2,g:function(p){return p.rodadas?p.mortes/p.rodadas:0}}
 ];
 var APOS=[
- {t:'Líder do ranking',d:'Maior Rating HLTV do grupo.',k:function(p){return p.hltv},m:function(v){return 'HLTV '+f(v,2)}},
+ {t:'Líder do ranking',d:'Maior Rating do grupo.',k:function(p){return p.hltv},m:function(v){return 'Rating '+f(v,2)}},
  {t:'Estrelinha',d:'Mais estrelas de MVP nas partidas.',ok:function(){return P.some(function(p){return p.mvps!=null})},k:function(p){return p.mvps==null?-1:p.mvps},m:function(v){return v+(v===1?' estrela':' estrelas')}},
  {t:'Mira de ouro',d:'Maior nota de mira do grupo.',k:function(p){return p.mira},m:function(v){return 'Mira '+f(v,0)}},
  {t:'Mestre das granadas',d:'Melhor nota de utilidade.',k:function(p){return p.utilidade},m:function(v){return 'Util. '+f(v,0)}},
@@ -1777,7 +1778,7 @@ var MET=[
  {t:'Mira',g:function(p){return p.mira},d:0},
  {t:'Utilidade',g:function(p){return p.utilidade},d:0},
  {t:'Posicionamento',g:function(p){return p.posicionamento},d:0},
- {t:'Rating HLTV',g:function(p){return p.hltv},d:2},
+ {t:'Rating',g:function(p){return p.hltv},d:2},
  {t:'Vitórias',g:function(p){return p.vitorias_pct==null?null:p.vitorias_pct*100},d:0,u:'%'},
  {t:'K/D',g:function(p){return p.mortes?p.abates/p.mortes:null},d:2},
  {t:'Clutch',g:function(p){return p.clutch},d:2},
@@ -1821,7 +1822,7 @@ function perfilCab(p,pos,tags,extra){return '<div class="dr-id"><span class="av-
 /* conquistas do perfil: cada partida que bate a meta soma uma vez (contagem guardada para sempre no servidor) */
 var CONQ=[
  {id:'mira',t:'Mira de ouro',ic:'Mira de ouro',d:'Partida com nota de mira 80 ou mais, bem acima da média, e 10 abates ou mais.'},
- {id:'impacto',t:'Impacto constante',ic:'Líder do ranking',d:'Partida com Rating HLTV de 1,30 ou mais.'},
+ {id:'impacto',t:'Impacto constante',ic:'Líder do ranking',d:'Partida com Rating de 1,30 ou mais.'},
  {id:'posicao',t:'Bem posicionado',ic:'Posicionamento',d:'Partida em que você sobreviveu a metade dos rounds ou mais.'},
  {id:'superior',t:'Cabeça a cabeça',ic:'Mira de ouro',d:'Partida em que você ganhou dos inimigos com folga: 10 abates ou mais e 1,5 abate para cada morte.'},
  {id:'dano',t:'Dano pesado',ic:'Estrelinha',d:'Partida com 100 de dano por round (ADR) ou mais.'},
@@ -1869,7 +1870,7 @@ function perfilSecoes(p,solo){
  var kp=[['Vitórias',p.vitorias_pct==null?'–':f(p.vitorias_pct*100,0)+'%'],['Headshots',p.hs_pct==null?'–':f(p.hs_pct*100,0)+'%'],['ADR',p.adr==null?'–':f(p.adr,0)],['Abates',p.abates==null?'–':p.abates],['Mortes',p.mortes==null?'–':p.mortes],p.mvps!=null?['Estrelas',p.mvps]:['Partidas',p.partidas_analisadas==null?'–':p.partidas_analisadas]];
  var grupo=!solo&&P.length>=3;
  return '<div class="dr-sec"><h4>Perfil de jogo</h4>'+radar(p,solo)+'<div class="leg"><span><i></i>'+esc(p.apelido)+'</span>'+(grupo?'<span><i class="g"></i>Média do grupo</span>':'')+'</div></div>'
-  +'<div class="dr-sec"><h4>Números</h4><div class="kpg"><div class="kb"><b>'+f(p.hltv,2)+'</b><span>Rating HLTV</span></div><div class="kb"><b>'+(kd==null?'–':f(kd,2))+'</b><span>K/D</span></div></div>'
+  +'<div class="dr-sec"><h4>Números</h4><div class="kpg"><div class="kb"><b>'+(p.hltv==null?'–':f(p.hltv,2))+'</b><span>'+rot2()+(p.hltv==null&&p.hltv_v==='2.0'?' <small class="kb-cal">em calibração: conta as partidas desde 21/11</small>':'')+'</span></div><div class="kb"><b>'+(kd==null?'–':f(kd,2))+'</b><span>K/D</span></div></div>'
   +'<div class="kp">'+kp.map(function(x){return '<div><b>'+x[1]+'</b><span>'+x[0]+'</span></div>'}).join('')+'</div></div>'
   +(solo?forcasSolo(p)+conquistasSolo(p):forcasHtml(p)
   +(P.length>=3?'<div class="dr-sec wide"><h4>Conquistas</h4>'+(ach.length?'<div class="ach">'+ach.join('')+'</div>':'<p class="note" style="margin:0">Nenhum título neste período.</p>')+'</div>':''));
@@ -1948,7 +1949,7 @@ function init(d){
  var jan=modo==='mes'?'neste mês':modo==='semana'?'nesta semana':'nas últimas partidas';
  var sd=per.semana_id?per.semana_id.split('-'):null;
  var PL=modo==='mes'?['do mês','neste mês','mês']:modo==='semana'?['da semana','nesta semana','semana']:['geral','nas últimas partidas','período'];var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=PL[0]==='geral'?'geral':PL[0];h1e.parentNode.nextElementSibling.setAttribute('data-per',PL[1]);h1e.parentNode.nextElementSibling.textContent=proOn()?'Quem está carregando o time '+PL[1]+'.':'Quem está carregando o time e quem mais alastrou '+PL[1]+'.'}var kk=el('kick');if(kk)kk.textContent=modo==='geral'?'Últimas 100 partidas lidas':textoCiclo(modo);el('rk-t').innerHTML=modo==='mes'?'Ranking do mês':modo==='semana'?'Ranking da semana':'Ranking geral';
- el('rk-p').textContent=(modo==='mes'?'Mês de '+faixaCiclo(cicloMes()):modo==='semana'?'Semana de '+faixaCiclo(cicloSemana()):'Últimas 100 partidas')+' - ordenado pelo Rating HLTV, calculado com abates, mortes e rodadas com multikills.';
+ el('rk-p').textContent=(modo==='mes'?'Mês de '+faixaCiclo(cicloMes()):modo==='semana'?'Semana de '+faixaCiclo(cicloSemana()):'Últimas 100 partidas')+' - ordenado pelo '+rot2()+(Date.now()>=RT2_PERFIL?', calculado com abates, mortes, assistências, dano e KAST.':', calculado com abates, mortes e rodadas com multikills.');
  el('rk-n').textContent='Clique num jogador para abrir o perfil.';
  el('dest-p').textContent='Quem está mandando bem em cada categoria '+jan+'.';
  el('zo-p').textContent='Quem está alastrando mais o time '+jan+'. Quanto mais alto na lista, pior.';
@@ -2449,7 +2450,7 @@ function desenharFechamento(j){
   return h+'</div>';
  }
  box.style.display='';
- box.innerHTML='<div class="sh"><div><h2>Fechamento</h2><p>A semana vai de sábado 0h até sexta 23h59, e o mês vai do dia 14 até o dia 13. Quando fecham, quem teve o maior Rating HLTV (com pelo menos '+cs.semana.minimo+' partidas na semana ou '+cs.mes.minimo+' no mês) carregou o time'+(pro?'':', e quem somou mais pontos de alastro é o alastrador')+'. O resultado fica guardado.</p></div></div>'
+ box.innerHTML='<div class="sh"><div><h2>Fechamento</h2><p>A semana vai de sábado 0h até sexta 23h59, e o mês vai do dia 14 até o dia 13. Quando fecham, quem teve o maior Rating (com pelo menos '+cs.semana.minimo+' partidas na semana ou '+cs.mes.minimo+' no mês) carregou o time'+(pro?'':', e quem somou mais pontos de alastro é o alastrador')+'. O resultado fica guardado.</p></div></div>'
   +'<div class="fc-grid">'+bloco('semana')+bloco('mes')+'</div>';
 }
 var PRO_HTML='<section id="pro" class="pro-sec"><div class="sh menor ap-top"><div><h2>Análise do time <span class="pro-b">PRO</span></h2><p id="ap-sub">O Analyst lê as partidas e mostra onde o time perde rounds. O Coach transforma cada problema em treino.</p></div>'
@@ -2722,7 +2723,8 @@ function renderPer(){
 }
 function glossario(){
  return '<details class="gloss"><summary>Como ler os números</summary><dl>'
-  +'<dt>Rating HLTV (1.0)</dt><dd>Nota na fórmula do HLTV 1.0, calculada pelo painel com abates, mortes e rodadas com multikills. 1,00 é a média; acima disso o jogador rende mais que o normal.</dd>'
+  +'<dt>Rating 2.0</dt><dd>Fórmula usada pela HLTV e pelo CS Stats: junta abates, mortes, assistências, dano por rodada e KAST. 1,00 é a média. Vale nas partidas lidas a partir de 19/11 e, no perfil e nos rankings, a partir de 21/11.</dd>'
+  +'<dt>Rating HLTV (1.0)</dt><dd>Usado nas partidas antigas (marcadas com 1.0). Nota na fórmula do HLTV 1.0, calculada pelo painel com abates, mortes e rodadas com multikills. 1,00 é a média; acima disso o jogador rende mais que o normal.</dd>'
   +'<dt>Como funcionam as notas de 0 a 100</dt><dd>Cada número seu é comparado com o de um jogador médio. Na média, a nota é 50. Acima da média ela sobe, abaixo ela desce, e quanto mais longe da média, mais ela anda. Ficar bem acima da média em tudo dá por volta de 85; só nível profissional chega perto de 100. Com poucas partidas a nota fica mais perto de 50, para um jogo bom ou ruim não decidir sozinho.</dd>'
   +'<dt>KAST (no gráfico do perfil)</dt><dd>Em quantos por cento dos rounds você fez algo útil: abateu (K), deu assistência (A), sobreviveu (S) ou foi trocado (T). Conta só as partidas em que o painel leu o quadro completo.</dd>'
   +'<dt>ADR e Headshots</dt><dd>ADR é o dano médio que você causa nos inimigos por rodada. Headshots é a porcentagem dos seus abates que foram na cabeça.</dd>'
@@ -2909,7 +2911,12 @@ function telaPartida(id,foco,meu,cla){
   desenharPartida(r.j,volta,meu,cla);
  });
 }
-var DX_R=0;
+// Rating 2.0 (19/11): partidas a partir de hoje usam o 2.0 (com KAST e dano); as antigas ficam no 1.0.
+// No perfil e nos rankings, o 2.0 passa a valer no fechamento de sábado 21/11, 0h de Brasília.
+var RT2_PARTIDA=Date.UTC(2026,10,19,16,30),RT2_PERFIL=Date.UTC(2026,10,21,3);
+function rot2(){return Date.now()>=RT2_PERFIL?'Rating 2.0':'Rating HLTV'}
+function rating2(k,d,a,adr,kast,R){if(!R||kast==null||adr==null)return null;var kpr=k/R,dpr=d/R,apr=a/R,imp=2.13*kpr+0.42*apr-0.41;return 0.0073*kast*100+0.3591*kpr-0.5329*dpr+0.2372*imp+0.0032*adr+0.1587}
+var DX_R=0,DX_T=0;
 function ratingJog(p,R){if(!R)return null;var m2=p.m2||0,m3=p.m3||0,m4=p.m4||0,m5=p.m5||0,m1=p.m1!=null?p.m1:Math.max(0,p.k-2*m2-3*m3-4*m4-5*m5);
  return (p.k/R/0.679+0.7*((R-p.d)/R/0.317)+(m1+4*m2+9*m3+16*m4+25*m5)/R/1.277)/2.7}
 function linhaJog(p,focoId){
@@ -2917,15 +2924,16 @@ function linhaJog(p,focoId){
   :'<span class="dx-j" title="'+esc(p.nome)+'"><i class="dx-ini">'+esc(iniciais(p.nome))+'</i><span class="nm"><span>'+esc(p.nome)+'</span><em class="dx-fora">fora do painel</em></span></span>';
  var z=function(n){return n?n:'<span class="z">0</span>'};
  var kd=p.d?p.k/p.d:p.k;
- return '<tr'+(SES&&p.steam64&&p.steam64===SES.sid?' class="eu"':'')+'><td>'+nome+'</td><td class="c">'+seloRank(p.rk)+'</td>'+(function(){var rt=ratingJog(p,DX_R);return '<td class="dx-rt '+(rt==null?'':rt>=1?'p':'n')+'">'+(rt==null?'–':f(rt,2))+'</td>'})()+'<td>'+p.k+'</td><td>'+p.a+'</td><td>'+p.d+'</td><td class="'+(kd>=1?'p':'n')+'">'+kdTxt(p.k,p.d)+'</td>'
+ return '<tr'+(SES&&p.steam64&&p.steam64===SES.sid?' class="eu"':'')+'><td>'+nome+'</td><td class="c">'+seloRank(p.rk)+'</td>'+(function(){var novo=DX_T>=RT2_PARTIDA,r2=novo?rating2(p.k,p.d,p.a||0,p.adr,p.kast,DX_R):null,rt=r2!=null?r2:ratingJog(p,DX_R);
+   return '<td class="dx-rt '+(rt==null?'':rt>=1?'p':'n')+'"'+(r2==null&&rt!=null?' title="Calculado no Rating 1.0: esta partida é de antes da migração para o Rating 2.0 (19/11)."':'')+'>'+(rt==null?'–':f(rt,2))+(r2==null&&rt!=null?'<sup class="dx-v1">1.0</sup>':'')+'</td>'})()+'<td>'+p.k+'</td><td>'+p.a+'</td><td>'+p.d+'</td><td class="'+(kd>=1?'p':'n')+'">'+kdTxt(p.k,p.d)+'</td>'
   +'<td>'+(p.adr==null?'–':f(p.adr,0))+'</td><td>'+(p.kast==null?'–':f(p.kast*100,0)+'%')+'</td><td>'+z(p.m2)+'</td><td>'+z(p.m3)+'</td><td>'+z(p.m4)+'</td><td>'+z(p.m5)+'</td></tr>';
 }
 function tabEquipe(rotulo,pl,venceu,lista,focoId){
- return '<div class="dx-t"><div class="dx-eq"><b>'+esc(rotulo)+'</b>'+(pl==null?'':'<span class="'+(venceu?'w':'')+'">'+pl+' rounds</span>')+'</div><table><colgroup><col><col style="width:104px"><col style="width:68px"><col span="4" style="width:58px"><col span="2" style="width:56px"><col span="4" style="width:38px"></colgroup><thead><tr><th>Jogador</th><th class="c">Rank</th><th title="Rating HLTV 1.0 nesta partida. 1,00 é a média.">Rating</th><th>Abates</th><th>Assist.</th><th>Mortes</th><th>K/D</th><th>ADR</th><th>KAST</th><th>2K</th><th>3K</th><th>4K</th><th>5K</th></tr></thead><tbody>'
+ return '<div class="dx-t"><div class="dx-eq"><b>'+esc(rotulo)+'</b>'+(pl==null?'':'<span class="'+(venceu?'w':'')+'">'+pl+' rounds</span>')+'</div><table><colgroup><col><col style="width:104px"><col style="width:68px"><col span="4" style="width:58px"><col span="2" style="width:56px"><col span="4" style="width:38px"></colgroup><thead><tr><th>Jogador</th><th class="c">Rank</th><th title="Rating nesta partida. 1,00 é a média. A partir de 19/11 é o Rating 2.0 (abates, mortes, assistências, dano e KAST); antes, o Rating 1.0.">Rating</th><th>Abates</th><th>Assist.</th><th>Mortes</th><th>K/D</th><th>ADR</th><th>KAST</th><th>2K</th><th>3K</th><th>4K</th><th>5K</th></tr></thead><tbody>'
   +lista.map(function(p){return linhaJog(p,focoId)}).join('')+'</tbody></table></div>';
 }
 function desenharPartida(j,volta,meu,cla){
- var pa=j.partida,J=j.jogadores,foco=null;DX_R=pa.rounds||0;
+ var pa=j.partida,J=j.jogadores,foco=null;DX_R=pa.rounds||0;DX_T=pa.t||0;
  J.forEach(function(p){if(p.steam64&&p.steam64===volta)foco=p});
  var eqF=foco?foco.eq:null,mine=eqF==null?0:eqF,outro=1-mine;
  var gm=pa.placar[mine],go=pa.placar[outro],res=eqF==null?'':(gm>go?'v':gm<go?'d':'');
