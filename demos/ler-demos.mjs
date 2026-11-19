@@ -255,7 +255,7 @@ function estatisticas(arquivo, ids) {
     // csn/csb = primeiros tiros dados logo depois de andar e quantos deles saíram com o boneco já parado (contra-strafe)
     // coleta v5 (14/11, noite): definições do Leetify. hta/hc = acertos (sem escopeta) e na cabeça; ea/eh = tiros em
     // combate e os que acertaram; csn/csb = tiros de rifle/sniper em combate e os que saíram parado. vc = versão da coleta.
-    v4: 1, v5: 1, vc: 10, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
+    v4: 1, v5: 1, vc: 11, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
     _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
