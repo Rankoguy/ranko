@@ -30,11 +30,21 @@ export async function lerComCs2(arquivo, mod) {
     } catch { /* sem o valor do equipamento */ }
     return p.round_equipmentValue || 0;
   };
+  // rating Premier do controlador (antes da partida e o previsto para vitória/derrota/empate), nos nomes do demoparser2
+  const rating = (p) => {
+    try {
+      const e = p.entity;
+      if (!e) return {};
+      const g = (k) => { const v = e['CCSPlayerController.' + k] ?? e[k]; return typeof v === 'number' ? v : null; };
+      return { rank: g('m_iCompetitiveRanking'), rank_if_win: g('m_iCompetitiveRankingPredicted_Win'), rank_if_loss: g('m_iCompetitiveRankingPredicted_Loss'),
+        rank_if_tie: g('m_iCompetitiveRankingPredicted_Tie'), comp_rank_type: g('m_iCompetitiveRankType') };
+    } catch { return {}; }
+  };
   const fotografar = (tick) => {
     for (const p of rd.playerControllers) {
       const id = String(p.steamId || '');
       if (!/^\d{17}$/.test(id)) continue;
-      fotos.push({ tick, steamid: id, name: p.name, team_num: p.teamNumber, current_equip_value: equipamento(p) });
+      fotos.push({ tick, steamid: id, name: p.name, team_num: p.teamNumber, current_equip_value: equipamento(p), ...rating(p) });
     }
   };
   // última foto do inventário de cada jogador (o cs2parser avisa quando o inventário muda)
