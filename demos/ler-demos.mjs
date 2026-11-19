@@ -611,6 +611,7 @@ const CONFERIR = process.env.CONFERIR === 'sim';
 mkdirSync('saida', { recursive: true });
 const partidas = [];
 const completas = [];
+const codigos = [];
 const analises = [];
 const ruins = new Map(); // matchId -> 'indisponivel' | 'falha'
 let n = 0;
@@ -678,6 +679,8 @@ for (const pt of porPartida.values()) {
     try {
       const q = completa(arq, s._ev);
       completas.push({ partida: pt.id, t: pt.horario, ...q });
+      // coleta v12 (19/11): KAST de cada um do painel no próprio registro, para o Rating 2.0 da partida e do perfil
+      for (const [id, st] of Object.entries(s)) { const j = q.jog.find((x) => x.id === id); if (j) { st.ka = j.ka; st.v12 = 1; } }
       if (CONFERIR) { // só totais por time: nada de nomes nem ids no log público
         const tot = [0, 1].map((eq) => q.jog.filter((x) => x.eq === eq).reduce((a, x) => ({ j: a.j + 1, k: a.k + x.k, d: a.d + x.d }), { j: 0, k: 0, d: 0 }));
         const d = new Date((pt.horario || 0) - 3 * 3600e3);
@@ -707,6 +710,7 @@ for (const pt of porPartida.values()) {
     rmSync(arq, { force: true });
     pt.stats = s;
     for (const [id, st] of Object.entries(s)) partidas.push({ steam64: id, partida: pt.id, t: pt.horario, s: st });
+    codigos.push({ partida: pt.id, t: pt.horario, codigo: pt.codigo }); // guardado só no servidor, para reler a partida se precisar
     { // só contagens (sem nomes nem valores): mostra se o rating por partida veio da demo
       const rkv = Object.values(s).filter((x) => x && typeof x === 'object');
       log(`✔ partida ${n}/${porPartida.size} lida (${rkv.length} pessoas do painel, ${rkv.filter((x) => x.rk0 && (x.rkw || x.rkl)).length} com rating da partida)`);
@@ -732,7 +736,7 @@ for (const p of pessoas) {
   const a = avancos.get(p.f.steam64); a.ultimo_codigo = ultimo;
 }
 if (CONFERIR) { log('Conferência concluída. Nada foi gravado e a fila não andou.'); steam.logOff(); await espera(500); process.exit(0); }
-await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas, completas, analises, ratings, avancos: [...avancos.values()] }) });
+await worker('/interno/partidas', { method: 'POST', body: JSON.stringify({ partidas, completas, analises, ratings, codigos, avancos: [...avancos.values()] }) });
 log(`Enviado: ${partidas.length} registros de partida e ${completas.length} quadro(s) completo(s).`);
 steam.logOff();
 await espera(500);
