@@ -242,7 +242,7 @@ function estatisticas(arquivo, ids) {
     // csn/csb = primeiros tiros dados logo depois de andar e quantos deles saíram com o boneco já parado (contra-strafe)
     // coleta v5 (14/11, noite): definições do Leetify. hta/hc = acertos (sem escopeta) e na cabeça; ea/eh = tiros em
     // combate e os que acertaram; csn/csb = tiros de rifle/sniper em combate e os que saíram parado. vc = versão da coleta.
-    v4: 1, v5: 1, vc: 8, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
+    v4: 1, v5: 1, vc: 9, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
     _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
@@ -384,6 +384,17 @@ function estatisticas(arquivo, ids) {
     }
     for (const [id, c] of cont) if (c.tot) S.get(id).w = c.ganhas > c.tot - c.ganhas ? 1 : c.ganhas === c.tot - c.ganhas ? null : 0;
   } catch { /* sem o dado, a vitória fica de fora */ }
+  // coleta v9 (19/11): rating Premier da própria demo (antes da partida e o previsto para vitória/derrota/empate).
+  // Assim cada partida tem quanto o jogador ganhou ou perdeu, sem depender da leitura do perfil uma vez por dia.
+  try {
+    const t0 = fins.map((f) => f.tick || 0).filter(Boolean).sort((a, b) => a - b)[0];
+    if (t0) for (const l of parseTicks(arquivo, ['rank', 'rank_if_win', 'rank_if_loss', 'rank_if_tie', 'comp_rank_type'], [t0])) {
+      const s = S.get(String(l.steamid || ''));
+      const n = (v) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Math.round(Number(v)) : null);
+      if (!s || l.comp_rank_type != null && Number(l.comp_rank_type) !== 11) continue; // 11 = Premier
+      if (n(l.rank) && n(l.rank) >= 1000) { s.rk0 = n(l.rank); s.rkw = n(l.rank_if_win); s.rkl = n(l.rank_if_loss); s.rke = n(l.rank_if_tie); }
+    }
+  } catch { /* sem o rating na demo, a partida usa a leitura do dia */ }
   let mapa = null;
   try { const h = parseHeader(arquivo); mapa = String(h.map_name || h.mapName || h.map || '').replace(/^.*\//, '') || null; } catch { /* sem o mapa, a partida fica sem nome de mapa */ }
   const peso = [0, 1, 4, 9, 16, 25];
@@ -621,6 +632,8 @@ for (const pt of porPartida.values()) {
         log(`  Mira nova (painel): na cabeça ${m4.hc || 0} de ${m4.hta || 0} acertos, tiros em combate ${m4.ea || 0} (acertaram ${m4.eh || 0}), tiros em spray ${m4.sp || 0} (acertaram ${m4.sa || 0}), tiros de rifle em combate ${m4.csn || 0} (saíram parado ${m4.csb || 0})` + (s._cs ? ` | velocidade no tiro: parado ${s._cs[0]}, quase parando ${s._cs[1]}, freando ${s._cs[2]}, correndo ${s._cs[3]}` : ''));
         const v8 = Object.values(s).reduce((t, x) => ({ vrd: t.vrd + (x.vrd || 0), vsm: t.vsm + (x.vsm || 0), d: t.d + (x.d || 0) }), { vrd: 0, vsm: 0, d: 0 });
         log(`  Mortes (painel): ${v8.d} no total, ${v8.vrd} varado, ${v8.vsm} pela smoke`);
+        const rkv = Object.values(s).filter((x) => x && typeof x === 'object');
+        log(`  Rating na demo (painel): ${rkv.filter((x) => x.rk0).length} de ${rkv.length} jogadores com rating, ${rkv.filter((x) => x.rk0 && (x.rkw || x.rkl)).length} com o ganho/perda previsto`);
         const h = s._hist, dg = libAtual && libAtual.diag;
         log(`  Granadas na hora da morte (painel): 0 = ${h ? h[0] : '?'}, 1 = ${h ? h[1] : '?'}, 2 = ${h ? h[2] : '?'}, 3+ = ${h ? h[3] : '?'}` + (dg ? ` | leitor reserva (fonte: ${dg.fonte}): ${dg.fotos} fotos de inventário (${dg.fotosComGranada} com granada), granadas pegas ${dg.pegou}, lançadas ${dg.lancou}, mortes com 3+ pela foto ${dg.morte3Foto} e pela contagem ${dg.morte3Conta} (todos os 10 jogadores)` : ''));
       }
