@@ -657,11 +657,12 @@ body.lock-gate{overflow:hidden}
 .me-card .cartao-acoes{padding:20px 32px}
 .me-card .dr-sec{padding:32px;border-top:1px solid var(--line)}
 .me-card .dr-sec h4{display:flex;align-items:center;gap:10px;margin:0 0 18px;font:800 20px/1.2 var(--disp);letter-spacing:-.01em}
-/* títulos do perfil (18/11, versão B): etiqueta na cor de destaque que some no fundo do card */
-.me-card .dr-sec h4{width:max-content;max-width:100%;padding:9px 90px 9px 16px;border-radius:9px;background:linear-gradient(90deg,var(--t) 0%,var(--t) 45%,var(--panel) 100%);color:var(--on-t)}
-.me-card .dr-sec h4 .ii{border-color:currentColor;color:inherit;opacity:.8}
-.me-card .dr-sec h4{white-space:nowrap}
-@media(max-width:640px){.me-card .dr-sec h4{padding:8px 40px 8px 14px;font-size:17px}}
+/* títulos do perfil (19/11): mesma regra dos títulos do time (Destaques): linha embaixo com uma faixa curta na cor de destaque */
+.me-card .dr-sec h4::before{display:none}
+.me-card .dr-sec h4{position:relative;padding-bottom:14px;margin-bottom:22px;border-bottom:1px solid var(--line);font-size:22px}
+.me-card .dr-sec h4::after{content:"";position:absolute;left:0;bottom:-1px;width:56px;height:3px;border-radius:3px;background:var(--t)}
+.func-h h4,.fx-top h4{flex:1 1 auto}
+@media(max-width:640px){.me-card .dr-sec h4{font-size:19px}}
 .me-card .dr-sec h4 .gloss-t{font:inherit}
 .me-card .me-body{padding:0;gap:0}
 .me-card .me-body>.dr-sec:nth-child(2){border-left:1px solid var(--line)}
@@ -908,10 +909,11 @@ body.modo-pro .pro-sec{display:block}
 .ev-cb{display:grid;grid-template-rows:auto 34px;justify-items:center;gap:6px;min-width:0}
 .ev-col{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
 .ev-col i{display:block;width:70%;max-width:64px;border-radius:8px 8px 3px 3px}
-.ev-cs{display:grid;justify-items:center;gap:2px}.ev-cs .rt{transform:scale(.8)}.ev-cs small{font:800 11.5px var(--body);color:var(--muted);white-space:nowrap}
+.ev-cs{display:grid;justify-items:center;gap:2px}.ev-cs .rt{zoom:.82}.ev-cs small{font:800 11.5px var(--body);color:var(--muted);white-space:nowrap}
+.ev-cb.ev-sem{background:rgba(var(--w),.035);border-radius:10px}.ev-d small{font:600 12.5px var(--body);color:var(--muted)}
 .ev-cb>span{display:grid;justify-items:center;font-size:11.5px;color:var(--dim);line-height:1.35;text-align:center}.ev-cb>span em{font-style:normal;color:var(--muted)}
 .ev-meta{position:absolute;left:0;right:0;border-top:1.5px dashed rgba(var(--w),.35);pointer-events:none}.ev-meta span{position:absolute;right:0;top:-19px;font:700 11.5px var(--body);color:var(--muted)}
-@media(max-width:640px){.ev-cw{gap:6px}.ev-cs .rt{transform:scale(.7)}.ev-cab{gap:12px 22px}}
+@media(max-width:640px){.ev-cw{gap:4px}.ev-cs .rt{zoom:.64}.ev-cs small{font-size:10.5px}.ev-cab{gap:12px 22px}}
 .ind-gloss{margin:14px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px;max-width:78ch}
 .ind-gloss li{margin:4px 0}
 .ind-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;max-width:640px}
@@ -2846,7 +2848,7 @@ function carregarHist(id){
  chamar('GET','/jogador/'+id+'/partidas').then(function(r){
   var box=el('hist-sec');if(!box||!r.ok)return;
   var L=(r.j&&r.j.partidas)||[],H=(r.j&&r.j.hist)||[],ev=el('evo-sec');
-  if(ev&&H.length>=2){ev.innerHTML='<h4>Evolução do rating'+info('Rating Premier lido uma vez por dia. Cada coluna é uma semana: o selo mostra onde você terminou a semana e quanto subiu ou caiu.')+'</h4>'+evoRating(H,null,L);ev.style.display=''}
+  var evh=evoRating(H,null,L);if(ev&&evh){ev.innerHTML='<h4>Evolução do rating'+info('Rating Premier de cada partida, lido da própria demo: quanto você ganhou ou perdeu em cada uma. Em cima, o resumo da semana (sábado a sábado).')+'</h4>'+evh;ev.style.display=''}
   if(!L.length){box.style.display='none';return}
   HX={L:L,f:'todas',n:15,id:id};desenharHist();
  });
@@ -3572,7 +3574,30 @@ function indAcao(ac,b){
 }
 // evolução do rating (versão C, escolhida em 19/11): uma coluna por semana, na cor da faixa, com o selo do fim da semana
 // h: [{d:'AAAA-MM-DD', r}] (uma leitura por dia); alvo: meta (opcional); L: partidas (para contar quantas por semana)
+// por partida (coleta v9): o rating vem da própria demo; em cima, só o resumo da semana (sábado 0h a sábado, horário de Brasília)
+function inicioSemanaBR(){var n=Date.now()-3*3600e3,d=new Date(n),dd=(d.getUTCDay()+1)%7;return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()-dd)+3*3600e3}
+function evoPartidas(P,alvo){
+ var nM=window.innerWidth<640?4:10,V=P.slice(-nM),ini=inicioSemanaBR();
+ var sem=P.filter(function(p){return p.t>=ini}),sd=sem.reduce(function(a,p){return a+p.rkd},0),at=P[P.length-1].rk;
+ var sg=function(v){return (v>0?'+':v<0?'−':'')+(v?rtNum(Math.abs(v)):'0')};
+ var cab='<div class="ev-cab"><div><span class="ev-k">Agora</span>'+selo(at)+'</div>'
+  +'<div><span class="ev-k">Nesta semana</span><b class="ev-d '+(sd>0?'p':sd<0?'n':'')+'">'+(sem.length?sg(sd):'–')+'</b></div>'
+  +'<div><span class="ev-k">Partidas na semana</span><b class="ev-d">'+sem.length+(sem.length?' <small>('+sem.filter(function(p){return p.rkd>0}).length+' subindo)</small>':'')+'</b></div>'
+  +(alvo?'<div><span class="ev-k">Meta</span>'+selo(alvo)+'</div>':'')+'</div>';
+ var rs=V.map(function(p){return p.rk}),mx=Math.max.apply(null,rs.concat(alvo?[alvo]:[])),mn=Math.min.apply(null,rs.concat(V.map(function(p){return p.rk0})))-2500,AH=200;
+ if(mx-mn<3000)mn=mx-3000;
+ var dm=function(t){var d=new Date(t-3*3600e3);return ('0'+d.getUTCDate()).slice(-2)+'/'+('0'+(d.getUTCMonth()+1)).slice(-2)};
+ var col=V.map(function(p){var fx=RT_F[rtFaixa(p.rk)],hg=Math.max(6,(p.rk-mn)/(mx-mn)*AH);
+  return '<div class="ev-cb'+(p.t>=ini?' ev-sem':'')+'" title="'+dm(p.t)+(p.mapa?' - '+esc(nomeMapa(p.mapa)):'')+': '+rtNum(p.rk0)+' → '+rtNum(p.rk)+'"><div class="ev-col" style="height:'+AH+'px"><div class="ev-cs">'+selo(p.rk)
+   +'<small class="'+(p.rkd>0?'p':p.rkd<0?'n':'')+'">'+sg(p.rkd)+'</small></div><i style="height:'+hg.toFixed(0)+'px;background:linear-gradient(180deg,'+fx[2]+','+fx[2]+'1f)"></i></div>'
+   +'<span>'+dm(p.t)+'<em>'+(p.w===1?'vitória':p.w===0?'derrota':'empate')+'</em></span></div>'}).join('');
+ return cab+'<div class="ev-cw" role="img" aria-label="Rating Premier nas últimas '+V.length+' partidas, de '+rtNum(V[0].rk0)+' para '+rtNum(at)+'">'
+  +(alvo?'<div class="ev-meta" style="bottom:'+(34+(alvo-mn)/(mx-mn)*AH).toFixed(0)+'px"><span>meta '+rtNum(alvo)+'</span></div>':'')+col+'</div>'
+  +'<p class="note" style="margin:10px 0 0">Cada coluna é uma partida de Premier: o selo é o rating depois dela. As colunas com fundo são desta semana.</p>';
+}
 function evoRating(h,alvo,L){
+ var P=(L||[]).filter(function(p){return p.rkd!=null&&p.rk0>0&&p.rk>0}).sort(function(a,b){return a.t-b.t});
+ if(P.length>=2)return evoPartidas(P,alvo);
  if(!h||h.length<2)return '';
  var dm=function(d){return d.slice(8,10)+'/'+d.slice(5,7)},dia=function(d){return Date.parse(d+'T12:00:00Z')};
  var fim=dia(h[h.length-1].d),nS=window.innerWidth<640?4:8,S=[];
