@@ -242,7 +242,7 @@ function estatisticas(arquivo, ids) {
     // csn/csb = primeiros tiros dados logo depois de andar e quantos deles saíram com o boneco já parado (contra-strafe)
     // coleta v5 (14/11, noite): definições do Leetify. hta/hc = acertos (sem escopeta) e na cabeça; ea/eh = tiros em
     // combate e os que acertaram; csn/csb = tiros de rifle/sniper em combate e os que saíram parado. vc = versão da coleta.
-    v4: 1, v5: 1, vc: 7, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
+    v4: 1, v5: 1, vc: 8, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
     _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
@@ -263,6 +263,11 @@ function estatisticas(arquivo, ids) {
       a.k++; if (e.headshot) a.hs++;
       if (/awp/i.test(String(e.weapon))) a.awp++; // abates com a AWP (ajuda a sugerir a função)
       const rd = e.total_rounds_played ?? 0; a._r[rd] = (a._r[rd] || 0) + 1;
+    }
+    // coleta v8 (18/11): morreu para inimigo varado (o tiro atravessou parede/objeto) ou através da smoke
+    if (v && e.attacker_steamid && e.attacker_steamid !== e.user_steamid && e.attacker_team_num !== e.user_team_num) {
+      if (Number(e.penetrated) > 0) v.vrd++;
+      if (e.thrusmoke === true || e.thrusmoke === 1) v.vsm++;
     }
     if (v) v._m[e.total_rounds_played ?? 0] = 1; // morreu nessa rodada
     const as = S.get(String(e.assister_steamid));
@@ -614,6 +619,8 @@ for (const pt of porPartida.values()) {
         log(`  Coleta nova: tiros ${v.tf || 0}, acertos ${v.ta || 0}, HE boas ${v.heb || 0}, molotov boas ${v.mob || 0}, rounds de 2+ abates vivo ${v.ks2 || 0}, fogo amigo ${v.ffx || 0}, flash em amigo ${v.fax || 0}, HE em amigo ${v.hex || 0}, morreu com 3+ granadas ${v.uct || 0} (inventário lido em ${v.ugn || 0} de ${v.d || 0} mortes)`);
         const m4 = Object.values(s).reduce((t, x) => { for (const c of ['hta', 'hc', 'ea', 'eh', 'sp', 'sa', 'csn', 'csb']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
         log(`  Mira nova (painel): na cabeça ${m4.hc || 0} de ${m4.hta || 0} acertos, tiros em combate ${m4.ea || 0} (acertaram ${m4.eh || 0}), tiros em spray ${m4.sp || 0} (acertaram ${m4.sa || 0}), tiros de rifle em combate ${m4.csn || 0} (saíram parado ${m4.csb || 0})` + (s._cs ? ` | velocidade no tiro: parado ${s._cs[0]}, quase parando ${s._cs[1]}, freando ${s._cs[2]}, correndo ${s._cs[3]}` : ''));
+        const v8 = Object.values(s).reduce((t, x) => ({ vrd: t.vrd + (x.vrd || 0), vsm: t.vsm + (x.vsm || 0), d: t.d + (x.d || 0) }), { vrd: 0, vsm: 0, d: 0 });
+        log(`  Mortes (painel): ${v8.d} no total, ${v8.vrd} varado, ${v8.vsm} pela smoke`);
         const h = s._hist, dg = libAtual && libAtual.diag;
         log(`  Granadas na hora da morte (painel): 0 = ${h ? h[0] : '?'}, 1 = ${h ? h[1] : '?'}, 2 = ${h ? h[2] : '?'}, 3+ = ${h ? h[3] : '?'}` + (dg ? ` | leitor reserva (fonte: ${dg.fonte}): ${dg.fotos} fotos de inventário (${dg.fotosComGranada} com granada), granadas pegas ${dg.pegou}, lançadas ${dg.lancou}, mortes com 3+ pela foto ${dg.morte3Foto} e pela contagem ${dg.morte3Conta} (todos os 10 jogadores)` : ''));
       }
