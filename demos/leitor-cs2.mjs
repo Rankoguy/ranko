@@ -80,6 +80,27 @@ export async function lerComCs2(arquivo, mod) {
       invs.set(id, { tick, g, antes: ant ? (ant.tick < tick ? ant.g : ant.antes) : 0 });
     } catch { /* sem a foto */ }
   });
+  // teste da flash (21/11): para quem foi cegado, a posição, a direção da mira e o brilho da cegueira, lidos no fim do tick do evento
+  const cegPend = [];
+  const campoPawn = (e, re) => {
+    if (!e) return undefined;
+    const ks = e instanceof Map ? [...e.keys()].map(String) : Object.keys(e);
+    const k = ks.find((x) => re.test(x)); if (!k) return undefined;
+    return e instanceof Map ? e.get(k) : e[k];
+  };
+  const num = (v) => (typeof v === 'number' ? v : typeof v === 'bigint' ? Number(v) : null);
+  const lerCegueira = (row, p) => {
+    try {
+      let e = null; try { e = rd.getEntity(p.pawnEntityId, 'CCSPlayerPawn'); } catch { /* segue */ }
+      if (e && !diag.flChaves) { const ks = e instanceof Map ? [...e.keys()].map(String) : Object.keys(e); diag.flChaves = ks.filter((k) => /Flash|EyeAngle|angRot/i.test(k)).map((k) => k.replace(/^CCSPlayerPawn\./, '')).join(',').slice(0, 200) || 'nenhum'; }
+      const al = num(campoPawn(e, /FlashMaxAlpha/i)); if (al != null) row._al = al;
+      const du = num(campoPawn(e, /FlashDuration/i)); if (du != null) row._fd = du;
+      let ang = campoPawn(e, /angEyeAngles/i) ?? p.eyeAngles ?? p.viewAngles ?? null;
+      if (Array.isArray(ang)) ang = { x: ang[0], y: ang[1] };
+      if (ang && typeof ang.x === 'number' && typeof ang.y === 'number') { row._pitch = ang.x; row._yaw = ang.y; }
+    } catch { /* sem o dado */ }
+  };
+  rd.on('tickend', () => { while (cegPend.length) { const [row, p] = cegPend.shift(); lerCegueira(row, p); } });
   // posição de cada boneco nos últimos ticks, para medir a velocidade na hora do tiro (contra-strafe)
   const trilha = new Map(); // steam64 -> [{t, x, y}] (só os últimos 24 ticks)
   rd.on('tickend', (t) => {
@@ -129,6 +150,10 @@ export async function lerComCs2(arquivo, mod) {
         if (!f) diag.mortesSemFoto++;
         else if (f.tick === tick) diag.mortesMesmoTick++;
         if (f) row.granadas = f.tick < tick || f.g > 0 ? f.g : f.antes;
+      }
+      if (nome === 'player_blind' && e && e.player) {
+        try { const q = e.player.position; if (q && typeof q.x === 'number') { row._px = q.x; row._py = q.y; row._pz = q.z; } } catch { /* sem posição */ }
+        cegPend.push([row, e.player]);
       }
       if (nome === 'round_end') {
         if (e.winner !== 2 && e.winner !== 3) return; // "a partida vai começar" e afins não são rodadas

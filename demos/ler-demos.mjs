@@ -397,7 +397,10 @@ function estatisticas(arquivo, ids) {
     tentar(['CCSPlayerPawn.m_flFlashMaxAlpha', 'CCSPlayerPawn.m_flFlashDuration']);
     const L = [];
     for (const e of tf) {
-      const d = achar(e), p = pos.get(String(e.user_steamid) + '|' + Math.max(1, (e.tick || 1) - 1)) || {};
+      const d = achar(e), p0 = pos.get(String(e.user_steamid) + '|' + Math.max(1, (e.tick || 1) - 1)) || {};
+      // leitor reserva: a posição, a mira e o brilho vêm no próprio evento
+      const p = typeof p0.X === 'number' ? p0 : { ...p0, X: e._px, Y: e._py, Z: e._pz, pitch: e._pitch, yaw: e._yaw, flash_max_alpha: p0.flash_max_alpha ?? e._al };
+      if (e._al != null) campos.flash_max_alpha = 1; if (typeof e._yaw === 'number') campos.yaw = 1;
       let ang = null, dist = null;
       if (d && typeof p.X === 'number' && typeof p.yaw === 'number') {
         const ox = p.X, oy = p.Y, oz = (p.Z || 0) + 64, vx = d.x - ox, vy = d.y - oy, vz = d.z - oz, n = Math.hypot(vx, vy, vz) || 1;
@@ -413,7 +416,7 @@ function estatisticas(arquivo, ids) {
         : mortes.some((m) => String(m.attacker_steamid) === vit && m.attacker_team_num !== m.user_team_num && m.tick >= t0 - 64 && m.tick <= t0 + 64) ? 'colega matou no estouro' : null;
       L.push({ t: Math.round((e.blind_duration || 0) * 10) / 10, ang, dist, al: al == null ? null : Math.round(al), boa });
     }
-    Object.defineProperty(S, '_fl', { value: { L, campos: Object.keys(campos), achadas: L.filter((x) => x.ang != null).length }, enumerable: false, configurable: true });
+    Object.defineProperty(S, '_fl', { value: { L, campos: Object.keys(campos), achadas: L.filter((x) => x.ang != null).length, det: det.length, detXY: det.filter((d) => typeof d.x === 'number').length, comPos: tf.filter((e) => typeof e._px === 'number' || typeof e._yaw === 'number').length }, enumerable: false, configurable: true });
   } catch (err) { Object.defineProperty(S, '_fl', { value: { erro: String((err && err.message) || err).slice(0, 120) }, enumerable: false, configurable: true }); }
   // ---- coleta v4: mira ----
   try { miraV4(arquivo, S, danos, ehArma, nomeArma); } catch { for (const x of S.values()) { x.v4 = 0; x.v5 = 0; x.vc = 3; } /* sem esses números, a mira usa o que tiver */ }
@@ -731,7 +734,7 @@ for (const pt of porPartida.values()) {
           else if (fl.erro) log(`  Teste da flash: erro (${fl.erro})`);
           else {
             const lado = (a) => (a == null ? '?' : a <= 45 ? 'frente' : a <= 90 ? 'lado' : a <= 135 ? 'lado de trás' : 'costas');
-            log(`  Teste da flash: ${fl.L.length} colegas cegados por flash do painel; ângulo lido em ${fl.achadas}; campos de brilho: ${fl.campos.filter((c) => /lpha|uration/.test(c)).join(', ') || 'nenhum'}`);
+            log(`  Teste da flash${libAtual && libAtual.diag && libAtual.diag.flChaves ? ' (campos do boneco: ' + libAtual.diag.flChaves + ')' : ''}: ${fl.L.length} colegas cegados por flash do painel; ângulo lido em ${fl.achadas} (flashes estouradas ${fl.det}, com posição ${fl.detXY}; cegados com posição/mira ${fl.comPos}); campos de brilho: ${fl.campos.filter((c) => /lpha|uration/.test(c)).join(', ') || 'nenhum'}`);
             log(`    Regra atual (1,5 s): ${fl.L.filter((x) => x.t >= 1.5).length} | Regra nova (4,5 s e de frente): ${fl.L.filter((x) => x.t >= 4.5 && x.ang != null && x.ang <= 45).length}, tirando as que deram resultado bom: ${fl.L.filter((x) => x.t >= 4.5 && x.ang != null && x.ang <= 45 && !x.boa).length}`);
             fl.L.slice().sort((a, b) => b.t - a.t).slice(0, 40).forEach((x, i) => log(`    #${i + 1}: ${String(x.t).replace('.', ',')} s, ${x.ang == null ? 'ângulo ?' : x.ang + '° (' + lado(x.ang) + ')'}, ${x.dist == null ? '' : x.dist + ' m, '}brilho ${x.al == null ? '?' : x.al}${x.boa ? ' - ' + x.boa : ''}`));
           } }
