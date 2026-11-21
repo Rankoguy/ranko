@@ -277,7 +277,7 @@ function estatisticas(arquivo, ids) {
     // csn/csb = primeiros tiros dados logo depois de andar e quantos deles saíram com o boneco já parado (contra-strafe)
     // coleta v5 (14/11, noite): definições do Leetify. hta/hc = acertos (sem escopeta) e na cabeça; ea/eh = tiros em
     // combate e os que acertaram; csn/csb = tiros de rifle/sniper em combate e os que saíram parado. vc = versão da coleta.
-    v4: 1, v5: 1, vc: 12, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
+    v4: 1, v5: 1, vc: 13, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
     _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
@@ -382,9 +382,10 @@ function estatisticas(arquivo, ids) {
     if (e.attacker_team_num === e.user_team_num && (e.blind_duration || 0) >= 1.5) flAmigo.add(String(e.attacker_steamid) + '|' + e.tick);
   }
   for (const k of flAmigo) S.get(k.split('|')[0]).fax++;
-  // teste da flash (21/11, só na conferência): para cada colega cegado, mede tempo, ângulo da flash em relação à mira e brilho.
-  // Não muda nenhuma conta; só vai para o log, em números, sem nomes nem ids.
-  if (CONFERIR) try {
+  // flash no colega (21/11): para cada colega cegado, o tempo, o ângulo da flash em relação à mira dele e se a mesma flash deu resultado.
+  // Regra do Cegador do time (decisão do Juan, 21/11): conta a flash que deixou um colega 3 s ou mais cego, estourando de frente (até 45° da mira),
+  // e que não virou assistência nem teve o colega matando no estouro. Uma flash conta 1, mesmo cegando vários colegas.
+  try {
     const tf = cegos.filter((e) => e.attacker_steamid !== e.user_steamid && e.attacker_team_num === e.user_team_num && S.has(String(e.attacker_steamid)));
     let det = []; try { det = parseEvent(arquivo, 'flashbang_detonate'); } catch {}
     const porEnt = new Map(det.filter((d) => d.entityid != null).map((d) => [String(d.entityid), d]));
@@ -415,9 +416,24 @@ function estatisticas(arquivo, ids) {
       const boa = mortes.some((m) => m.tick >= t0 && m.tick <= t0 + 5 * 64 && m.assistedflash && String(m.assister_steamid) === thr && m.attacker_team_num !== m.user_team_num) ? 'virou assistência'
         : mortes.some((m) => String(m.attacker_steamid) === vit && m.attacker_team_num !== m.user_team_num && m.tick >= t0 - 64 && m.tick <= t0 + 64) ? 'colega matou no estouro' : null;
       L.push({ t: Math.round((e.blind_duration || 0) * 10) / 10, ang, dist, al: al == null ? null : Math.round(al), boa });
+      e._fl = { ang, boa, chave: String(e.attacker_steamid) + '|' + (d ? (d.entityid ?? d.tick) : e.tick) };
     }
     Object.defineProperty(S, '_fl', { value: { L, campos: Object.keys(campos), achadas: L.filter((x) => x.ang != null).length, det: det.length, detXY: det.filter((d) => typeof d.x === 'number').length, comPos: tf.filter((e) => typeof e._px === 'number' || typeof e._yaw === 'number').length }, enumerable: false, configurable: true });
   } catch (err) { Object.defineProperty(S, '_fl', { value: { erro: String((err && err.message) || err).slice(0, 120) }, enumerable: false, configurable: true }); }
+  {
+    const fl = S._fl, ruim = new Set(), boa = new Set();
+    const comAng = fl && fl.L ? fl.achadas : 0, total = fl && fl.L ? fl.L.length : 0;
+    for (const e of cegos) {
+      const x = e._fl; if (!x || !S.has(String(e.attacker_steamid))) continue;
+      if (x.boa) boa.add(x.chave);
+      else if ((e.blind_duration || 0) >= 3 && x.ang != null && x.ang <= 45) ruim.add(x.chave);
+    }
+    for (const k of boa) ruim.delete(k); // a flash que deu resultado com um colega não conta como ruim
+    // só vale quando o ângulo foi lido (ou ninguém do time foi cegado); senão a partida fica fora do Cegador do time
+    const ok = total === 0 || comAng === total;
+    for (const st of S.values()) { st.v13 = ok ? 1 : 0; st.fx2 = 0; st.fab = 0; }
+    if (ok) { for (const k of ruim) S.get(k.split('|')[0]).fx2++; for (const k of boa) S.get(k.split('|')[0]).fab++; }
+  }
   // ---- coleta v4: mira ----
   try { miraV4(arquivo, S, danos, ehArma, nomeArma); } catch { for (const x of S.values()) { x.v4 = 0; x.v5 = 0; x.vc = 3; } /* sem esses números, a mira usa o que tiver */ }
   // comprou à toa: morreu com 3 granadas ou mais na mão
@@ -734,9 +750,9 @@ for (const pt of porPartida.values()) {
           else if (fl.erro) log(`  Teste da flash: erro (${fl.erro})`);
           else {
             const lado = (a) => (a == null ? '?' : a <= 45 ? 'frente' : a <= 90 ? 'lado' : a <= 135 ? 'lado de trás' : 'costas');
-            log(`  Teste da flash${libAtual && libAtual.diag && libAtual.diag.flChaves ? ' (campos do boneco: ' + libAtual.diag.flChaves + ')' : ''}: ${fl.L.length} colegas cegados por flash do painel; ângulo lido em ${fl.achadas} (flashes estouradas ${fl.det}, com posição ${fl.detXY}; cegados com posição/mira ${fl.comPos}); campos de brilho: ${fl.campos.filter((c) => /lpha|uration/.test(c)).join(', ') || 'nenhum'}`);
-            log(`    Regra atual (1,5 s): ${fl.L.filter((x) => x.t >= 1.5).length} | Regra nova (4,5 s e de frente): ${fl.L.filter((x) => x.t >= 4.5 && x.ang != null && x.ang <= 45).length}, tirando as que deram resultado bom: ${fl.L.filter((x) => x.t >= 4.5 && x.ang != null && x.ang <= 45 && !x.boa).length}`);
-            fl.L.slice().sort((a, b) => b.t - a.t).slice(0, 40).forEach((x, i) => log(`    #${i + 1}: ${String(x.t).replace('.', ',')} s, ${x.ang == null ? 'ângulo ?' : x.ang + '° (' + lado(x.ang) + ')'}, ${x.dist == null ? '' : x.dist + ' m, '}brilho ${x.al == null ? '?' : x.al}${x.boa ? ' - ' + x.boa : ''}`));
+            log(`  Teste da flash${libAtual && libAtual.diag && libAtual.diag.flChaves ? ' (campos do boneco: ' + libAtual.diag.flChaves + ')' : ''}: ${fl.L.length} colegas cegados por flash do painel; ângulo lido em ${fl.achadas} (flashes estouradas ${fl.det}, com posição ${fl.detXY}; cegados com posição/mira ${fl.comPos})`);
+            log(`    Regra antiga (1,5 s): ${fl.L.filter((x) => x.t >= 1.5).length} cegueiras | Regra nova (3 s, de frente, sem resultado bom): ${fl.L.filter((x) => x.t >= 3 && x.ang != null && x.ang <= 45 && !x.boa).length} cegueiras; no Cegador do time: ${Object.values(s).reduce((t, x) => t + ((x && x.fx2) || 0), 0)} flashes`);
+            fl.L.slice().sort((a, b) => b.t - a.t).slice(0, 15).forEach((x, i) => log(`    #${i + 1}: ${String(x.t).replace('.', ',')} s, ${x.ang == null ? 'ângulo ?' : x.ang + '° (' + lado(x.ang) + ')'}, ${x.dist == null ? '' : x.dist + ' m, '}${x.boa ? ' - ' + x.boa : ''}`));
           } }
         const rkv = Object.values(s).filter((x) => x && typeof x === 'object');
         log(`  Rating na demo (painel): ${rkv.filter((x) => x.rk0).length} de ${rkv.length} jogadores com rating, ${rkv.filter((x) => x.rk0 && (x.rkw || x.rkl)).length} com o ganho/perda previsto`);
