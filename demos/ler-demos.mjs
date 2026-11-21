@@ -382,6 +382,39 @@ function estatisticas(arquivo, ids) {
     if (e.attacker_team_num === e.user_team_num && (e.blind_duration || 0) >= 1.5) flAmigo.add(String(e.attacker_steamid) + '|' + e.tick);
   }
   for (const k of flAmigo) S.get(k.split('|')[0]).fax++;
+  // teste da flash (21/11, só na conferência): para cada colega cegado, mede tempo, ângulo da flash em relação à mira e brilho.
+  // Não muda nenhuma conta; só vai para o log, em números, sem nomes nem ids.
+  if (CONFERIR) try {
+    const tf = cegos.filter((e) => e.attacker_steamid !== e.user_steamid && e.attacker_team_num === e.user_team_num && S.has(String(e.attacker_steamid)));
+    let det = []; try { det = parseEvent(arquivo, 'flashbang_detonate'); } catch {}
+    const porEnt = new Map(det.filter((d) => d.entityid != null).map((d) => [String(d.entityid), d]));
+    const achar = (e) => (e.entityid != null && porEnt.get(String(e.entityid))) || det.filter((d) => String(d.user_steamid) === String(e.attacker_steamid) && d.tick <= e.tick && e.tick - d.tick <= 4).sort((a, b) => b.tick - a.tick)[0] || null;
+    const ticks = [...new Set(tf.map((e) => Math.max(1, (e.tick || 1) - 1)))];
+    const pos = new Map(), campos = {};
+    const tentar = (lista) => { try { for (const l of parseTicks(arquivo, lista, ticks)) { const k = String(l.steamid) + '|' + l.tick; pos.set(k, { ...(pos.get(k) || {}), ...l }); for (const c of lista) if (l[c] != null) campos[c] = 1; } } catch {} };
+    tentar(['X', 'Y', 'Z', 'pitch', 'yaw']);
+    tentar(['flash_max_alpha', 'flash_duration']);
+    tentar(['CCSPlayerPawn.m_flFlashMaxAlpha', 'CCSPlayerPawn.m_flFlashDuration']);
+    const L = [];
+    for (const e of tf) {
+      const d = achar(e), p = pos.get(String(e.user_steamid) + '|' + Math.max(1, (e.tick || 1) - 1)) || {};
+      let ang = null, dist = null;
+      if (d && typeof p.X === 'number' && typeof p.yaw === 'number') {
+        const ox = p.X, oy = p.Y, oz = (p.Z || 0) + 64, vx = d.x - ox, vy = d.y - oy, vz = d.z - oz, n = Math.hypot(vx, vy, vz) || 1;
+        const yw = p.yaw * Math.PI / 180, pt = (p.pitch || 0) * Math.PI / 180;
+        const fx = Math.cos(pt) * Math.cos(yw), fy = Math.cos(pt) * Math.sin(yw), fz = -Math.sin(pt);
+        ang = Math.round(Math.acos(Math.max(-1, Math.min(1, (fx * vx + fy * vy + fz * vz) / n))) * 180 / Math.PI);
+        dist = Math.round(n * 0.0254); // unidades do jogo para metros
+      }
+      const al = p.flash_max_alpha ?? p['CCSPlayerPawn.m_flFlashMaxAlpha'] ?? null;
+      // lado bom da mesma flash: virou assistência de flash (até 5 s depois) ou o colega cegado matou alguém perto do estouro (1 s antes até 1 s depois)
+      const t0 = d ? d.tick : e.tick, thr = String(e.attacker_steamid), vit = String(e.user_steamid);
+      const boa = mortes.some((m) => m.tick >= t0 && m.tick <= t0 + 5 * 64 && m.assistedflash && String(m.assister_steamid) === thr && m.attacker_team_num !== m.user_team_num) ? 'virou assistência'
+        : mortes.some((m) => String(m.attacker_steamid) === vit && m.attacker_team_num !== m.user_team_num && m.tick >= t0 - 64 && m.tick <= t0 + 64) ? 'colega matou no estouro' : null;
+      L.push({ t: Math.round((e.blind_duration || 0) * 10) / 10, ang, dist, al: al == null ? null : Math.round(al), boa });
+    }
+    Object.defineProperty(S, '_fl', { value: { L, campos: Object.keys(campos), achadas: L.filter((x) => x.ang != null).length }, enumerable: false, configurable: true });
+  } catch (err) { Object.defineProperty(S, '_fl', { value: { erro: String((err && err.message) || err).slice(0, 120) }, enumerable: false, configurable: true }); }
   // ---- coleta v4: mira ----
   try { miraV4(arquivo, S, danos, ehArma, nomeArma); } catch { for (const x of S.values()) { x.v4 = 0; x.v5 = 0; x.vc = 3; } /* sem esses números, a mira usa o que tiver */ }
   // comprou à toa: morreu com 3 granadas ou mais na mão
@@ -442,6 +475,7 @@ function estatisticas(arquivo, ids) {
   Object.defineProperty(saida, '_hist', { value: S._hist || null, enumerable: false });
   Object.defineProperty(saida, '_cs', { value: S._cs || null, enumerable: false });
   Object.defineProperty(saida, '_rk', { value: S._rk || null, enumerable: false });
+  Object.defineProperty(saida, '_fl', { value: S._fl || null, enumerable: false });
   for (const [id, s] of S) {
     if (!s.k && !s.d && !s.dmg) continue; // não estava nessa partida
     for (const k of Object.values(s._r)) { const n = Math.min(k, 5); s['m' + n]++; }
@@ -692,6 +726,15 @@ for (const pt of porPartida.values()) {
         log(`  Mira nova (painel): na cabeça ${m4.hc || 0} de ${m4.hta || 0} acertos, tiros em combate ${m4.ea || 0} (acertaram ${m4.eh || 0}), tiros em spray ${m4.sp || 0} (acertaram ${m4.sa || 0}), tiros de rifle em combate ${m4.csn || 0} (saíram parado ${m4.csb || 0})` + (s._cs ? ` | velocidade no tiro: parado ${s._cs[0]}, quase parando ${s._cs[1]}, freando ${s._cs[2]}, correndo ${s._cs[3]}` : ''));
         const v8 = Object.values(s).reduce((t, x) => ({ vrd: t.vrd + (x.vrd || 0), vsm: t.vsm + (x.vsm || 0), d: t.d + (x.d || 0) }), { vrd: 0, vsm: 0, d: 0 });
         log(`  Mortes (painel): ${v8.d} no total, ${v8.vrd} varado, ${v8.vsm} pela smoke`);
+        { const fl = s._fl; // teste da flash: só números, sem nomes
+          if (!fl) log('  Teste da flash: sem dados');
+          else if (fl.erro) log(`  Teste da flash: erro (${fl.erro})`);
+          else {
+            const lado = (a) => (a == null ? '?' : a <= 45 ? 'frente' : a <= 90 ? 'lado' : a <= 135 ? 'lado de trás' : 'costas');
+            log(`  Teste da flash: ${fl.L.length} colegas cegados por flash do painel; ângulo lido em ${fl.achadas}; campos de brilho: ${fl.campos.filter((c) => /lpha|uration/.test(c)).join(', ') || 'nenhum'}`);
+            log(`    Regra atual (1,5 s): ${fl.L.filter((x) => x.t >= 1.5).length} | Regra nova (4,5 s e de frente): ${fl.L.filter((x) => x.t >= 4.5 && x.ang != null && x.ang <= 45).length}, tirando as que deram resultado bom: ${fl.L.filter((x) => x.t >= 4.5 && x.ang != null && x.ang <= 45 && !x.boa).length}`);
+            fl.L.slice().sort((a, b) => b.t - a.t).slice(0, 40).forEach((x, i) => log(`    #${i + 1}: ${String(x.t).replace('.', ',')} s, ${x.ang == null ? 'ângulo ?' : x.ang + '° (' + lado(x.ang) + ')'}, ${x.dist == null ? '' : x.dist + ' m, '}brilho ${x.al == null ? '?' : x.al}${x.boa ? ' - ' + x.boa : ''}`));
+          } }
         const rkv = Object.values(s).filter((x) => x && typeof x === 'object');
         log(`  Rating na demo (painel): ${rkv.filter((x) => x.rk0).length} de ${rkv.length} jogadores com rating, ${rkv.filter((x) => x.rk0 && (x.rkw || x.rkl)).length} com o ganho/perda previsto`);
         log(`  Rating pela Valve (só contagens): ${rkInfo.gc} jogadores na partida, ${rkInfo.gcPremier} do painel com Premier, ${rkInfo.gcPrevisto} com o previsto, ${rkInfo.gcMudanca} com a mudança`);
