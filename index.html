@@ -408,6 +408,7 @@ body.lock{overflow:hidden}
 .kb{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--panel2)}
 .kb b{display:block;font:800 clamp(36px,4.4vw,52px)/1 var(--disp);letter-spacing:-.03em}
 .kb:first-child b{color:var(--t-text)}
+.rv10{display:inline-block;margin-left:6px;padding:1px 5px;border-radius:4px;font:600 10px var(--body);color:var(--dim);border:1px solid var(--line);vertical-align:middle}
 .kb-cal{display:block;font:500 11px var(--body);color:var(--dim);margin-top:2px}
 .kb span{display:block;margin-top:6px;color:var(--muted);font-size:13.5px}
 .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:0 20px}
@@ -1624,7 +1625,7 @@ function cu(v,d,pre){return '<span class="cu" data-v="'+v+'" data-d="'+d+'" data
 
 var P=[],E=[],S=[],B=[],zi=0,modo='geral',DADOS=null;
 var MES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-function vis(p,k){var q=p[k];return Object.assign({},p,{hltv:q.hltv,rodadas:q.rodadas,abates:q.abates,mortes:q.mortes,mvps:q.mvps,zoeira:q.zoeira,partidas_analisadas:q.partidas})}
+function vis(p,k){var q=p[k];return Object.assign({},p,{hltv:q.hltv,hltv_v:q.hltv_v,rodadas:q.rodadas,abates:q.abates,mortes:q.mortes,mvps:q.mvps,zoeira:q.zoeira,partidas_analisadas:q.partidas})}
 /* alastro (14/11): contagens do período escolhido (semana, mês ou geral), sem dividir por partida.
    Valores null = partida lida antes da coleta nova, sem esse dado. */
 function zc(p,k){var v=p.zoeira&&p.zoeira[k];return v==null?0:v}
@@ -1663,7 +1664,7 @@ function drawRows(q){
   var i=P.indexOf(p);
   function bar(v){return v==null?'–':'<span class="bar"><i style="width:'+Math.max(0,Math.min(100,v))+'%"></i></span><span class="mono">'+f(v,0)+'</span>'}
   return '<tr data-p="'+p.steam64+'" tabindex="0" class="'+(i<3?'top'+(i+1):'')+'"><td class="pos"><span class="rk">'+(i+1)+'</span></td><td><div class="pl">'+av(p)+'<span class="pl-n">'+esc(p.apelido)+'</span>'+selo(p.rating)+'</div></td>'
-  +'<td><b class="hv '+(p.hltv>=1?'up':'dn')+'">'+f(p.hltv,2)+'</b></td>'
+  +'<td><b class="hv '+(p.hltv>=1?'up':'dn')+'">'+f(p.hltv,2)+'</b>'+(eh10(p)?'<small class="rv10" title="Ainda no Rating 1.0: muda para o 2.0 na próxima partida lida">1.0</small>':'')+'</td>'
   +'<td data-l="Mira">'+bar(p.mira)+'</td><td data-l="Utilidade">'+bar(p.utilidade)+'</td><td data-l="Posição">'+bar(p.posicionamento)+'</td>'
   +'<td class="mono" data-l="Vitórias">'+(p.vitorias_pct==null?'–':f(p.vitorias_pct*100,0)+'%')+'</td><td class="mono" data-l="Estrelas">'+(p.mvps==null?'–':p.mvps)+'</td><td class="mono" data-l="Partidas">'+p.partidas_analisadas+'</td></tr>'}).join('');
  var vazio='Nenhum jogador encontrado. Tente outro nome.';
@@ -1870,7 +1871,7 @@ function perfilSecoes(p,solo){
  var kp=[['Vitórias',p.vitorias_pct==null?'–':f(p.vitorias_pct*100,0)+'%'],['Headshots',p.hs_pct==null?'–':f(p.hs_pct*100,0)+'%'],['ADR',p.adr==null?'–':f(p.adr,0)],['Abates',p.abates==null?'–':p.abates],['Mortes',p.mortes==null?'–':p.mortes],p.mvps!=null?['Estrelas',p.mvps]:['Partidas',p.partidas_analisadas==null?'–':p.partidas_analisadas]];
  var grupo=!solo&&P.length>=3;
  return '<div class="dr-sec"><h4>Perfil de jogo</h4>'+radar(p,solo)+'<div class="leg"><span><i></i>'+esc(p.apelido)+'</span>'+(grupo?'<span><i class="g"></i>Média do grupo</span>':'')+'</div></div>'
-  +'<div class="dr-sec"><h4>Números</h4><div class="kpg"><div class="kb"><b>'+(p.hltv==null?'–':f(p.hltv,2))+'</b><span>'+rot2()+(p.hltv==null&&p.hltv_v==='2.0'?' <small class="kb-cal">em calibração: conta as partidas desde 21/11</small>':'')+'</span></div><div class="kb"><b>'+(kd==null?'–':f(kd,2))+'</b><span>K/D</span></div></div>'
+  +'<div class="dr-sec"><h4>Números</h4><div class="kpg"><div class="kb"><b>'+(p.hltv==null?'–':f(p.hltv,2))+'</b><span>'+(eh10(p)?'Rating 1.0 <small class="kb-cal">muda para o 2.0 na próxima partida lida</small>':rot2())+'</span></div><div class="kb"><b>'+(kd==null?'–':f(kd,2))+'</b><span>K/D</span></div></div>'
   +'<div class="kp">'+kp.map(function(x){return '<div><b>'+x[1]+'</b><span>'+x[0]+'</span></div>'}).join('')+'</div></div>'
   +(solo?forcasSolo(p)+conquistasSolo(p):forcasHtml(p)
   +(P.length>=3?'<div class="dr-sec wide"><h4>Conquistas</h4>'+(ach.length?'<div class="ach">'+ach.join('')+'</div>':'<p class="note" style="margin:0">Nenhum título neste período.</p>')+'</div>':''));
@@ -1949,7 +1950,7 @@ function init(d){
  var jan=modo==='mes'?'neste mês':modo==='semana'?'nesta semana':'nas últimas partidas';
  var sd=per.semana_id?per.semana_id.split('-'):null;
  var PL=modo==='mes'?['do mês','neste mês','mês']:modo==='semana'?['da semana','nesta semana','semana']:['geral','nas últimas partidas','período'];var h1e=document.querySelector('#painel h1 em');if(h1e){h1e.textContent=PL[0]==='geral'?'geral':PL[0];h1e.parentNode.nextElementSibling.setAttribute('data-per',PL[1]);h1e.parentNode.nextElementSibling.textContent=proOn()?'Quem está carregando o time '+PL[1]+'.':'Quem está carregando o time e quem mais alastrou '+PL[1]+'.'}var kk=el('kick');if(kk)kk.textContent=modo==='geral'?'Últimas 100 partidas lidas':textoCiclo(modo);el('rk-t').innerHTML=modo==='mes'?'Ranking do mês':modo==='semana'?'Ranking da semana':'Ranking geral';
- el('rk-p').textContent=(modo==='mes'?'Mês de '+faixaCiclo(cicloMes()):modo==='semana'?'Semana de '+faixaCiclo(cicloSemana()):'Últimas 100 partidas')+' - ordenado pelo '+rot2()+(Date.now()>=RT2_PERFIL?', calculado com abates, mortes, assistências, dano e KAST.':', calculado com abates, mortes e rodadas com multikills.');
+ el('rk-p').textContent=(modo==='mes'?'Mês de '+faixaCiclo(cicloMes()):modo==='semana'?'Semana de '+faixaCiclo(cicloSemana()):'Últimas 100 partidas')+' - ordenado pelo '+rot2()+(Date.now()>=RT2_PERFIL?', calculado com abates, mortes, assistências, dano e KAST. Quem ainda não jogou depois da mudança aparece no 1.0 até a próxima partida.':', calculado com abates, mortes e rodadas com multikills.');
  el('rk-n').textContent='Clique num jogador para abrir o perfil.';
  el('dest-p').textContent='Quem está mandando bem em cada categoria '+jan+'.';
  el('zo-p').textContent='Quem está alastrando mais o time '+jan+'. Quanto mais alto na lista, pior.';
@@ -2411,7 +2412,7 @@ function telaCla(slug,meu){
    +(meuCla&&!dono?'<button class="btn red sm" type="button" data-acao="sair-cla">Sair do time</button>':'')
    +'</div></div><p class="msg" id="msg-cla" style="margin:0"></p>';
   var eu1=SES&&(r.j.membros||[]).filter(function(m){return m.steam64===SES.sid})[0];
-  var avisoLigar=(eu1&&membroDados(eu1).hltv==null)?'<div class="aviso-ligar"><div><b>Os seus números ainda não aparecem aqui.</b><p>Ligue a leitura das suas partidas: leva 2 minutos, uma vez só, e já puxamos as últimas partidas que a Steam ainda guarda (até 8).</p></div><button class="btn y sm" type="button" data-acao="abrir-conta">Ligar minhas partidas</button></div>':'';
+  var avisoLigar=(eu1&&!(membroDados(eu1).partidas_analisadas>0))?'<div class="aviso-ligar"><div><b>Os seus números ainda não aparecem aqui.</b><p>Ligue a leitura das suas partidas: leva 2 minutos, uma vez só, e já puxamos as últimas partidas que a Steam ainda guarda (até 8).</p></div><button class="btn y sm" type="button" data-acao="abrir-conta">Ligar minhas partidas</button></div>':'';
   if(slug===CLA_PADRAO)avisoLigar='<div class="aviso-ligar aviso-ex"><div><b>Time de exemplo.</b><p>Pessoas e números inventados, só para você ver como o Ranko funciona. Os times de verdade só aparecem para quem é do time. Clique em alguém do ranking para ver um perfil de exemplo.</p></div>'+(SES?'':loginBtn('Entrar e criar o meu'))+'</div>';
   view(avisoLigar+'<div class="cla-pg"><div class="cla-topo">'+bar+navAbas('cla-abas','#/cla/'+encodeURIComponent(c.slug),abasCla())+'</div><div class="cla-folha">'+CLA_TPL+'</div></div>');
   var psec=el('partidas');if(psec)psec.insertAdjacentHTML('beforebegin','<section id="mapas"></section>');
@@ -2914,6 +2915,7 @@ function telaPartida(id,foco,meu,cla){
 // Rating 2.0 (19/11): partidas a partir de hoje usam o 2.0 (com KAST e dano); as antigas ficam no 1.0.
 // No perfil e nos rankings, o 2.0 passa a valer no fechamento de sábado 21/11, 0h de Brasília.
 var RT2_PARTIDA=Date.UTC(2026,10,19,16,30),RT2_PERFIL=Date.UTC(2026,10,21,3);
+function eh10(p){return !!p&&p.hltv!=null&&p.hltv_v==='1.0'&&Date.now()>=RT2_PERFIL}
 function rot2(){return Date.now()>=RT2_PERFIL?'Rating 2.0':'Rating HLTV'}
 function rating2(k,d,a,adr,kast,R){if(!R||kast==null||adr==null)return null;var kpr=k/R,dpr=d/R,apr=a/R,imp=2.13*kpr+0.42*apr-0.41;return 0.0073*kast*100+0.3591*kpr-0.5329*dpr+0.2372*imp+0.0032*adr+0.1587}
 var DX_R=0,DX_T=0;
