@@ -1631,7 +1631,7 @@ function vis(p,k){var q=p[k];return Object.assign({},p,{hltv:q.hltv,hltv_v:q.hlt
 function zc(p,k){var v=p.zoeira&&p.zoeira[k];return v==null?0:v}
 var CAT=[
  {t:'Fogo amigo',ti:'Atirador de elite aliado',u:'tiros que tiraram 15+ de vida de colegas',d:0,k:'fogo_amigo',g:function(p){return zc(p,'fogo_amigo')}},
- {t:'Cegador do time',ti:'Cegador do time',u:'flashes que cegaram colegas por 1,5 s ou mais',d:0,k:'cegou_amigos',g:function(p){return zc(p,'cegou_amigos')}},
+ {t:'Cegador do time',ti:'Cegador do time',u:'flashes de frente que cegaram um colega por 3 s ou mais',d:0,k:'cegou_amigos',g:function(p){return zc(p,'cegou_amigos')}},
  {t:'Comprou à toa',ti:'Morreu sem usar as granadas',u:'mortes com 3 granadas ou mais na mão',d:0,k:'comprou_a_toa',g:function(p){return zc(p,'comprou_a_toa')}},
  {t:'HE no time',ti:'Granada amiga',u:'colegas atingidos por HE com 10+ de dano',d:0,k:'he_no_time',g:function(p){return zc(p,'he_no_time')}},
  {t:'Varado',ti:'Morreu varado',fora:1,u:'mortes com o tiro atravessando parede ou objeto',d:0,k:'morreu_varado',g:function(p){return zc(p,'morreu_varado')}},
@@ -1943,8 +1943,8 @@ function init(d){
  /* semana e mês sempre podem ser escolhidos; sem ninguém com partida no período, a página mostra as datas e avisa */
  modo=PER||(M.length>=2?'mes':'geral');
  if(modo!=='geral'&&!(modo==='mes'?M:Wk).length){periodoVazio(modo);return}
- P=(modo==='mes'?M.map(function(p){return vis(p,'mes')}):modo==='semana'?Wk.map(function(p){return vis(p,'semana')}):B.slice()).sort(function(a,b){return b.hltv-a.hltv});
- if(!P.length){NB=0;el('rows').innerHTML='<tr><td colspan="9" class="note">Nenhum jogador com dados ainda. Os números chegam em poucos minutos.</td></tr>';return}
+ P=(modo==='mes'?M.map(function(p){return vis(p,'mes')}):modo==='semana'?Wk.map(function(p){return vis(p,'semana')}):B.filter(function(p){return (p.partidas_analisadas||0)>=MIN_RANK})).sort(function(a,b){return b.hltv-a.hltv});
+ if(!P.length){NB=0;el('rows').innerHTML='<tr><td colspan="9" class="note">'+(B.length?'Ainda ninguém tem '+MIN_RANK+' partidas para entrar no ranking.':'Nenhum jogador com dados ainda. Os números chegam em poucos minutos.')+'</td></tr>';return}
  var mi=per.mes_id?(+per.mes_id.split('-')[1]-1):new Date(d.atualizado_em).getMonth();
  var ano=per.mes_id?per.mes_id.split('-')[0]:new Date(d.atualizado_em).getFullYear();
  var jan=modo==='mes'?'neste mês':modo==='semana'?'nesta semana':'nas últimas partidas';
@@ -1959,6 +1959,7 @@ function init(d){
  var pend=E.filter(function(p){return p.pendente}),semd=E.filter(function(p){return !p.pendente});
  if(semd.length)avisos.push('Sem dados: '+semd.map(function(p){return p.apelido}).join(', ')+'. Perfil privado ou sem partidas recentes.');
  if(pend.length)avisos.push('Aguardando a primeira atualização: '+pend.map(function(p){return p.apelido}).join(', ')+'. Quem acabou de entrar aparece com dados em até 1 hora.');
+ if(modo==='geral'){var calib=B.filter(function(p){return (p.partidas_analisadas||0)<MIN_RANK});if(calib.length)avisos.push('Em calibração (precisa de '+MIN_RANK+' partidas para entrar no ranking): '+calib.map(function(p){return p.apelido+' ('+(p.partidas_analisadas||0)+' de '+MIN_RANK+')'}).join(', ')+'.')}
  if(modo!=='geral'){var fora=B.filter(function(p){return (modo==='mes'?M:Wk).indexOf(p)<0});if(fora.length)avisos.push('Sem partidas '+(modo==='mes'?'neste mês':'nesta semana')+': '+fora.map(function(p){return p.apelido}).join(', ')+'.')}
  el('semperfil').textContent=avisos.join(' ');
  el('cards').innerHTML=APOS.filter(function(a){return !a.ok||a.ok()}).map(function(a){return cardHl(a,false)}).join('');
@@ -2304,9 +2305,9 @@ function telaJogador(id,meu){
  });
 }
 function montarPerfil(j,p,propria,grupo){
- var pos=grupo.indexOf(p)+1,tags='',lado='';
+ var disp=grupo.filter(function(x){return (x.partidas_analisadas||0)>=MIN_RANK}),pos=disp.indexOf(p)+1,tags='',lado='';
  if(p.hltv!=null){
-  if(pos&&grupo.length>=2)tags+='<span class="tagx">'+pos+'º no time</span>';
+  if(pos&&disp.length>=2)tags+='<span class="tagx">'+pos+'º no time</span>';else if((p.partidas_analisadas||0)<MIN_RANK)tags+='<span class="tagx" title="Precisa de '+MIN_RANK+' partidas para entrar no ranking do time">Em calibração</span>';
   tags+='<span class="tagx">'+p.partidas_analisadas+' partidas</span>';
  }else if(p.so_steam){tags+='<span class="tagx">Sem dados</span>'+((p.steam&&p.steam.horas_cs2!=null)?'<span class="tagx">'+f(p.steam.horas_cs2,0)+' h de CS2</span>':'')}
  else tags+='<span class="tagx">Aguardando dados</span>';
@@ -2734,7 +2735,7 @@ function glossario(){
   +'<dt>Posicionamento</dt><dd>70% pela sobrevivência (quantos rounds você sai vivo) e 30% pelos rounds em que você faz 2 abates ou mais e sai vivo, comparados com o jogador médio.</dd>'
   +'<dt>Estrelas (Estrelinha)</dt><dd>Quantas vezes o jogador foi o MVP da rodada.</dd>'
   +'<dt>Abertura de rodada</dt><dd>Porcentagem dos primeiros duelos da rodada que você ganhou. Clutch ainda não é calculado.</dd>'
-  +'<dt>Alastro</dt><dd>Contagens do período escolhido (semana, mês ou geral): tiros que tiraram 15 ou mais de vida de um colega (fogo amigo), flashes que cegaram um colega por 1,5 s ou mais, colegas atingidos por HE com 10 ou mais de dano (uma HE que pega dois colegas conta 2), mortes com 3 granadas ou mais na mão (comprou à toa) e mortes por rodada.</dd>'
+  +'<dt>Alastro</dt><dd>Contagens do período escolhido (semana, mês ou geral): tiros que tiraram 15 ou mais de vida de um colega (fogo amigo), flashes que estouraram de frente para um colega e o cegaram por 3 s ou mais (flash nas costas ou de lado não conta, nem a que virou assistência ou em que o colega matou no estouro; vale desde 21/11), colegas atingidos por HE com 10 ou mais de dano (uma HE que pega dois colegas conta 2), mortes com 3 granadas ou mais na mão (comprou à toa) e mortes por rodada.</dd>'
   +'<dt>Pontos de alastro</dt><dd>Em cada categoria do alastro, o pior da galera ganha mais pontos. Quem soma mais é quem mais alastrou.</dd><dt>De onde vêm os dados</dt><dd>O painel lê as suas próprias partidas de Premier e competitivo direto do CS2. Para aparecer no ranking, ligue a leitura no seu perfil (“Ligar minhas partidas”). Já puxa as últimas partidas que a Steam ainda guarda (até 8, dos últimos 30 dias) e depois lê cada partida nova sozinho.</dd></dl></details>';
 }
 
@@ -2916,6 +2917,7 @@ function telaPartida(id,foco,meu,cla){
 // No perfil e nos rankings, o 2.0 passa a valer no fechamento de sábado 21/11, 0h de Brasília.
 var RT2_PARTIDA=Date.UTC(2026,10,19,16,30),RT2_PERFIL=Date.UTC(2026,10,21,3);
 function eh10(p){return !!p&&p.hltv!=null&&p.hltv_v==='1.0'&&Date.now()>=RT2_PERFIL}
+var MIN_RANK=5; /* partidas mínimas para disputar o ranking geral (decisão do Juan, 21/11) */
 function rot2(){return Date.now()>=RT2_PERFIL?'Rating 2.0':'Rating HLTV'}
 function rating2(k,d,a,adr,kast,R){if(!R||kast==null||adr==null)return null;var kpr=k/R,dpr=d/R,apr=a/R,imp=2.13*kpr+0.42*apr-0.41;return 0.0073*kast*100+0.3591*kpr-0.5329*dpr+0.2372*imp+0.0032*adr+0.1587}
 var DX_R=0,DX_T=0;
