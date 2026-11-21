@@ -1694,8 +1694,13 @@ function drawZ(){
 }
 function spotlight(){
  /* o destaque segue o período escolhido (semana, mês ou geral) */
- var Q=P.slice(),sem=false;
+ /* só disputa o destaque quem tem o mínimo de partidas do período: geral 5 (o mesmo do ranking), mês 5 (o mesmo do fechamento). Semana (decisão do Juan, 21/11): 2 partidas, como no fechamento;
+    mas, enquanto ninguém chegou a 2 (começo da semana), quem já jogou 1 aparece */
+ var mn=modo==='mes'?5:modo==='semana'?(P.some(function(p){return (p.partidas_analisadas||0)>=2})?2:1):MIN_RANK;
+ var Q=P.filter(function(p){return (p.partidas_analisadas||0)>=mn}),sem=false;
  var fb=modo==='geral'?'Nas últimas partidas lidas':modo==='mes'?'Destaque do mês até agora':'Destaque da semana até agora';
+ if(!Q.length){var nin='<div><b>Ninguém ainda</b><span>Precisa de '+mn+' partidas ou mais '+(modo==='mes'?'no mês':modo==='semana'?'na semana':'lidas')+' para entrar.</span></div>';
+  el('spot').innerHTML='<div class="sp mv"><div class="sp-k">'+svg('Líder do ranking')+'Carregando o time</div><div class="sp-b">'+nin+'</div><small>'+fb+'</small></div><div class="sp tr"><div class="sp-k">'+svg('Fogo amigo')+'Quem mais alastrou</div><div class="sp-b">'+nin+'</div><small>'+fb+'</small></div>';return}
  var mv=Q.reduce(function(m,p){return p.hltv>m.hltv?p:m},Q[0]);
  var pa=pontosAlastro(Q),pts=pa.pts,lid=pa.lid;
  var tr=Q.reduce(function(m,p){return pts[p.steam64]>pts[m.steam64]?p:m},Q[0]);
