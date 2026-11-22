@@ -1373,14 +1373,15 @@ a.dx-j:hover span{text-decoration:underline}
 @media(max-width:520px){.fc-par{grid-template-columns:minmax(0,1fr)}}
 
 /* cabeçalho C (22/11): tema e cor num grupo só, perfil em pílula com o nick, engrenagem pequena à direita */
-.tema{gap:0;padding:0;border-radius:10px;overflow:hidden;background:rgba(var(--w),.02)}
-.tema .modo-b{width:40px;height:38px;border:0;border-radius:0;background:none;color:var(--text)}
+.tema{gap:0;padding:0;border-radius:10px;background:rgba(var(--w),.02)}
+.tema .modo-b{border-radius:9px 0 0 9px}.tema .tema-b{border-radius:0 9px 9px 0}
+.tema .modo-b{width:40px;height:38px;border:0;border-radius:9px 0 0 9px;background:none;color:var(--text)}
 .tema .modo-b .mt{display:none}
 .tema .modo-b svg{left:50%;right:auto;margin-left:-8px}
 .tema .modo-b .m-sol{display:none}
 .tema .modo-b[aria-checked=true] .m-sol{display:block}.tema .modo-b[aria-checked=true] .m-lua{display:none}
 .tema .modo-b:hover,.tema .tema-b:hover{background:rgba(var(--w),.06)}
-.tema .tema-b{width:40px;height:38px;padding:0;justify-content:center;border:0;border-left:1px solid var(--line2);border-radius:0}
+.tema .tema-b{width:40px;height:38px;padding:0;justify-content:center;border:0;border-left:1px solid var(--line2);border-radius:0 9px 9px 0}
 .tema .tema-b span{display:none}
 .usr{gap:6px}
 .usr .conta-f{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 14px 0 4px;border:1px solid var(--line2);border-radius:999px;line-height:1;color:var(--text);text-decoration:none;font:600 14px var(--body)}
