@@ -1460,6 +1460,26 @@ nav>a .ic{width:20px;height:20px}
 .nsub a.on,body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub a.on{background:rgba(var(--w),.07);color:var(--t-text)}
 .nsub a.on i{color:var(--t-text);opacity:1}
 nav>a.on{border-radius:var(--r-sm)}
+
+/* 22/11: menu lateral mais suave. Os textos não somem do layout (só ficam transparentes e cortados),
+   então nada pula: a barra só cresce e os textos aparecem aos poucos. Sem o título "Você". */
+.side .brand>div:not(.logo){display:flex;align-items:center;height:36px;padding-top:3px;line-height:1}
+@media(min-width:901px){
+ .side{transition:width .38s cubic-bezier(.22,1,.36,1),box-shadow .38s cubic-bezier(.22,1,.36,1)}
+ .side nav a,.side .nsub{transition:padding .38s cubic-bezier(.22,1,.36,1),margin .38s cubic-bezier(.22,1,.36,1),border-color .3s,background .15s,color .15s}
+ .side .nl,.side .brand>div:not(.logo),.side .pin-b,.side .nmodo{transition:opacity .28s ease .1s,max-height .38s cubic-bezier(.22,1,.36,1),margin .38s cubic-bezier(.22,1,.36,1)}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nl,body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .brand>div:not(.logo),body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .pin-b{display:inline-flex;opacity:0;transition:opacity .12s ease}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .pin-b{display:grid;pointer-events:none}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav{padding:8px 4px}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav a{gap:12px;justify-content:flex-start;padding:8px 11px;white-space:nowrap}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub{display:grid;margin:2px 0 6px 0;padding-left:0;border-left-color:transparent}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub a{gap:10px;justify-content:flex-start;padding:10px 11px;white-space:nowrap}
+ .side nav{overflow:hidden}
+ .nmodo{max-height:40px;overflow:hidden}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nmodo{display:flex;max-height:0;opacity:0;margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0;transition:opacity .1s,max-height .38s cubic-bezier(.22,1,.36,1),margin .38s}
+ .side:hover .promo,.side:focus-within .promo{animation:surge .35s ease .12s both}
+}
+@keyframes surge{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 </style>
 <meta name="theme-color" content="#e6af0c">
 <script>(function(){
@@ -2318,7 +2338,7 @@ function subMenu(base,lista,ativo){return '<div class="nsub">'+lista.map(functio
 function navLateral(){
  var h='';if(!(ME&&SES))return '';
  var noPerfil=ROTA.t==='jogador'&&ROTA.id===SES.sid,naMinha=ROTA.t==='cla'&&ME.cla&&ME.cla.slug===ROTA.id;
- h+='<h4>Você</h4>'+linkMenu({t:'Meu perfil',n:0,h:'#/jogador/'+SES.sid,on:noPerfil});
+ h+=linkMenu({t:'Meu perfil',n:0,h:'#/jogador/'+SES.sid,on:noPerfil});
  var pa=[['desempenho','Meu desempenho'],['partidas','Partidas'],['funcoes','Minhas funções'],['plano','Plano individual']];
  h+=subMenu('#/jogador/'+SES.sid,pa,noPerfil?(ABA_ATUAL&&ROTA.t==='jogador'?ABA_ATUAL:(ROTA.id2||'desempenho')):'');
  if(ME.cla){
