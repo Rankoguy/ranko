@@ -277,7 +277,7 @@ function estatisticas(arquivo, ids) {
     // csn/csb = primeiros tiros dados logo depois de andar e quantos deles saíram com o boneco já parado (contra-strafe)
     // coleta v5 (14/11, noite): definições do Leetify. hta/hc = acertos (sem escopeta) e na cabeça; ea/eh = tiros em
     // combate e os que acertaram; csn/csb = tiros de rifle/sniper em combate e os que saíram parado. vc = versão da coleta.
-    v4: 1, v5: 1, vc: 13, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
+    v4: 1, v5: 1, vc: 14, hed: 0, mv: 0, v14: 0, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
     _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
@@ -327,8 +327,13 @@ function estatisticas(arquivo, ids) {
     else {
       a.dmg += e._ef ?? (e.dmg_health || 0);
       if (/hegrenade|inferno|molotov|incgrenade/.test(String(e.weapon))) a.ud += e._ef ?? (e.dmg_health || 0); // dano de granada nos inimigos
+      if (/hegrenade/.test(String(e.weapon))) a.hed += e._ef ?? (e.dmg_health || 0); // pódio (21/11): dano só de HE nos inimigos
     }
   }
+  // pódio (21/11): estrelas de MVP de cada rodada
+  let mvpsLidos = false;
+  try { const L = parseEvent(arquivo, 'round_mvp'); for (const e of L) { const a = S.get(String(e.user_steamid)); if (a) a.mv++; } mvpsLidos = L.length > 0; } catch { /* sem o evento */ }
+  for (const st of S.values()) st.v14 = mvpsLidos ? 1 : 0;
   for (const e of cegos) {
     const a = S.get(String(e.attacker_steamid));
     if (!a || e.attacker_steamid === e.user_steamid) continue;
@@ -741,6 +746,7 @@ for (const pt of porPartida.values()) {
         // coleta nova (v3): só somas de quem é do painel, para conferir se os dados chegaram
         const v = Object.values(s).reduce((t, x) => { for (const c of ['tf', 'ta', 'heb', 'mob', 'ks2', 'ffx', 'fax', 'hex', 'uct', 'ugn', 'd']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
         log(`  Coleta nova: tiros ${v.tf || 0}, acertos ${v.ta || 0}, HE boas ${v.heb || 0}, molotov boas ${v.mob || 0}, rounds de 2+ abates vivo ${v.ks2 || 0}, fogo amigo ${v.ffx || 0}, flash em amigo ${v.fax || 0}, HE em amigo ${v.hex || 0}, morreu com 3+ granadas ${v.uct || 0} (inventário lido em ${v.ugn || 0} de ${v.d || 0} mortes)`);
+        log(`  Pódio (painel): estrelas ${Object.values(s).reduce((t, x) => t + ((x && x.mv) || 0), 0)}${Object.values(s).some((x) => x && x.v14) ? '' : ' (sem o evento de MVP)'}, dano de HE ${Object.values(s).reduce((t, x) => t + Math.round((x && x.hed) || 0), 0)}, assistências de flash ${Object.values(s).reduce((t, x) => t + ((x && x.fas) || 0), 0)}, abates de AWP ${Object.values(s).reduce((t, x) => t + ((x && x.awp) || 0), 0)}`);
         const m4 = Object.values(s).reduce((t, x) => { for (const c of ['hta', 'hc', 'ea', 'eh', 'sp', 'sa', 'csn', 'csb']) t[c] = (t[c] || 0) + (x[c] || 0); return t; }, {});
         log(`  Mira nova (painel): na cabeça ${m4.hc || 0} de ${m4.hta || 0} acertos, tiros em combate ${m4.ea || 0} (acertaram ${m4.eh || 0}), tiros em spray ${m4.sp || 0} (acertaram ${m4.sa || 0}), tiros de rifle em combate ${m4.csn || 0} (saíram parado ${m4.csb || 0})` + (s._cs ? ` | velocidade no tiro: parado ${s._cs[0]}, quase parando ${s._cs[1]}, freando ${s._cs[2]}, correndo ${s._cs[3]}` : ''));
         const v8 = Object.values(s).reduce((t, x) => ({ vrd: t.vrd + (x.vrd || 0), vsm: t.vsm + (x.vsm || 0), d: t.d + (x.d || 0) }), { vrd: 0, vsm: 0, d: 0 });

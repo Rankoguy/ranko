@@ -2,7 +2,7 @@
 // e entrega os eventos no MESMO formato do demoparser2. Assim o resto do robô (estatísticas,
 // placar, KAST e a análise de rounds) não muda nada.
 const EVENTOS = ['player_death', 'player_hurt', 'player_blind', 'round_end', 'round_freeze_end', 'begin_new_match',
-  'bomb_planted', 'bomb_defused', 'bomb_exploded', 'flashbang_detonate', 'smokegrenade_detonate', 'weapon_fire'];
+  'bomb_planted', 'bomb_defused', 'bomb_exploded', 'flashbang_detonate', 'smokegrenade_detonate', 'weapon_fire', 'round_mvp'];
 const GRANADA = /grenade|flashbang|molotov|incendiary|decoy/i;
 // motivo do fim da rodada, nos nomes que o demoparser2 usava
 const MOTIVO = { 1: 'bomb_exploded', 7: 'bomb_defused', 8: 't_killed', 9: 'ct_killed', 10: 'draw', 12: 'target_saved', 17: 't_surrender', 18: 'ct_surrender' };
