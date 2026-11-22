@@ -2324,7 +2324,8 @@ function navLateral(){
  if(ME.cla){
   var base='#/cla/'+encodeURIComponent(ME.cla.slug),pro=proOn();
   h+=linkMenu({t:'Meu time',n:5,h:base,on:naMinha});
-  h+='<div class="nmodo" role="group" aria-label="Modo do time"><a href="'+base+'/geral" data-mt="simples"'+(pro?'':' class="on"')+'>Simples</a><a href="'+base+'/pro" data-mt="pro"'+(pro?' class="on"':'')+'>★ Pro</a></div>';
+  var ab=naMinha&&ABA_ATUAL?ABA_ATUAL:'geral',abS=['geral','partidas','mapas','podio','alastro'].indexOf(ab)>-1?ab:'geral',abP=['geral','partidas','mapas','pro'].indexOf(ab)>-1?ab:'geral';
+  h+='<div class="nmodo" role="group" aria-label="Modo do time"><a href="'+base+'/'+abS+'" data-mt="simples"'+(pro?'':' class="on"')+'>Simples</a><a href="'+base+'/'+abP+'" data-mt="pro"'+(pro?' class="on"':'')+'>★ Pro</a></div>';
   h+=subMenu(base,abasCla(),naMinha?(ABA_ATUAL&&ROTA.t==='cla'?ABA_ATUAL:(ROTA.id2||abasCla()[0][0])):'');
  }
  return h;
@@ -2421,7 +2422,7 @@ function rotear(manter){
 /* ----- abas do perfil e do time (troca o conteúdo em vez de rolar a página) ----- */
 var PAG=null;
 var ABA_CLA={geral:['painel','fechamento','ranking','conquistas','steam'],partidas:['partidas'],mapas:['mapas'],alastro:['zoeira'],podio:['podio'],pro:['pro']};
-function abasCla(){return proOn()?[['pro','Analyst + Coach',7,1],['geral','Visão geral',1],['partidas','Partidas',6],['mapas','Mapas',2]]:[['geral','Visão geral',1],['partidas','Partidas',6],['mapas','Mapas',2],['podio','Pódio',3],['alastro','Alastro',3]]}
+function abasCla(){return proOn()?[['geral','Visão geral',1],['partidas','Partidas',6],['mapas','Mapas',2],['pro','Analyst + Coach',7,1]]:[['geral','Visão geral',1],['partidas','Partidas',6],['mapas','Mapas',2],['podio','Pódio',3],['alastro','Alastro',3]]}
 function navAbas(id,base,lista){return '<nav class="abas fichas" id="'+id+'" aria-label="Seções">'+lista.map(function(a){return '<a href="'+base+'/'+a[0]+'" data-aba="'+a[0]+'"'+(a[3]?' class="f-pro"':'')+'>'+(a[3]?'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+STAR+'</svg>':'')+esc(a[1])+'</a>'}).join('')+'</nav>'}
 function mostrarAba(aba){
  var nav=el(ROTA.t==='cla'?'cla-abas':'me-abas');if(!nav)return;
@@ -3469,7 +3470,6 @@ document.addEventListener('click',function(e){
  var m=e.target.closest('[data-mt]');if(!m)return;
  try{localStorage.setItem('painel_modo_time',m.getAttribute('data-mt'))}catch(x){}
  aplicarModoTime();desenharChrome();if(el('nav'))el('nav').innerHTML=navLateral();
- if(m.getAttribute('data-mt')==='pro'){var z=el('pro');if(z)z.scrollIntoView({block:'start'})}
 });
 document.addEventListener('keydown',function(e){
  if(e.key!=='Tab')return;
