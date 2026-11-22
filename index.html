@@ -1406,16 +1406,17 @@ a.dx-j:hover span{text-decoration:underline}
 nav a .nl{white-space:nowrap}
 @media(min-width:901px){
  :root{--side-w:76px}
+ body.menu-fixo{--side-w:272px}
+ body.menu-fixo .side{width:272px;box-shadow:none}
  .side{width:76px;overflow:hidden;z-index:30;transition:width .22s var(--ease),box-shadow .22s var(--ease);padding:20px 12px}
  .side:hover,.side:focus-within{width:272px;overflow:auto;box-shadow:12px 0 40px rgba(0,0,0,.45)}
- .side .brand>div:not(.logo),.side nav h4,.side .nsub,.side .nmodo,.side .promo,.side nav .nl{opacity:0;transition:opacity .15s}
- .side:hover .brand>div:not(.logo),.side:hover nav h4,.side:hover .nsub,.side:hover .nmodo,.side:hover .promo,.side:hover nav .nl,
- .side:focus-within .brand>div:not(.logo),.side:focus-within nav h4,.side:focus-within .nsub,.side:focus-within .nmodo,.side:focus-within .promo,.side:focus-within nav .nl{opacity:1;transition-delay:.08s}
- .side:not(:hover):not(:focus-within) .nsub,.side:not(:hover):not(:focus-within) .nmodo{display:none}
- .side:not(:hover):not(:focus-within) nav .nl,.side:not(:hover):not(:focus-within) nav h4,.side:not(:hover):not(:focus-within) .promo{display:none}
- .side:not(:hover):not(:focus-within) nav a{gap:0}
- .side:not(:hover):not(:focus-within) nav{padding:8px 4px}
- .side:not(:hover):not(:focus-within) nav a{padding:8px;justify-content:center}
+ body:not(.menu-fixo) .side .brand>div:not(.logo),body:not(.menu-fixo) .side .pin-b,body:not(.menu-fixo) .side nav h4,body:not(.menu-fixo) .side .nsub,body:not(.menu-fixo) .side .nmodo,body:not(.menu-fixo) .side .promo,body:not(.menu-fixo) .side nav .nl{opacity:0;transition:opacity .15s}
+ body:not(.menu-fixo) .side:hover .pin-b,body:not(.menu-fixo) .side:focus-within .pin-b,body:not(.menu-fixo) .side:hover .brand>div:not(.logo),body:not(.menu-fixo) .side:hover nav h4,body:not(.menu-fixo) .side:hover .nsub,body:not(.menu-fixo) .side:hover .nmodo,body:not(.menu-fixo) .side:hover .promo,body:not(.menu-fixo) .side:hover nav .nl,body:not(.menu-fixo) .side:focus-within .brand>div:not(.logo),body:not(.menu-fixo) .side:focus-within nav h4,body:not(.menu-fixo) .side:focus-within .nsub,body:not(.menu-fixo) .side:focus-within .nmodo,body:not(.menu-fixo) .side:focus-within .promo,body:not(.menu-fixo) .side:focus-within nav .nl{opacity:1;transition-delay:.08s}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub,body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nmodo{display:none}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav .nl,body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav h4,body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .promo{display:none}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav a{gap:0}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav{padding:8px 4px}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav a{padding:8px;justify-content:center}
  .side .brand{padding:2px 2px}
 }
 
@@ -1423,18 +1424,41 @@ nav a .nl{white-space:nowrap}
 .nsub a{gap:10px}.nsub a .ic{width:16px;height:16px}
 .nsub a i{font-style:normal;display:grid;place-items:center;opacity:.8}.nsub a.on i{display:grid;opacity:1}
 @media(min-width:901px){
- .side:not(:hover):not(:focus-within) .nsub{display:grid;margin:2px 0 6px;padding:0;border:0;opacity:1}
- .side:not(:hover):not(:focus-within) .nsub a{justify-content:center;padding:7px;gap:0}
- .side:not(:hover):not(:focus-within) .nsub a.on{background:rgba(var(--w),.14)}
- .side:not(:hover):not(:focus-within) nav>a{margin-top:6px;opacity:.9}
- .side:not(:hover):not(:focus-within) nav>a+.nsub{border-top:0}
- .side:not(:hover):not(:focus-within) .nmodo{display:none}
- .side:not(:hover):not(:focus-within) nav>a:not(:first-of-type){border-top:1px solid var(--line2);border-radius:0 0 var(--r-sm) var(--r-sm);padding-top:12px}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub{display:grid;margin:2px 0 6px;padding:0;border:0;opacity:1}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub a{justify-content:center;padding:7px;gap:0}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub a.on{background:rgba(var(--w),.14)}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav>a{margin-top:6px;opacity:.9}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav>a+.nsub{border-top:0}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nmodo{display:none}
 }
 
 /* aba selecionada no menu lateral (22/11): fundo na cor de destaque, ícone e texto na cor de contraste (branco no vermelho) */
-.nsub a.on,.side:not(:hover):not(:focus-within) .nsub a.on{background:var(--t);color:var(--on-t)}
+.nsub a.on,body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub a.on{background:var(--t);color:var(--on-t)}
 .nsub a.on i{color:var(--on-t)}
+
+/* 22/11: ícones maiores e mais afastados; marca sem legenda; botão de fixar o menu */
+.side .brand{position:relative;min-height:36px}
+.pin-b{margin-left:auto;width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:8px;background:color-mix(in srgb,var(--t) 70%,#000);color:var(--on-t);cursor:pointer;flex:none}
+.pin-b:hover{background:color-mix(in srgb,var(--t) 55%,#000)}
+.pin-b[aria-pressed=true]{background:color-mix(in srgb,var(--t) 60%,#fff);color:var(--on-t)}
+.pin-b .ic{width:16px;height:16px}
+.nsub{gap:3px}
+.nsub a{min-height:38px}
+.nsub a .ic{width:18px;height:18px}
+nav>a .ic{width:20px;height:20px}
+@media(min-width:901px){
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub{gap:6px}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub a{min-height:42px;padding:10px}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub a .ic{width:21px;height:21px}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) nav>a .ic{width:22px;height:22px}
+ body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .pin-b{display:none}
+}
+@media(max-width:900px){.pin-b{display:none}}
+
+/* 22/11: grupo atual (Meu perfil / Meu time) com fundo na cor de destaque; aba atual com o cinza do passar o mouse e ícone e texto na cor de destaque */
+.nsub a.on,body:not(.menu-fixo) .side:not(:hover):not(:focus-within) .nsub a.on{background:rgba(var(--w),.07);color:var(--t-text)}
+.nsub a.on i{color:var(--t-text);opacity:1}
+nav>a.on{border-radius:var(--r-sm)}
 </style>
 <meta name="theme-color" content="#e6af0c">
 <script>(function(){
@@ -1538,7 +1562,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <body class="rota-home">
 <div class="app">
   <aside class="side">
-    <div class="brand"><div class="logo"><svg viewBox="0 0 64 71" width="19" height="21" fill="currentColor" aria-hidden="true"><path d="M6.33 0L0 6.65v33l14.95-16V15.03h31.55v12.08L36 37.65h15l11.51-8.82V5.91L54.88 0z"/><path d="M18.17 31.65h15.53L0 68.65v-19.5z"/><path d="M36 42.65h15l13 27.5H48z"/></svg></div><div>Ranko<small>Painel de CS2</small></div></div>
+    <div class="brand"><div class="logo"><svg viewBox="0 0 64 71" width="19" height="21" fill="currentColor" aria-hidden="true"><path d="M6.33 0L0 6.65v33l14.95-16V15.03h31.55v12.08L36 37.65h15l11.51-8.82V5.91L54.88 0z"/><path d="M18.17 31.65h15.53L0 68.65v-19.5z"/><path d="M36 42.65h15l13 27.5H48z"/></svg></div><div>Ranko</div><button type="button" class="pin-b" id="pin-b" aria-pressed="false" aria-label="Fixar o menu aberto" title="Fixar o menu aberto"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 6 3 3v2H7v-2l3-3z"/><path d="M12 15v5"/></svg></button></div>
     <div class="me" id="me-w"></div>
     <nav id="nav"></nav>
     <div class="promo" id="promo"></div>
@@ -2192,6 +2216,7 @@ function telaPrivacidade(){
  +linha(['painel_modo','Lembrar se você prefere o modo claro ou escuro','Até você limpar os dados do navegador'])
  +linha(['painel_tema','Lembrar a cor de destaque que você escolheu','Até você limpar os dados do navegador'])
  +linha(['painel_fonte','Lembrar a cor do texto sobre a cor de destaque','Até você limpar os dados do navegador'])
+ +linha(['painel_menu_fixo','Lembrar se você fixou o menu lateral aberto','Até você limpar os dados do navegador'])
  +linha(['painel_modo_time','Lembrar se o time está no modo Simples ou Pro','Até você limpar os dados do navegador'])
  +'</tbody></table></div><p>Como tudo isso é necessário ou é uma preferência sua, não há banner de cookies. As fontes de texto vêm do próprio site, sem passar pelo Google. Na página de login da Steam valem os cookies e as regras da própria Steam.</p></section>'
  +'<section id="pol-mudancas"><h2>Mudanças nesta política</h2><p>Se algo mudar no jeito de tratar os seus dados, atualizamos esta página e a data lá em cima.</p><p class="note">Este texto explica a prática do Ranko e foi escrito para ser entendido por qualquer pessoa. Ele não substitui a lei: em caso de dúvida, vale a LGPD (Lei nº 13.709/2018).</p></section>'
@@ -3865,6 +3890,14 @@ function montarMapas(j){
   +'</div>';
 }
 
+
+/* fixar o menu lateral aberto (22/11): fica salvo no navegador */
+(function(){
+ function on(){try{return localStorage.getItem('painel_menu_fixo')==='1'}catch(e){return false}}
+ function aplicar(){var f=on();document.body.classList.toggle('menu-fixo',f);var b=el('pin-b');if(b){b.setAttribute('aria-pressed',String(f));b.title=b.getAttribute('aria-label');b.setAttribute('aria-label',f?'Soltar o menu':'Fixar o menu aberto');b.title=f?'Soltar o menu':'Fixar o menu aberto'}}
+ document.addEventListener('click',function(e){var b=e.target.closest('#pin-b');if(!b)return;e.preventDefault();try{localStorage.setItem('painel_menu_fixo',on()?'0':'1')}catch(x){}aplicar()});
+ aplicar();
+})();
 </script>
 </body>
 </html>
