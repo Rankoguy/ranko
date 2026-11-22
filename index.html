@@ -1371,6 +1371,70 @@ a.dx-j:hover span{text-decoration:underline}
 .fc-hist .fc-hh{color:var(--muted);border-top:0}.fc-hist .fc-hh b,.fc-hist .fc-hh em{color:var(--muted);font-weight:600}
 @media(max-width:900px){.fc-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:520px){.fc-par{grid-template-columns:minmax(0,1fr)}}
+
+/* cabeçalho C (22/11): tema e cor num grupo só, perfil em pílula com o nick, engrenagem pequena à direita */
+.tema{gap:0;padding:0;border-radius:10px;overflow:hidden;background:rgba(var(--w),.02)}
+.tema .modo-b{width:40px;height:38px;border:0;border-radius:0;background:none;color:var(--text)}
+.tema .modo-b .mt{display:none}
+.tema .modo-b svg{left:50%;right:auto;margin-left:-8px}
+.tema .modo-b .m-sol{display:none}
+.tema .modo-b[aria-checked=true] .m-sol{display:block}.tema .modo-b[aria-checked=true] .m-lua{display:none}
+.tema .modo-b:hover,.tema .tema-b:hover{background:rgba(var(--w),.06)}
+.tema .tema-b{width:40px;height:38px;padding:0;justify-content:center;border:0;border-left:1px solid var(--line2);border-radius:0}
+.tema .tema-b span{display:none}
+.usr{gap:6px}
+.usr .conta-f{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 14px 0 4px;border:1px solid var(--line2);border-radius:999px;line-height:1;color:var(--text);text-decoration:none;font:600 14px var(--body)}
+.usr .conta-f .av{width:32px;height:32px;font-size:12px}
+.usr .conta-f:hover,.usr .conta-f:focus-visible{background:rgba(var(--w),.05);border-color:rgba(var(--w),.28);box-shadow:none}
+.conta-n{max-width:140px;overflow:hidden;text-overflow:ellipsis}
+.usr .conf-b{width:34px;height:34px;border:0;color:var(--muted)}
+.usr .conf-b .ic{width:17px;height:17px}
+.usr .conf-b:hover{color:var(--text)}
+@media(max-width:640px){.conta-n{display:none}.usr .conta-f{padding:0;border:0;height:auto}.usr .conta-f .av{width:38px;height:38px}}
+
+/* ----- menu lateral (22/11): sem o quadro "Logado como"; sub-abas; recolhido, abre ao passar o mouse ----- */
+.side .me{display:none}
+.nsub{margin:2px 0 8px 23px;padding-left:10px;border-left:1px solid var(--line2);display:grid;gap:1px}
+.nsub a{min-height:32px;padding:6px 10px;font:500 14px var(--body);color:var(--muted)}
+.nsub a:hover{color:var(--text)}
+.nsub a.on{background:rgba(var(--w),.08);color:var(--text);font-weight:700}
+.nsub a.on i{display:none}
+.nsub a[data-pro]{color:var(--star,#f5b942);font-weight:700}
+.nmodo{display:flex;gap:2px;margin:4px 0 4px 33px;padding:3px;border-radius:8px;background:rgba(var(--w),.06);width:max-content}
+.nmodo a{min-height:0;padding:4px 12px;border-radius:6px;font:600 12px var(--body);color:var(--muted)}
+.nmodo a.on{background:var(--text);color:var(--bg)}
+nav a .nl{white-space:nowrap}
+@media(min-width:901px){
+ :root{--side-w:76px}
+ .side{width:76px;overflow:hidden;z-index:30;transition:width .22s var(--ease),box-shadow .22s var(--ease);padding:20px 12px}
+ .side:hover,.side:focus-within{width:272px;overflow:auto;box-shadow:12px 0 40px rgba(0,0,0,.45)}
+ .side .brand>div:not(.logo),.side nav h4,.side .nsub,.side .nmodo,.side .promo,.side nav .nl{opacity:0;transition:opacity .15s}
+ .side:hover .brand>div:not(.logo),.side:hover nav h4,.side:hover .nsub,.side:hover .nmodo,.side:hover .promo,.side:hover nav .nl,
+ .side:focus-within .brand>div:not(.logo),.side:focus-within nav h4,.side:focus-within .nsub,.side:focus-within .nmodo,.side:focus-within .promo,.side:focus-within nav .nl{opacity:1;transition-delay:.08s}
+ .side:not(:hover):not(:focus-within) .nsub,.side:not(:hover):not(:focus-within) .nmodo{display:none}
+ .side:not(:hover):not(:focus-within) nav .nl,.side:not(:hover):not(:focus-within) nav h4,.side:not(:hover):not(:focus-within) .promo{display:none}
+ .side:not(:hover):not(:focus-within) nav a{gap:0}
+ .side:not(:hover):not(:focus-within) nav{padding:8px 4px}
+ .side:not(:hover):not(:focus-within) nav a{padding:8px;justify-content:center}
+ .side .brand{padding:2px 2px}
+}
+
+/* teste (22/11): ícone em cada aba; recolhido mostra todos os ícones */
+.nsub a{gap:10px}.nsub a .ic{width:16px;height:16px}
+.nsub a i{font-style:normal;display:grid;place-items:center;opacity:.8}.nsub a.on i{display:grid;opacity:1}
+@media(min-width:901px){
+ .side:not(:hover):not(:focus-within) .nsub{display:grid;margin:2px 0 6px;padding:0;border:0;opacity:1}
+ .side:not(:hover):not(:focus-within) .nsub a{justify-content:center;padding:7px;gap:0}
+ .side:not(:hover):not(:focus-within) .nsub a.on{background:rgba(var(--w),.14)}
+ .side:not(:hover):not(:focus-within) nav>a{margin-top:6px;opacity:.9}
+ .side:not(:hover):not(:focus-within) nav>a+.nsub{border-top:0}
+ .side:not(:hover):not(:focus-within) .nmodo{display:none}
+ .side:not(:hover):not(:focus-within) nav>a:not(:first-of-type){border-top:1px solid var(--line2);border-radius:0 0 var(--r-sm) var(--r-sm);padding-top:12px}
+}
+
+/* aba selecionada no menu lateral (22/11): fundo na cor de destaque, ícone e texto na cor de contraste (branco no vermelho) */
+.nsub a.on,.side:not(:hover):not(:focus-within) .nsub a.on{background:var(--t);color:var(--on-t)}
+.nsub a.on i{color:var(--on-t)}
 </style>
 <meta name="theme-color" content="#e6af0c">
 <script>(function(){
@@ -1678,11 +1742,11 @@ function fPod(v,d){return v>=10000?f(v/1000,1)+' mil':d===0?Math.round(v).toLoca
 function pd(p,k){var v=p.podio&&p.podio[k];return v==null?0:v}
 var CATP=[
  {t:'Rating',ti:'Carregou o time',u:'Rating do período',d:2,g:function(p){return p.hltv||0}},
+ {t:'Mira de ouro',ti:'Mira de ouro',u:'',d:0,g:function(p){return p.mira||0}},
  {t:'Estrelas',ti:'Estrela do time',u:'estrelas de MVP de round',d:0,k:'estrelas',g:function(p){return pd(p,'estrelas')}},
- {t:'Assistência de flash',ti:'Flash assistente',u:'abates do time em inimigos cegados pela sua flash',d:0,k:'assist_flash',g:function(p){return pd(p,'assist_flash')}},
  {t:'Abates de AWP',ti:'Mão de AWP',u:'abates com a AWP',d:0,k:'abates_awp',g:function(p){return pd(p,'abates_awp')}},
  {t:'Dano de utilitária',ti:'Mestre da utilitária',u:'',d:0,k:'dano_util',g:function(p){return modo==='geral'?pd(p,'dano_util_pp'):pd(p,'dano_util')}},
- {t:'Mira de ouro',ti:'Mira de ouro',u:'',d:0,g:function(p){return p.mira||0}}
+ {t:'Assistência de flash',ti:'Flash assistente',u:'abates do time em inimigos cegados pela sua flash',d:0,k:'assist_flash',g:function(p){return pd(p,'assist_flash')}}
 ];
 var pzi=0;
 function temDadoP(c,L){return c.k?(L||P).some(function(p){return p.podio&&p.podio[c.k]!=null}):(L||P).some(function(p){return c.g(p)>0})}
@@ -1698,7 +1762,7 @@ function drawP(){
  var o=order(c),mx=c.g(o[0])||1;
  el('pchips').innerHTML=CATP.map(function(x,i){return '<button class="chip'+(i===pzi?' on':'')+'" aria-pressed="'+(i===pzi)+'" data-i="'+i+'">'+x.t+(x.t==='Estrelas'?' <small>(MVP de round)</small>':'')+'</button>'}).join('');
  var uu=c.k==='dano_util'?(modo==='geral'?'dano de utilitária (HE + molotov) por partida, média de todas as partidas':'dano de utilitária (HE + molotov) somado no período'):c.t==='Mira de ouro'?(modo==='geral'?'nota de mira de todas as partidas':'nota de mira só com as partidas do período'):c.u;
- var nota='<div class="zr note"><span></span>'+esc(uu)+(c.k==='estrelas'?'. Conta as partidas lidas desde 21/11.':'')+'</div>';
+ var nota='<div class="zr note"><span></span>'+esc(uu)+(c.k==='estrelas'?'. Conta só as partidas lidas a partir de 22/11 (ou relidas).':'')+'</div>';
  if(!temDadoP(c)){el('pl').innerHTML='<div class="vazio z-vazio"><b>Ainda sem dado.</b> Essa contagem começou em 21/11 e vai aparecendo conforme as partidas novas forem lidas.</div>'+nota;return}
  if(!c.g(o[0])){el('pl').innerHTML='<div class="vazio z-vazio"><b>Ninguém neste período.</b></div>'+nota;return}
  el('pl').innerHTML=o.map(function(p,pos){
@@ -2211,19 +2275,37 @@ function itensMenu(){
  return{voce:voce,sec:sec};
 }
 function linkMenu(x,curto){
- return '<a '+(x.s?'href="#/cla/'+esc(ROTA.id)+'/'+x.s+'" data-sec="'+x.s+'"':'href="'+x.h+'"')+(x.on?' class="on"':'')+'><i>'+ic(IC0[x.n])+'</i>'+(curto?'<span>'+(x.b||x.t)+'</span>':x.t+(x.em?'<em id="nb">'+NB+'</em>':''))+'</a>';
+ return '<a '+(x.s?'href="#/cla/'+esc(ROTA.id)+'/'+x.s+'" data-sec="'+x.s+'"':'href="'+x.h+'"')+(x.on?' class="on"':'')+'><i>'+ic(IC0[x.n])+'</i>'+(curto?'<span>'+(x.b||x.t)+'</span>':'<span class="nl">'+x.t+'</span>'+(x.em?'<em id="nb">'+NB+'</em>':''))+'</a>';
 }
 function desenharPromo(){
  var p=el('promo'),dono=ME&&ME.cla&&ME.cla.eu_sou_dono;
- if(dono&&ROTA.t!=='convite'&&ROTA.t!=='criar'){
+ if(dono&&ROTA.t==='cla'&&ME&&ME.cla&&ME.cla.slug===ROTA.id){
   p.style.display='';
   p.innerHTML='<b>Chame mais amigos</b><p>Copie o link de convite do seu time e mande para a galera.</p><button class="btn y w" type="button" data-acao="abrir-opcoes" data-aba="convite">Link de convite</button>';
  }else{p.style.display='none';p.innerHTML=''}
 }
 function setCtx(t){var c=el('ctx');if(c)c.textContent=t||''}
+/* menu lateral B (22/11): Meu perfil e Meu time sempre abertos, com as abas de cada um; Simples/Pro dentro do Meu time */
+/* teste (22/11): um ícone para cada aba do menu lateral */
+var ICS={desempenho:'<path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6"/>',partidas:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/>',funcoes:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',plano:'<path d="M9 5h10M9 12h10M9 19h10"/><path d="M4 5l1 1 2-2M4 12l1 1 2-2M4 19l1 1 2-2"/>',geral:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',mapas:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',podio:'<path d="M3 20h18M5 20v-6h4v6M10 20V9h4v11M15 20v-8h4v8"/>',alastro:'<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/>',pro:'<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>'};
+function subMenu(base,lista,ativo){return '<div class="nsub">'+lista.map(function(a){return '<a href="'+base+'/'+a[0]+'" data-ns="'+a[0]+'" title="'+esc(a[1])+'"'+(a[0]===ativo?' class="on" aria-current="page"':'')+(a[3]?' data-pro="1"':'')+'><i>'+ic(ICS[a[0]]||ICS.geral)+'</i><span class="nl">'+esc(a[1])+'</span></a>'}).join('')+'</div>'}
+function navLateral(){
+ var h='';if(!(ME&&SES))return '';
+ var noPerfil=ROTA.t==='jogador'&&ROTA.id===SES.sid,naMinha=ROTA.t==='cla'&&ME.cla&&ME.cla.slug===ROTA.id;
+ h+='<h4>Você</h4>'+linkMenu({t:'Meu perfil',n:0,h:'#/jogador/'+SES.sid,on:noPerfil});
+ var pa=[['desempenho','Meu desempenho'],['partidas','Partidas'],['funcoes','Minhas funções'],['plano','Plano individual']];
+ h+=subMenu('#/jogador/'+SES.sid,pa,noPerfil?(ABA_ATUAL&&ROTA.t==='jogador'?ABA_ATUAL:(ROTA.id2||'desempenho')):'');
+ if(ME.cla){
+  var base='#/cla/'+encodeURIComponent(ME.cla.slug),pro=proOn();
+  h+=linkMenu({t:'Meu time',n:5,h:base,on:naMinha});
+  h+='<div class="nmodo" role="group" aria-label="Modo do time"><a href="'+base+'/geral" data-mt="simples"'+(pro?'':' class="on"')+'>Simples</a><a href="'+base+'/pro" data-mt="pro"'+(pro?' class="on"':'')+'>★ Pro</a></div>';
+  h+=subMenu(base,abasCla(),naMinha?(ABA_ATUAL&&ROTA.t==='cla'?ABA_ATUAL:(ROTA.id2||abasCla()[0][0])):'');
+ }
+ return h;
+}
 function desenharMenus(){
  var m=itensMenu(),h='';
- if(m.voce.length)h+='<h4>Você</h4>'+m.voce.map(function(x){return linkMenu(x)}).join('');
+ if(m.voce.length)h+=navLateral();
  if(m.sec.length){var nome=CLA_ATUAL?CLA_ATUAL.cla.nome:'Time';h+=(m.voce.length?'<div class="nav-sep"></div>':'')+'<h4>'+esc(nome)+'</h4>'+m.sec.map(function(x){return linkMenu(x)}).join('')}
  el('nav').innerHTML=h;
  var b=m.sec.length?m.voce.slice(0,1).concat(m.sec):m.voce;
@@ -2235,8 +2317,8 @@ function desenharChrome(){
  var nome=ME&&ME.nome?ME.nome:'Conectado';
  if(SES){
   /* engrenagem abre Opções (onde também fica o Sair); a foto leva ao perfil */
-  el('usr').innerHTML='<button id="conta" class="opt conf-b" type="button" data-acao="abrir-conta" aria-haspopup="dialog" aria-label="Opções" title="Opções">'+ic('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>')+'</button>'
-   +'<a class="conta-f" href="#/jogador/'+esc(SES.sid)+'" title="Meu perfil" aria-label="Meu perfil">'+(ME?av({avatar:ME.avatar,apelido:nome}):'<div class="av">ID</div>')+'</a>';
+  el('usr').innerHTML='<a class="conta-f" href="#/jogador/'+esc(SES.sid)+'" title="Meu perfil" aria-label="Meu perfil">'+(ME?av({avatar:ME.avatar,apelido:nome}):'<div class="av">ID</div>')+'<span class="conta-n">'+esc(nome)+'</span></a>'
+   +'<button id="conta" class="opt conf-b" type="button" data-acao="abrir-conta" aria-haspopup="dialog" aria-label="Opções" title="Opções">'+ic('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>')+'</button>';
   el('entrar').style.display='none';
   el('me-w').innerHTML=(ME?av({avatar:ME.avatar,apelido:nome},'l','ring-t'):'<div class="av l ring-t">VC</div>')+'<div><small>Logado como</small><b>'+esc(nome)+'</b></div>';
  }else{
@@ -2325,7 +2407,7 @@ function mostrarAba(aba){
  }else{
   [].forEach.call(document.querySelectorAll('.aba-p'),function(e){e.classList.toggle('aba-off',e.getAttribute('data-aba')!==aba)});
  }
- ABA_ATUAL=aba;setActive(aba);
+ ABA_ATUAL=aba;setActive(aba);if(el('nav'))el('nav').innerHTML=navLateral();
  var topo=nav.getBoundingClientRect().top;if(topo<0)nav.scrollIntoView({block:'start'});
 }
 var ABA_ATUAL=null;
@@ -3360,7 +3442,7 @@ window.addEventListener('hashchange',function(){fecharGate();rotear()});
 document.addEventListener('click',function(e){
  var m=e.target.closest('[data-mt]');if(!m)return;
  try{localStorage.setItem('painel_modo_time',m.getAttribute('data-mt'))}catch(x){}
- aplicarModoTime();desenharChrome();
+ aplicarModoTime();desenharChrome();if(el('nav'))el('nav').innerHTML=navLateral();
  if(m.getAttribute('data-mt')==='pro'){var z=el('pro');if(z)z.scrollIntoView({block:'start'})}
 });
 document.addEventListener('keydown',function(e){
