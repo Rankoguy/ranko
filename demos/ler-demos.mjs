@@ -277,7 +277,7 @@ function estatisticas(arquivo, ids) {
     // csn/csb = primeiros tiros dados logo depois de andar e quantos deles saíram com o boneco já parado (contra-strafe)
     // coleta v5 (14/11, noite): definições do Leetify. hta/hc = acertos (sem escopeta) e na cabeça; ea/eh = tiros em
     // combate e os que acertaram; csn/csb = tiros de rifle/sniper em combate e os que saíram parado. vc = versão da coleta.
-    v4: 1, v5: 1, vc: 14, hed: 0, mv: 0, v14: 0, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
+    v4: 1, v5: 1, vc: 15, hed: 0, mv: 0, v14: 0, v8: 1, vrd: 0, vsm: 0, hta: 0, hc: 0, sp: 0, sa: 0, csn: 0, csb: 0, ea: 0, eh: 0,
     _r: {}, _m: {}, _n: 0, _u: 0 }]));
   const primeira = new Map(); // rodada -> primeira morte
   const ordenadas = [...mortes].sort((a, b) => (a.tick || 0) - (b.tick || 0));
@@ -333,6 +333,16 @@ function estatisticas(arquivo, ids) {
   // pódio (21/11): estrelas de MVP de cada rodada
   let mvpsLidos = false;
   try { const L = parseEvent(arquivo, 'round_mvp'); for (const e of L) { const a = S.get(String(e.user_steamid)); if (a) a.mv++; } mvpsLidos = L.length > 0; } catch { /* sem o evento */ }
+  // 22/11: a demo do CS2 não traz o evento round_mvp; o placar guarda as estrelas no jogador (m_iMVPs, acumulado na partida).
+  // Pegamos o maior valor de cada um nas fotos do fim de cada rodada, do começo da seguinte e do fim da partida.
+  if (!mvpsLidos) try {
+    const tk = [...new Set(parseEvent(arquivo, 'round_end').map((e) => e.tick).concat(parseEvent(arquivo, 'round_freeze_end').map((e) => e.tick)))];
+    let linhas = [];
+    try { linhas = parseTicks(arquivo, ['mvps'], tk.concat([-1])); } catch { linhas = parseTicks(arquivo, ['mvps'], tk); }
+    const mx = new Map();
+    for (const l of linhas) { const v = Number(l.mvps); if (Number.isFinite(v)) mx.set(String(l.steamid), Math.max(mx.get(String(l.steamid)) || 0, v)); }
+    if ([...mx.values()].some((v) => v > 0)) { for (const [id, v] of mx) { const a = S.get(id); if (a) a.mv = v; } mvpsLidos = true; }
+  } catch { /* sem as estrelas */ }
   for (const st of S.values()) st.v14 = mvpsLidos ? 1 : 0;
   for (const e of cegos) {
     const a = S.get(String(e.attacker_steamid));

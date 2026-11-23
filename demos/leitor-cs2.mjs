@@ -44,7 +44,8 @@ export async function lerComCs2(arquivo, mod) {
       }
       const g = (k) => { let v = e['CCSPlayerController.' + k] ?? e[k]; if (v == null && typeof e.get === 'function') v = e.get('CCSPlayerController.' + k) ?? e.get(k); return typeof v === 'number' ? v : typeof v === 'bigint' ? Number(v) : null; };
       return { rank: g('m_iCompetitiveRanking'), rank_if_win: g('m_iCompetitiveRankingPredicted_Win'), rank_if_loss: g('m_iCompetitiveRankingPredicted_Loss'),
-        rank_if_tie: g('m_iCompetitiveRankingPredicted_Tie'), comp_rank_type: g('m_iCompetitiveRankType') };
+        rank_if_tie: g('m_iCompetitiveRankingPredicted_Tie'), comp_rank_type: g('m_iCompetitiveRankType'),
+        mvps: g('m_iMVPs') }; // estrelas de MVP acumuladas na partida (22/11: o evento round_mvp não vem na demo)
     } catch { return {}; }
   };
   const fotografar = (tick) => {
@@ -167,6 +168,7 @@ export async function lerComCs2(arquivo, mod) {
     });
   }
   const r = await rd.parseDemo(arquivo, { entities: EntityMode.ALL });
+  try { fotografar(-1); } catch { /* sem a foto final */ } // foto do fim da partida (tick -1), para as estrelas da última rodada
   // escolhe a fonte das granadas na hora da morte: foto do inventário quando a demo traz, senão a nossa contagem
   const mortesEv = ev.filter((x) => x.event_name === 'player_death');
   for (const x of mortesEv) { if ((x.granadas || 0) >= 3) diag.morte3Foto++; if ((x._conta || 0) >= 3) diag.morte3Conta++; }
