@@ -1545,6 +1545,26 @@ nav>a.on{border-radius:var(--r-sm)}
 .pular{position:fixed;left:12px;top:-60px;z-index:200;padding:10px 14px;border:0;border-radius:10px;cursor:pointer;background:var(--t);color:var(--on-t);font:700 14px var(--body);text-decoration:none}
 .pular:focus{top:12px}
 #brilho .av,#brilho .ring-ct{outline-color:var(--t-text)}
+
+/* 23/11: mini ranking do 2º ao 5º dentro do cartão grande (Pódio e Alastro) */
+.mini-rk{align-self:stretch;justify-self:stretch;width:100%;display:grid;gap:2px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.mr{display:grid;grid-template-columns:28px 28px minmax(0,1fr) auto;align-items:center;gap:8px;padding:6px 6px;border-radius:8px;cursor:pointer}
+.mr:hover{background:rgba(var(--w),.05)}
+.mr .av.sm{width:28px;height:28px;font-size:10.5px}
+.mr-n{color:var(--muted);font:700 13px var(--body);text-align:center}
+.mr-a{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 14px var(--body)}
+.mr-p{color:var(--muted);font:600 13px var(--body);font-variant-numeric:tabular-nums}
+#ii-tip{white-space:pre-line}
+#ii-tip{max-width:none}
+
+/* 23/11 (Juan): cartão do lado com a mesma altura da lista; foto, nick e textos menores */
+@media(min-width:901px){#zoeira .zgrid,#podio .zgrid{align-items:stretch}}
+#troll,#brilho{gap:4px;padding:20px;align-content:start}
+#troll .av.xl,#brilho .av.xl{width:48px;height:48px;font-size:16px;margin-bottom:4px}
+#troll b.big,#brilho b.big{font-size:24px}
+#troll p,#brilho p{font-size:13px}
+#troll .mini-rk,#brilho .mini-rk{margin-top:6px;padding-top:8px}
+#troll .mr,#brilho .mr{padding:4px 6px}
 </style>
 <meta name="theme-color" content="#e6af0c">
 <script>(function(){
@@ -1777,12 +1797,12 @@ function rtFaixa(r){var i=0;for(var k=0;k<RT_F.length;k++)if(r>=RT_F[k][1])i=k;r
 function info(t){return '<span class="ii" tabindex="0" role="img" aria-label="'+esc(t)+'" data-tip="'+esc(t)+'">i</span>'}
 (function(){
  var tip=null,cur=null;
- function txt(i){var t=i.getAttribute('data-tip');if(t)return t;var sh=i.closest('.sh'),p=sh&&sh.querySelector('p');return p?p.textContent.trim():''}
+ function txt(i){var t=i.getAttribute('data-tip')||(i.closest('section')&&i.closest('section').getAttribute('data-tip'));if(t)return t;var sh=i.closest('.sh'),p=sh&&sh.querySelector('p');return p?p.textContent.trim():''}
  function ver(i){
   var t=txt(i);if(!t)return;
   if(!tip){tip=document.createElement('div');tip.id='ii-tip';tip.setAttribute('role','tooltip');document.body.appendChild(tip)}
   tip.textContent=t;cur=i;i.classList.add('on');
-  var r=i.getBoundingClientRect(),w=Math.min(300,window.innerWidth-24);tip.style.maxWidth=w+'px';
+  var r=i.getBoundingClientRect(),w=Math.min(t.length>220?380:300,window.innerWidth-24);tip.style.maxWidth=w+'px';
   var h=tip.offsetHeight,x=Math.max(12,Math.min(r.left+r.width/2-w/2,window.innerWidth-w-12)),y=r.bottom+10;
   if(y+h>window.innerHeight-12)y=Math.max(12,r.top-h-10);
   tip.style.left=x+'px';tip.style.top=y+'px';tip.classList.add('on');
@@ -1824,8 +1844,8 @@ var CAT=[
  {t:'Cegador do time',ti:'Cegador do time',u:'flashes de frente que cegaram um colega por 3 s ou mais',d:0,k:'cegou_amigos',g:function(p){return zc(p,'cegou_amigos')}},
  {t:'Comprou à toa',ti:'Morreu sem usar as granadas',u:'mortes com 3 granadas ou mais na mão',d:0,k:'comprou_a_toa',g:function(p){return zc(p,'comprou_a_toa')}},
  {t:'HE no time',ti:'Granada amiga',u:'colegas atingidos por HE com 10+ de dano',d:0,k:'he_no_time',g:function(p){return zc(p,'he_no_time')}},
- {t:'Varado',ti:'Morreu varado',fora:1,u:'mortes com o tiro atravessando parede ou objeto',d:0,k:'morreu_varado',g:function(p){return zc(p,'morreu_varado')}},
- {t:'Atrás da smoke',ti:'Morreu pela smoke',fora:1,u:'mortes com o tiro passando pela smoke',d:0,k:'morreu_na_smoke',g:function(p){return zc(p,'morreu_na_smoke')}},
+ {t:'Varado',ti:'Morreu varado',u:'mortes com o tiro atravessando parede ou objeto',d:0,k:'morreu_varado',g:function(p){return zc(p,'morreu_varado')}},
+ {t:'Atrás da smoke',ti:'Morreu pela smoke',u:'mortes com o tiro passando pela smoke',d:0,k:'morreu_na_smoke',g:function(p){return zc(p,'morreu_na_smoke')}},
  {t:'Não fica vivo',ti:'O que mais morre do time',u:'mortes por rodada',d:2,g:function(p){return p.rodadas?p.mortes/p.rodadas:0}}
 ];
 var APOS=[
@@ -1863,7 +1883,7 @@ var pzi=0;
 function temDadoP(c,L){return c.k?(L||P).some(function(p){return p.podio&&p.podio[c.k]!=null}):(L||P).some(function(p){return c.g(p)>0})}
 function pontosPodio(L){
  var pts={},lid={};L.forEach(function(p){pts[p.steam64]=0});
- CATP.forEach(function(c){if(!temDadoP(c,L))return;var o=order(c,L);o.forEach(function(p,i){if(c.g(p)>0)pts[p.steam64]+=L.length-i});if(c.g(o[0])>0)(lid[o[0].steam64]=lid[o[0].steam64]||[]).push(c.t)});
+ CATP.forEach(function(c){if(!temDadoP(c,L))return;var o=order(c,L);o.forEach(function(p){var vp=c.g(p);if(vp>0)pts[p.steam64]+=L.length-o.filter(function(y){return c.g(y)>vp}).length});if(c.g(o[0])>0)(lid[o[0].steam64]=lid[o[0].steam64]||[]).push(c.t)});
  return {pts:pts,lid:lid};
 }
 function drawP(){
@@ -1877,8 +1897,28 @@ function drawP(){
  if(!temDadoP(c)){el('pl').innerHTML='<div class="vazio z-vazio"><b>Ainda sem dado.</b> Essa contagem começou em 21/11 e vai aparecendo conforme as partidas novas forem lidas.</div>'+nota;return}
  if(!c.g(o[0])){el('pl').innerHTML='<div class="vazio z-vazio"><b>Ninguém neste período.</b></div>'+nota;return}
  el('pl').innerHTML=o.map(function(p,pos){
-  return '<div class="zr" data-p="'+p.steam64+'" style="cursor:pointer">'+av(p)+'<div><div class="zn">'+(pos+1)+'º '+esc(p.apelido)+(pos===0&&c.g(p)>0?' <span class="pill">'+c.ti+'</span>':'')+'</div><div class="zb"><i style="width:'+Math.round(c.g(p)/mx*100)+'%"></i></div></div><div class="zv">'+fPod(c.g(p),c.d)+'</div></div>'}).join('')+nota;
+  return '<div class="zr" data-p="'+p.steam64+'" style="cursor:pointer">'+av(p)+'<div><div class="zn">'+(o.filter(function(y){return c.g(y)>c.g(p)}).length+1)+'º '+esc(p.apelido)+(c.g(p)>0&&c.g(p)===c.g(o[0])?' <span class="pill">'+c.ti+'</span>':'')+'</div><div class="zb"><i style="width:'+Math.round(c.g(p)/mx*100)+'%"></i></div></div><div class="zv">'+fPod(c.g(p),c.d)+'</div></div>'}).join('')+nota;
 }
+/* 23/11: abaixo do cartão grande, do 2º ao 5º em pontos (empate = mesma posição) */
+function miniRank(L,pts,rotulo){
+ var o=L.filter(function(p){return pts[p.steam64]>0}).sort(function(a,b){return pts[b.steam64]-pts[a.steam64]});
+ if(o.length<2)return '';
+ return '<div class="mini-rk" aria-label="'+esc(rotulo)+'">'+o.slice(1,5).map(function(p){var r=o.filter(function(y){return pts[y.steam64]>pts[p.steam64]}).length+1;
+  return '<div class="mr" data-p="'+p.steam64+'"><span class="mr-n">'+r+'º</span>'+av(p,'sm')+'<span class="mr-a">'+esc(p.apelido)+'</span><span class="mr-p">'+pts[p.steam64]+' pts</span></div>'}).join('')+'</div>';
+}
+function explicaPontos(tipo,n,cats){
+ var N=n||0;
+ return (tipo==='alastro'?'Quem está alastrando mais o time. Quanto mais alto na lista, pior.':'Quem mais mandou bem no time. Quanto mais alto na lista, melhor.')
+  +'\n\nComo funcionam os pontos'
+  +'\n• São '+cats+' categorias. Em cada uma, '+(tipo==='alastro'?'o pior':'o melhor')+' do período ganha mais pontos.'
+  +'\n• Com '+N+' jogadores no período: o 1º ganha '+N+' pontos, o 2º ganha '+Math.max(N-1,0)+', o 3º ganha '+Math.max(N-2,0)+', e assim por diante, até 1 ponto.'
+  +'\n• Quem tem 0 na categoria não ganha ponto.'
+  +'\n• Empate: quem empata ganha os mesmos pontos, e o próximo pula as posições empatadas (dois em 2º, o seguinte fica em 4º).'
+  +'\n• Categoria sem dado no período não entra na conta.'
+  +'\n• '+(tipo==='alastro'?'Quem mais alastrou':'Quem mais brilhou')+' é quem soma mais pontos.'
+  +(tipo==='alastro'?'\n\nAs contagens usam o total do período.':'\n\nAs contagens usam o total do período: quem joga mais tem mais chance de pontuar. Rating e Mira de ouro são notas do período.');
+}
+function setDica(sec,t){if(el(sec))el(sec).setAttribute('data-tip',t)}
 function drawBrilho(){
  if(!el('brilho'))return;
  var pp=pontosPodio(P),pts=pp.pts,lid=pp.lid;
@@ -1886,7 +1926,8 @@ function drawBrilho(){
  if(!t||!pts[t.steam64]){el('brilho').removeAttribute('data-p');el('brilho').innerHTML='<div class="k">Quem mais brilhou</div><b class="big">Ninguém ainda</b><p>Os pontos aparecem quando alguém jogar no período.</p>';return}
  var lt=lid[t.steam64]||[];
  el('brilho').setAttribute('data-p',t.steam64);
- el('brilho').innerHTML=av(t,'xl','ring-ct')+'<div class="k">'+(modo==='mes'?'Quem mais brilhou no mês':modo==='semana'?'Quem mais brilhou na semana':'Quem mais brilhou nas últimas partidas')+'</div><div class="po-soma">Soma de todas as categorias do Pódio</div><b class="big">'+esc(t.apelido)+'</b><p>'+pts[t.steam64]+' pontos de pódio somando as categorias'+(lt.length?'. Lidera em '+esc(lt.join(', ')):'')+'.</p>';
+ el('brilho').innerHTML=av(t,'xl','ring-ct')+'<div class="k">'+(modo==='mes'?'Quem mais brilhou no mês':modo==='semana'?'Quem mais brilhou na semana':'Quem mais brilhou nas últimas partidas')+'</div><b class="big">'+esc(t.apelido)+'</b><p>'+pts[t.steam64]+' pontos de pódio somando as categorias'+(lt.length?'. Lidera em '+esc(lt.join(', ')):'')+'.</p>'+miniRank(P,pts,'Do 2º ao 5º no Pódio');
+ setDica('podio',explicaPontos('podio',P.length,CATP.filter(function(c){return temDadoP(c,P)}).length));
 }
 
 function drawRows(q){
@@ -1910,7 +1951,7 @@ function temDado(c,L){return !c.k||(L||P).some(function(p){return p.zoeira&&p.zo
 /* pontos de alastro: em cada categoria com dado, o pior ganha mais; quem tem 0 não ganha ponto */
 function pontosAlastro(L){
  var pts={},lid={};L.forEach(function(p){pts[p.steam64]=0});
- CAT.forEach(function(c){if(c.fora||!temDado(c,L))return; /* fora: aparece no menu, mas não soma pontos de alastro */var o=order(c,L);o.forEach(function(p,i){if(c.g(p)>0)pts[p.steam64]+=L.length-i});if(c.g(o[0])>0)(lid[o[0].steam64]=lid[o[0].steam64]||[]).push(c.t)});
+ CAT.forEach(function(c){if(c.fora||!temDado(c,L))return; /* fora: aparece no menu, mas não soma pontos de alastro */var o=order(c,L);o.forEach(function(p){var vp=c.g(p);if(vp>0)pts[p.steam64]+=L.length-o.filter(function(y){return c.g(y)>vp}).length});if(c.g(o[0])>0)(lid[o[0].steam64]=lid[o[0].steam64]||[]).push(c.t)});
  return {pts:pts,lid:lid};
 }
 function drawZ(){
@@ -1919,7 +1960,7 @@ function drawZ(){
  if(!temDado(c)){el('zl').innerHTML='<div class="vazio z-vazio"><b>Ainda sem dado.</b> Essa contagem começou em 14/11 e vai aparecendo conforme as partidas novas forem lidas.</div><div class="zr note"><span></span>'+c.u+'</div>';return}
  if(!c.g(o[0])){el('zl').innerHTML='<div class="vazio z-vazio"><b>Ninguém neste período.</b> Ponto para o time.</div><div class="zr note"><span></span>'+c.u+'</div>';return}
  el('zl').innerHTML=o.map(function(p,pos){
-  return '<div class="zr" data-p="'+p.steam64+'" style="cursor:pointer">'+av(p)+'<div><div class="zn">'+(pos+1)+'º '+esc(p.apelido)+(pos===0&&c.g(p)>0?' <span class="pill">'+c.ti+'</span>':'')+'</div><div class="zb"><i style="width:'+Math.round(c.g(p)/mx*100)+'%"></i></div></div><div class="zv">'+f(c.g(p),c.d)+'</div></div>'}).join('')
+  return '<div class="zr" data-p="'+p.steam64+'" style="cursor:pointer">'+av(p)+'<div><div class="zn">'+(o.filter(function(y){return c.g(y)>c.g(p)}).length+1)+'º '+esc(p.apelido)+(c.g(p)>0&&c.g(p)===c.g(o[0])?' <span class="pill">'+c.ti+'</span>':'')+'</div><div class="zb"><i style="width:'+Math.round(c.g(p)/mx*100)+'%"></i></div></div><div class="zv">'+f(c.g(p),c.d)+'</div></div>'}).join('')
   +'<div class="zr note"><span></span>'+c.u+'</div>';
 }
 function spotlight(){
@@ -2203,7 +2244,8 @@ function init(d){
  var t=P.reduce(function(m,p){return pts[p.steam64]>pts[m.steam64]?p:m},P[0]);
  el('troll').setAttribute('data-p',t.steam64);
  if(!pts[t.steam64]){el('troll').removeAttribute('data-p');el('troll').innerHTML='<div class="k">Quem mais alastrou</div><b class="big">Ninguém ainda</b><p>As contagens do alastro começaram em 14/11 e vão aparecendo conforme as partidas novas forem lidas.</p>'}
- else el('troll').innerHTML=av(t,'xl','ring-red')+'<div class="k">'+(modo==='mes'?'Quem mais alastrou no mês':modo==='semana'?'Quem mais alastrou na semana':'Quem mais alastrou nas últimas partidas')+'</div><b class="big">'+esc(t.apelido)+'</b><p>'+pts[t.steam64]+' pontos de alastro somando as categorias que já têm dado.</p>';
+ else el('troll').innerHTML=av(t,'xl','ring-red')+'<div class="k">'+(modo==='mes'?'Quem mais alastrou no mês':modo==='semana'?'Quem mais alastrou na semana':'Quem mais alastrou nas últimas partidas')+'</div><b class="big">'+esc(t.apelido)+'</b><p>'+pts[t.steam64]+' pontos de alastro somando as categorias que já têm dado.</p>'+miniRank(P,pts,'Do 2º ao 5º no Alastro');
+ setDica('zoeira',explicaPontos('alastro',P.length,CAT.filter(function(c){return !c.fora&&temDado(c,P)}).length));
  if(!el('chips').getAttribute('data-ok')){el('chips').setAttribute('data-ok','1');el('chips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(b){zi=+b.getAttribute('data-i');drawZ();posDraw()}})}
  if(el('pchips')&&!el('pchips').getAttribute('data-ok')){el('pchips').setAttribute('data-ok','1');el('pchips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(b){pzi=+b.getAttribute('data-i');drawP();posDraw()}})}
  el('po-p').textContent='Quem mais mandou bem no time '+jan+'. Quanto mais alto na lista, melhor.';
